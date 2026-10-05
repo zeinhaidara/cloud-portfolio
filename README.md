@@ -1,44 +1,43 @@
-# Zein Haidara: Cloud Engineering Portfolio
+# Zein Haidara · Cloud Engineering
 
-Senior Cloud Engineer, available for contract engagements in AWS, Azure, Kubernetes, and infrastructure automation.
+Senior Cloud Engineer focused on AWS, Azure, Kubernetes, and infrastructure automation.
 
-**Portfolio site:** https://zeinhaidara.github.io/cloud-portfolio/
+**Portfolio:** https://zeinhaidara.github.io/cloud-portfolio/
 
-This repository is the source for the portfolio site. It documents how I design, build, deliver, and observe cloud platforms, using projects I built end to end. Each case study shows the architecture, the reasoning behind the key decisions, and evidence captured from the running system. Demo infrastructure is torn down to control cost, so the evidence is preserved here as captures.
+Each project here is built the way production platforms are: infrastructure as code, least-privilege access, automated delivery, real monitoring, and load testing against a working environment. The site presents the architecture, the decisions behind it, and evidence captured from the running systems.
 
-## How I work
+## Engineering approach
 
-- **Infrastructure as code.** Platforms are defined in Terraform and deployed through Helm and GitHub Actions or Azure DevOps. Changes are reviewed, repeatable, and tied to commits.
-- **Least privilege by default.** Workloads use scoped IAM roles or workload identity, pipelines authenticate with short-lived OIDC credentials rather than stored keys, and secrets are injected at deploy time.
-- **Explicit service boundaries.** Each service owns its data and its rules. Consistency, caching, and eventing choices are made deliberately and documented.
-- **Delivery with verification.** Pipelines validate configuration, run smoke tests and security checks, publish commit-tagged images, and confirm the deployment.
-- **Observable systems.** Services expose metrics, Prometheus scrapes them, and Grafana dashboards cover traffic, latency, errors, and business flows.
+- **Infrastructure as code.** Terraform defines the platform; Helm, GitHub Actions, and Azure DevOps deliver it. Every change is reviewed and traceable to a commit.
+- **Least privilege.** Scoped IAM roles and workload identity for runtime access, short-lived OIDC credentials for pipelines, and no long-lived keys.
+- **Clear service boundaries.** Each service owns its data and rules, and consistency, caching, and eventing choices are documented.
+- **Verified delivery.** Configuration validation, tests, security scans, immutable commit-tagged images, and post-deploy smoke checks.
+- **Observability and load.** Prometheus, Grafana, and CloudWatch alarms for traffic, latency, and errors, plus load tests that exercise autoscaling end to end.
 
-## Featured case study
+## Projects
 
 ### Orbital Expeditions: event-driven microservices on AWS EKS
-[Read the case study](https://zeinhaidara.github.io/cloud-portfolio/orbital.html) · [Source repository](https://github.com/zeinhaidara/aws-retail-microservices-eks)
+[Case study](https://zeinhaidara.github.io/cloud-portfolio/orbital.html) · [Source](https://github.com/zeinhaidara/aws-retail-microservices-eks)
 
-Six services (storefront, product, inventory, order, trip planner, notification) on EKS. Highlights:
+Six services on EKS with DynamoDB for atomic reservations, RDS MySQL with a transactional outbox, and Valkey for catalog caching. Order events move through EventBridge and SQS with a dead-letter queue. Terraform and Helm deliver the platform, and a Prometheus and Grafana dashboard tracks the services.
 
-- DynamoDB for atomic seat reservations, RDS MySQL for orders and a transactional outbox, and Valkey for catalog caching without moving price authority away from the Product service.
-- Order events flow from the outbox through EventBridge to SQS with a dead-letter queue, with at-least-once delivery and retries for the notification service.
-- Provider credentials for the AI trip planner stay server-side; recommendations reference catalog items rather than inventing prices.
-- Terraform for the platform, Helm for workloads, separate protected branches for application and infrastructure changes.
-- Prometheus and Grafana operations dashboard, with captures from the running deployment.
+### AWS three-tier delivery
+[Source](https://github.com/zeinhaidara/aws-3-tier-github-actions)
 
-## Other work
+One FastAPI/MySQL application on two compute paths, EC2 Auto Scaling and ECS Fargate, behind an Application Load Balancer. Private subnets, Secrets Manager, immutable ECR images, and CloudWatch alarms, delivered with Terraform and GitHub Actions over OIDC. A load-test workflow drives sustained concurrent traffic at the HTTPS endpoint and records Auto Scaling capacity before and after.
 
-| Project | Focus |
-| --- | --- |
-| [AWS three-tier delivery](https://github.com/zeinhaidara/aws-3-tier-github-actions) | One FastAPI/MySQL application on two compute paths (private EC2 Auto Scaling and ECS Fargate behind an ALB), with Terraform and GitHub Actions publishing immutable images over OIDC. |
-| [GitHub to AWS pipeline](https://github.com/zeinhaidara/github-to-aws-pipeline) | Tested and security-scanned changes promoted through dev, stage, and main to an S3 website, authenticated to AWS with OIDC. |
-| [Northbridge Health (Azure)](https://github.com/zeinhaidara/azure-endtoend-platform) | Azure referral-platform blueprint with reusable Terraform modules, AKS, private endpoints, workload identity, Key Vault, and staged delivery. Resilience and rebuild evidence is still being added to the repository. |
+### GitHub to AWS pipeline
+[Source](https://github.com/zeinhaidara/github-to-aws-pipeline)
 
-## Scope and honesty
+Tested, security-scanned changes promoted through dev, stage, and main to an S3 website, authenticated to AWS with OIDC.
 
-These are portfolio projects, not production systems for a client. The Orbital storefront is a fictional product built to exercise real engineering concerns, and the dashboard captures show a demo deployment with limited traffic, not production load. I note gaps where they exist rather than presenting them as finished.
+### Northbridge Health on Azure
+[Source](https://github.com/zeinhaidara/azure-endtoend-platform)
 
-## Contact
+A referral-platform blueprint with reusable Terraform modules, AKS, private endpoints, workload identity, Key Vault, and staged delivery. Resilience and rebuild evidence is being added.
+
+## Notes
+
+Demo environments are torn down after capture to keep costs controlled, so each case study keeps its screenshots and write-up. Orbital Expeditions is a fictional storefront used as a realistic workload.
 
 GitHub: [@zeinhaidara](https://github.com/zeinhaidara)
