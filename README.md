@@ -2,7 +2,7 @@
 
 Senior Cloud Engineer focused on AWS, Azure, Kubernetes, and infrastructure automation.
 
-**Portfolio:** https://zeinhaidara.github.io/cloud-portfolio/
+**Portfolio:** https://zeinhaidara.github.io/cloud-portfolio/ (an explorable 3D map of the projects; a [classic view](https://zeinhaidara.github.io/cloud-portfolio/classic.html) is also available)
 
 Each project here is built the way production platforms are: infrastructure as code, least-privilege access, automated delivery, real monitoring, and load testing against a working environment. The site presents the architecture, the decisions behind it, and evidence captured from the running systems.
 
@@ -20,6 +20,11 @@ Each project here is built the way production platforms are: infrastructure as c
 [Case study](https://zeinhaidara.github.io/cloud-portfolio/orbital.html) · [Source](https://github.com/zeinhaidara/aws-retail-microservices-eks)
 
 Six services on EKS with DynamoDB for atomic reservations, RDS MySQL with a transactional outbox, and Valkey for catalog caching. Order events move through EventBridge and SQS with a dead-letter queue. Terraform and Helm deliver the platform, and a Prometheus and Grafana dashboard tracks the services.
+
+### Healthcare SecOps: secure delivery on EKS Fargate
+[Case study](https://zeinhaidara.github.io/cloud-portfolio/healthcare.html) · [Source](https://github.com/zeinhaidara/healthcare-eks-secops)
+
+A read-only patient API (synthetic data) on EKS Fargate, delivered through CI scan gates, GitOps with Argo CD, Terraform behind approvals, OIDC-only pipeline access, IRSA, and detective controls. 43 logged security changes and 16 accepted risks, each with evidence. No compliance claim is made.
 
 ### AWS three-tier delivery
 [Source](https://github.com/zeinhaidara/aws-3-tier-github-actions)
