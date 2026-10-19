@@ -8,7 +8,7 @@ const PROJECTS = [
   { id: 'healthcare', title: 'Healthcare SecOps', kind: 'CASE STUDY · SECURE PLATFORM', color: 0x4fd1c5, orbit: 14, speed: 0.08, phase: 2.2, size: 1.2,
     blurb: 'A read-only patient API on EKS Fargate, delivered through scan gates, GitOps with Argo CD, Terraform behind approvals, least-privilege IAM and detective controls. Every change and accepted risk is logged with evidence.',
     tags: ['EKS Fargate', 'Argo CD', 'Terraform', 'GuardDuty', 'Trivy', 'Checkov', 'IRSA'],
-    main: ['Read the case study', 'healthcare.html'], src: 'https://github.com/zeinhaidara/healthcare-eks-secops', note: 'Synthetic data only. No compliance claim is made. Stack is destroyed between sessions.' },
+    main: ['Read the case study', 'healthcare.html'], src: 'https://github.com/zeinhaidara/healthcare-eks-secops', note: 'Includes a ship-a-change simulator: try to sneak a secret past the gates. Synthetic data only; no compliance claim is made.' },
   { id: 'threetier', title: 'AWS three-tier delivery', kind: 'AWS · APPLICATION PLATFORM', color: 0x7aa2ff, orbit: 19, speed: 0.06, phase: 4.1, size: 1,
     blurb: 'One FastAPI and MySQL application on two compute paths, private EC2 Auto Scaling and ECS Fargate, behind an Application Load Balancer. A load-test workflow exercises Auto Scaling under sustained traffic.',
     tags: ['EC2', 'ECS Fargate', 'RDS', 'Terraform', 'Load testing'],
