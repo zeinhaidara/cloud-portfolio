@@ -38,4 +38,4 @@ A static site on GitHub Pages with no build step. The homepage shows the project
 | `classic.html` | Plain project list for non-3D use |
 | `assets/`, `og-image.png` | Screenshots and social preview |
 
-Run locally from the repo root with `python -m http.server`, then open `http://localhost:8000`. The 3D scene needs a server; opening `index.html` as a file will not load it.
+Local preview only: serve the folder with `python -m http.server` and open `http://localhost:8000`. The live site needs no setup.
