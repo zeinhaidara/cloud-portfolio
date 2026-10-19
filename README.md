@@ -2,7 +2,7 @@
 
 Senior Cloud Engineer focused on AWS, Azure, Kubernetes, and infrastructure automation.
 
-**Portfolio:** https://zeinhaidara.github.io/cloud-portfolio/ (an explorable 3D map of the projects; a [classic view](https://zeinhaidara.github.io/cloud-portfolio/classic.html) is also available)
+**Portfolio:** https://zeinhaidara.github.io/cloud-portfolio/ (cloud islands by day, [3D planets by night](https://zeinhaidara.github.io/cloud-portfolio/#night); a [classic view](https://zeinhaidara.github.io/cloud-portfolio/classic.html) is also available)
 
 Each project here is built the way production platforms are: infrastructure as code, least-privilege access, automated delivery, real monitoring, and load testing against a working environment. The site presents the architecture, the decisions behind it, and evidence captured from the running systems.
 

@@ -1,13 +1,38 @@
 <!doctype html>
-<html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Zein · Cloud Engineering Portfolio</title><meta name="description" content="An explorable 3D map of cloud engineering projects: Orbital Expeditions, Healthcare SecOps, AWS three-tier delivery, a GitHub to AWS pipeline, and Northbridge Health on Azure."><link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%230c1017'/%3E%3Cpath d='M8 9h16L8 23h16' fill='none' stroke='%23ffad48' stroke-width='3'/%3E%3C/svg%3E"><link rel="stylesheet" href="world.css?v=4">
-<script type="importmap">{"imports":{"three":"https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js"}}</script></head>
-<body>
+<html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><title>Zein · Cloud Engineering Portfolio</title>
+<meta name="description" content="Cloud engineering projects by Zein: floating cloud islands by day, 3D planets by night. Orbital Expeditions, Healthcare SecOps, AWS three-tier delivery, a GitHub to AWS pipeline, and Northbridge Health on Azure.">
+<meta property="og:type" content="website"><meta property="og:url" content="https://zeinhaidara.github.io/cloud-portfolio/">
+<meta property="og:title" content="Zein · Cloud Engineering Portfolio"><meta property="og:description" content="AWS, Azure and Kubernetes projects with the evidence behind them: secure pipelines, GitOps, Terraform and observability.">
+<meta property="og:image" content="https://zeinhaidara.github.io/cloud-portfolio/og-image.png"><meta property="og:image:width" content="1200"><meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image"><meta name="twitter:image" content="https://zeinhaidara.github.io/cloud-portfolio/og-image.png">
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%230c1017'/%3E%3Cpath d='M8 9h16L8 23h16' fill='none' stroke='%23ffad48' stroke-width='3'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700&family=Space+Grotesk:wght@500;700&display=swap">
+<link rel="stylesheet" href="app.css?v=7">
+<script type="importmap">{"imports":{"three":"https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js"}}</script>
+</head>
+<body data-mode="day">
 <canvas id="stage" aria-hidden="true"></canvas>
-<header class="hud-top"><a class="brand" href="index.html">ZEIN<span> / CLOUD ENGINEERING</span></a><nav aria-label="Main navigation"><a href="classic.html">Classic view</a><a class="nav-contact" href="https://github.com/zeinhaidara">GitHub</a></nav></header>
-<section class="intro" id="intro"><div class="eyebrow">AWS + AZURE · INFRASTRUCTURE · APPLICATIONS</div><h1>Ideas into systems.<br><span>Systems into orbit.</span></h1><p>I’m Zein. Every planet is a project I built. Drag to look around, click one to land.</p><p class="keys">Drag to orbit · Scroll to zoom · ← → to hop between projects · Esc to zoom out</p></section>
-<aside class="panel" id="panel" aria-live="polite" hidden><button class="close" id="close" type="button" aria-label="Back to the map">✕</button><span class="kind" id="p-kind"></span><h2 id="p-title"></h2><p id="p-blurb"></p><div class="tags" id="p-tags"></div><div class="actions"><a class="button" id="p-main" href="#"></a><a class="text-link" id="p-src" href="#">Source on GitHub</a></div><p class="note" id="p-note"></p></aside>
-<nav class="dock" id="dock" aria-label="Projects"><span class="score" id="score">Explored 0 / 5</span></nav>
-<noscript><section class="intro"><h1>Projects</h1><p><a href="classic.html">Open the classic view</a> to see all projects.</p></section></noscript>
-<div class="fallback" id="fallback" hidden>3D view unavailable on this device. <a href="classic.html">Open the classic view</a>. The project buttons below still work.</div>
-<script type="module" src="world.js?v=4"></script>
+<div class="sky" aria-hidden="true"><div class="sun"></div><div class="cloud c1"></div><div class="cloud c2"></div><div class="cloud c3"></div></div>
+<div class="daywrap"><svg id="scene" viewBox="150 90 1080 690" preserveAspectRatio="xMidYMid meet" aria-label="Projects as floating islands">
+ <path id="r1" class="route" d="M330 290 Q500 200 670 300"/>
+ <path id="r2" class="route" d="M670 300 Q840 210 1010 290"/>
+ <path id="r3" class="route" d="M670 300 Q660 480 800 620"/>
+ <path id="r4" class="route" d="M1010 290 Q1130 450 1090 610"/>
+ <g id="packets"></g><g id="islands"></g>
+</svg></div>
+<div id="plabels" class="plabels" aria-hidden="true"></div>
+
+<header class="top"><a class="brand" href="index.html">ZEIN<span> / CLOUD ENGINEERING</span></a>
+ <nav aria-label="Main navigation"><a href="classic.html">All projects</a><a class="pill gh" href="https://github.com/zeinhaidara">GitHub</a><a class="pill" href="mailto:zeinhaidara@gmail.com">Contact</a>
+ <button class="mode" id="mode" type="button" aria-pressed="false" aria-label="Switch to night: projects as 3D planets"><i aria-hidden="true"><span class="sunI">☀️</span><span class="moonI">🌙</span></i></button></nav></header>
+
+<section class="intro" aria-live="polite"><div class="eyebrow">AWS + AZURE · INFRASTRUCTURE · APPLICATIONS</div>
+ <h1>Ideas into systems.<br><span class="swap"><span class="d">Built in the cloud.</span><span class="n">Running in orbit.</span></span></h1>
+ <p class="swap"><span class="d">Every island is a project I built. Tap one to visit, or flip to night.</span><span class="n">Same projects, now in orbit. Drag to look around, click a planet to land.</span></p></section>
+
+<aside class="panel" id="panel" hidden><button class="close" id="close" type="button" aria-label="Close project">✕</button><span class="kind" id="p-kind"></span><h2 id="p-title"></h2><p id="p-blurb"></p><div class="tags" id="p-tags"></div><div class="actions"><a class="cta" id="p-main" href="#"></a><a class="link" id="p-src" href="#">Source on GitHub</a></div><p class="note" id="p-note"></p></aside>
+
+<nav class="dock" id="dock" aria-label="Projects"><span class="score" id="score"></span></nav>
+<noscript><div class="noscript">This page needs JavaScript. <a href="classic.html">Open the classic view</a>.</div></noscript>
+<script type="module" src="app.js?v=7"></script>
 </body></html>
