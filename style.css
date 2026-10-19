@@ -41,3 +41,6 @@
 @media(max-width:600px){.sim{padding:18px}.sim-track{grid-template-columns:1fr 1fr}.sim-foot{flex-direction:column;align-items:flex-start}}
 @media(prefers-reduced-motion:reduce){.sim-track li.run .dot{animation:none}}
 #sim-approve[hidden]{display:none}
+.obs-grid.g-net{grid-template-columns:4.08fr 1fr;align-items:start}.obs-grid.g-three{grid-template-columns:1.27fr 1.49fr 2.32fr;align-items:start}
+.obs-grid a{display:block;transition:transform .2s}.obs-grid a:hover{transform:translateY(-2px)}.obs-grid a:hover img{border-color:var(--accent)}
+@media(max-width:800px){.obs-grid.g-net,.obs-grid.g-three{grid-template-columns:1fr}.obs-grid.g-net figure:last-child img{max-width:300px;margin:auto}}
