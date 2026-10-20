@@ -1,15 +1,15 @@
 <!doctype html>
 <html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><title>Zein · Cloud Engineering Portfolio</title>
-<meta name="description" content="Cloud engineering projects by Zein, shown as a 3D world of floating islands, by day and by night. Orbital Expeditions, Healthcare SecOps, AWS three-tier delivery, a GitHub to AWS pipeline, and Northbridge Health on Azure.">
+<meta name="description" content="Cloud engineering projects by Zein, shown as a 3D world of floating islands, by day and by night. Orbital Expeditions, Healthcare SecOps, a GCP AI log analyzer, AWS three-tier delivery, a GitHub to AWS pipeline, and Northbridge Health on Azure.">
 <meta property="og:type" content="website"><meta property="og:url" content="https://zeinhaidara.github.io/cloud-portfolio/">
 <meta property="og:title" content="Zein · Cloud Engineering Portfolio"><meta property="og:description" content="AWS, Azure and Kubernetes projects with the evidence behind them: secure pipelines, GitOps, Terraform and observability.">
 <meta property="og:image" content="https://zeinhaidara.github.io/cloud-portfolio/og-image.png"><meta property="og:image:width" content="1200"><meta property="og:image:height" content="630">
 <meta name="twitter:card" content="summary_large_image"><meta name="twitter:image" content="https://zeinhaidara.github.io/cloud-portfolio/og-image.png">
 <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%230c1017'/%3E%3Cpath d='M8 9h16L8 23h16' fill='none' stroke='%23ffad48' stroke-width='3'/%3E%3C/svg%3E">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700&family=Space+Grotesk:wght@500;700&display=swap">
-<link rel="stylesheet" href="app.css?v=10">
+<link rel="stylesheet" href="app.css?v=12">
 <script type="importmap">{"imports":{"three":"https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js"}}</script>
-<link rel="modulepreload" href="https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js"><link rel="modulepreload" href="world.js?v=10">
+<link rel="modulepreload" href="https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js"><link rel="modulepreload" href="world.js?v=12">
 </head>
 <body data-mode="day">
 <canvas id="stage" aria-hidden="true"></canvas>
@@ -27,14 +27,14 @@
  <nav aria-label="Main navigation"><a href="classic.html">All projects</a><a class="pill gh" href="https://github.com/zeinhaidara">GitHub</a><a class="pill" href="mailto:zeinhaidara@gmail.com">Contact</a>
  <button class="mode" id="mode" type="button" aria-pressed="false" aria-label="Switch to night"><i aria-hidden="true"><span class="sunI">☀️</span><span class="moonI">🌙</span></i></button></nav></header>
 
-<section class="intro" aria-live="polite"><div class="eyebrow">AWS + AZURE · INFRASTRUCTURE · APPLICATIONS</div>
+<section class="intro" aria-live="polite"><div class="eyebrow">AWS · AZURE · GCP · INFRASTRUCTURE · APPLICATIONS</div>
  <h1>Ideas into systems.<br><span class="swap"><span class="d">Built in the cloud.</span><span class="n">Running after dark.</span></span></h1>
  <p class="swap"><span class="d">Every island is a project I built. Drag to explore, tap one to visit. The balloon says hi.</span><span class="n">Same islands after dark. Drag to explore, tap one to visit. The balloon says hi.</span></p></section>
 
 <aside class="panel" id="panel" hidden><button class="close" id="close" type="button" aria-label="Close project">✕</button><span class="kind" id="p-kind"></span><h2 id="p-title"></h2><p id="p-blurb"></p><div class="tags" id="p-tags"></div><div class="actions"><a class="cta" id="p-main" href="#"></a><a class="link" id="p-src" href="#">Source on GitHub</a></div><p class="note" id="p-note"></p></aside>
 
-<div class="toast" id="toast" role="status" hidden><b>All five explored.</b> Thanks for the visit. <a href="mailto:zeinhaidara@gmail.com">Say hi ✉</a></div>
+<div class="toast" id="toast" role="status" hidden><b>Every island explored.</b> Thanks for the visit. <a href="mailto:zeinhaidara@gmail.com">Say hi ✉</a></div>
 <nav class="dock" id="dock" aria-label="Projects"><span class="score" id="score"></span></nav>
 <noscript><div class="noscript">This page needs JavaScript. <a href="classic.html">Open the classic view</a>.</div></noscript>
-<script type="module" src="app.js?v=10"></script>
+<script type="module" src="app.js?v=12"></script>
 </body></html>

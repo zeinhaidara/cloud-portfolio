@@ -1,6 +1,6 @@
 # M. Zein Haidara · Cloud Engineering
 
-Cloud engineer focused on AWS, Azure, Kubernetes, and infrastructure automation.
+Cloud engineer focused on AWS, Azure, Google Cloud, Kubernetes, and infrastructure automation.
 
 **Portfolio:** https://zeinhaidara.github.io/cloud-portfolio/ · **Contact:** zeinhaidara@gmail.com · **GitHub:** [@zeinhaidara](https://github.com/zeinhaidara)
 
@@ -18,6 +18,7 @@ Each project is built the way production platforms are: infrastructure as code, 
 | Project | Focus | Links |
 |---|---|---|
 | **Healthcare SecOps** | Patient API on EKS Fargate behind CI scan gates, GitOps (Argo CD), approval-gated Terraform, OIDC-only access, IRSA, and detective controls. 43 logged security changes and 16 accepted risks, each with evidence. Synthetic data; no compliance claim. | [Case study](https://zeinhaidara.github.io/cloud-portfolio/healthcare.html) · [Source](https://github.com/zeinhaidara/healthcare-eks-secops) |
+| **AI Log Analyzer (GCP)** | Log investigations by an ADK agent on private Cloud Run using Gemini on Vertex AI, with BigQuery incident history, Pub/Sub, Firestore, Cloud Storage and private Google API egress. Team project with a colleague. | [Case study](https://zeinhaidara.github.io/cloud-portfolio/gcp.html) · [Source](https://github.com/zeinhaidara/gcp-ai-log-analyzer) · [Live app](https://log-analyzer-dev-imm5hb2vlq-uc.a.run.app/) |
 | **Orbital Expeditions** | Six event-driven microservices on EKS: DynamoDB reservations, RDS outbox, Valkey caching, EventBridge and SQS with a dead-letter queue, Prometheus and Grafana. | [Case study](https://zeinhaidara.github.io/cloud-portfolio/orbital.html) · [Source](https://github.com/zeinhaidara/aws-retail-microservices-eks) |
 | **AWS three-tier delivery** | One FastAPI/MySQL app on EC2 Auto Scaling and ECS Fargate behind an ALB, with a load-test workflow that records scaling. | [Source](https://github.com/zeinhaidara/aws-3-tier-github-actions) |
 | **GitHub to AWS pipeline** | Scanned changes promoted through dev, stage, and main to S3 over OIDC. | [Source](https://github.com/zeinhaidara/github-to-aws-pipeline) |
@@ -34,7 +35,9 @@ A static site on GitHub Pages with no build step. The homepage is a 3D world (Th
 | `index.html`, `app.css`, `app.js` | Homepage: project panel, day/night switch, flat fallback for devices without WebGL |
 | `world.js` | 3D island world for both day and night |
 | `healthcare.html`, `pipeline.js` | Healthcare SecOps case study and pipeline simulator |
-| `orbital.html`, `style.css` | Orbital Expeditions case study and shared case-study styles |
+| `gcp.html`, `gcp-replay.js` | AI Log Analyzer case study and investigation replay |
+| `orbital.html` | Orbital Expeditions case study |
+| `style.css`, `theme.css`, `case.js` | Shared case-study styles, the day/night theme, and each page's 3D island hero |
 | `classic.html` | Plain project list for non-3D use |
 | `assets/`, `og-image.png` | Screenshots and social preview |
 

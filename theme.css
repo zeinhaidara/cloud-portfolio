@@ -1,0 +1,77 @@
+/* Case-study theme: the islands' day and night, layered over style.css. Mode lives on <html data-mode>. */
+:root{--t:1.1s;--ease:cubic-bezier(.65,0,.35,1);--ok:#12b981}
+:root[data-mode=day]{--bg:#eef6ff;--panel:rgba(255,255,255,.82);--panel-solid:#fff;--line:rgba(29,35,64,.12);--text:#1d2340;--muted:#55607e;--accent:#e07a00;--node:#fff;--node2:#f3f8ff;--chip:#eef3fb;--btn:#1d2340;--btn-ink:#fff;--shadow:0 18px 50px rgba(40,80,140,.12)}
+:root[data-mode=night]{--bg:#0b1020;--panel:rgba(20,27,42,.78);--panel-solid:#141b2a;--line:#27324a;--text:#eff2f6;--muted:#a6afbc;--accent:#ffad48;--node:#141b2a;--node2:#0c1220;--chip:#1b2436;--btn:#ffad48;--btn-ink:#14100a;--shadow:0 18px 50px rgba(0,0,0,.35)}
+body{background:var(--bg);transition:background-color var(--t) var(--ease),color var(--t) var(--ease)}
+body,.brand span,nav a,p,summary,.tags span,.muted,figcaption{transition:color var(--t) var(--ease),background-color var(--t) var(--ease),border-color var(--t) var(--ease)}
+
+/* sky behind the page: two layers that cross-fade */
+.backdrop{position:fixed;inset:0;z-index:-1;pointer-events:none}
+.backdrop i{position:absolute;inset:0;transition:opacity var(--t) var(--ease)}
+.backdrop .day{background:linear-gradient(#8fd0ff 0%,#d4ecff 38%,#f4f9ff 70%,#fff3e6 100%)}
+.backdrop .night{opacity:0;background:radial-gradient(#fff 1px,transparent 1.6px) 13px 41px/97px 89px,radial-gradient(#cfd8e8 .8px,transparent 1.4px) 61px 7px/131px 113px,radial-gradient(#fff 1.1px,transparent 1.7px) 29px 83px/173px 157px,linear-gradient(#04060c 0%,#0e1530 55%,#1a2444 100%)}
+:root[data-mode=night] .backdrop .day{opacity:0}:root[data-mode=night] .backdrop .night{opacity:1}
+.backdrop .cl{position:absolute;width:150px;height:44px;border-radius:40px;background:#fff;opacity:.75;animation:drift 90s linear infinite;transition:opacity var(--t) var(--ease)}
+.backdrop .cl::before,.backdrop .cl::after{content:"";position:absolute;background:#fff;border-radius:50%}
+.backdrop .cl::before{width:70px;height:70px;left:22px;top:-36px}.backdrop .cl::after{width:50px;height:50px;right:22px;top:-24px}
+.backdrop .c1{top:14%;left:-180px}.backdrop .c2{top:48%;left:-180px;animation-duration:120s;animation-delay:-50s;transform:scale(.7)}.backdrop .c3{top:78%;left:-180px;animation-duration:150s;animation-delay:-100s;transform:scale(.85)}
+:root[data-mode=night] .backdrop .cl{opacity:.06}
+@keyframes drift{to{translate:calc(100vw + 360px) 0}}
+
+/* header: glass bar like the homepage, with the same day/night switch */
+header{position:sticky;top:0;z-index:20;max-width:none;padding:14px max(28px,calc((100% - 1320px)/2 + 56px));border-bottom:1px solid var(--line);background:var(--panel);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);transition:background-color var(--t) var(--ease),border-color var(--t) var(--ease)}
+nav{gap:22px}
+.nav-contact,.pill-link{border:1.5px solid var(--line);border-radius:20px;padding:6px 15px;background:var(--panel-solid)}
+.mode{position:relative;width:66px;height:34px;border-radius:20px;border:1.5px solid var(--line);background:var(--panel-solid);cursor:pointer;padding:0;flex:none}
+.mode i{position:absolute;top:3px;left:3px;width:26px;height:26px;border-radius:50%;background:#ffd34d;display:grid;font-style:normal;font-size:14px;transition:left .7s var(--ease),background .7s var(--ease)}
+.mode i span{grid-area:1/1;place-self:center;transition:opacity .4s,transform .7s var(--ease)}
+.mode .moonI{opacity:0;transform:rotate(-90deg)}
+:root[data-mode=night] .mode i{left:33px;background:#2b3350}
+:root[data-mode=night] .mode .sunI{opacity:0;transform:rotate(90deg)}:root[data-mode=night] .mode .moonI{opacity:1;transform:none}
+.mode:focus-visible{outline:2.5px solid var(--accent);outline-offset:3px}
+
+/* the project's island */
+.isle{position:relative;height:clamp(300px,42vw,470px);margin:6px 0 30px;border-radius:28px;overflow:hidden;border:1px solid var(--line);box-shadow:var(--shadow);background:linear-gradient(#8fd0ff,#d4ecff 60%,#fff3e6);transition:border-color var(--t) var(--ease)}
+:root[data-mode=night] .isle{background:linear-gradient(#04060c,#111a33 60%,#1c2747)}
+.isle canvas{position:absolute;inset:0;width:100%;height:100%;display:block;opacity:0;transition:opacity 1.2s var(--ease);cursor:grab;touch-action:pan-y}
+.isle.on canvas{opacity:1}.isle canvas:active{cursor:grabbing}
+.isle .hint{position:absolute;left:18px;bottom:16px;font-size:12px;font-weight:700;letter-spacing:.06em;color:#1d2340;background:rgba(255,255,255,.85);border-radius:20px;padding:6px 12px;pointer-events:none;transition:background-color var(--t),color var(--t)}
+:root[data-mode=night] .isle .hint{color:#eff2f6;background:rgba(20,27,42,.8)}
+.isle .tag{position:absolute;right:18px;top:16px;font-size:11px;font-weight:700;letter-spacing:.12em;color:#fff;background:var(--c);border-radius:20px;padding:6px 12px}
+
+/* cards everywhere */
+.button{background:var(--btn);color:var(--btn-ink);border-radius:30px;padding:13px 22px}.button:hover{background:var(--btn);filter:brightness(1.1)}
+.pill{border-radius:20px;background:var(--panel-solid)}
+.tags span,.skills span{border-radius:20px;background:var(--chip);border-color:transparent}
+.stat-row{border-radius:22px;background:var(--line);box-shadow:var(--shadow)}.stat-row>div{background:var(--panel-solid)}
+.stat-row b{color:var(--c,var(--accent))}
+.project-notes article{background:var(--panel);border:1px solid var(--line);border-radius:22px;padding:24px;box-shadow:var(--shadow)}
+.team,.honest{border-radius:22px;background:var(--panel);box-shadow:var(--shadow)}.honest{border-left-width:5px}
+.diagram,.obs:not(.obs-flat){background:var(--panel);border:1px solid var(--line);border-radius:24px;padding:22px;box-shadow:var(--shadow)}
+.decisions{background:var(--panel);border:1px solid var(--line);border-radius:24px;padding:0 28px;box-shadow:var(--shadow)}.decisions details:last-child{border-bottom:0}
+.table-wrap{border-radius:18px;background:var(--panel-solid);box-shadow:var(--shadow)}.table-wrap th{background:var(--node2)}
+.obs-grid img,.demo-evidence img{border-radius:16px}
+.sim,.replay{border-radius:24px;background:var(--panel);box-shadow:var(--shadow)}
+.sim-pick button{background:var(--panel-solid)}
+.closing{text-align:center}.closing h2 br{display:none}
+footer{max-width:none;padding:22px max(28px,calc((100% - 1320px)/2 + 56px));background:var(--panel)}
+.back{display:inline-block;margin-top:26px;font-size:14px;color:var(--muted)}
+
+/* diagrams: map the SVGs' fixed colours onto the theme */
+.diagram svg [fill="#131a24"]{fill:var(--node)}.diagram svg [fill="#0c1017"]{fill:var(--node2)}
+.diagram svg [fill="#eff2f6"]{fill:var(--text)}.diagram svg [fill="#a6afbc"]{fill:var(--muted)}
+.diagram svg [stroke="#2a3340"]{stroke:var(--line)}.diagram svg [stroke="#a6afbc"]{stroke:var(--muted)}
+.diagram svg [stroke="#ffad48"]{stroke:var(--accent)}
+
+/* day-mode status colours that read on white */
+:root[data-mode=day] .st.live{color:#0b8a5f;border-color:#a7dcc6}:root[data-mode=day] .st.open{color:#c53030;border-color:#f0b0b0}:root[data-mode=day] .st.manual{color:#b35c00;border-color:#f1c894}
+:root[data-mode=day] .sim-track li.pass,:root[data-mode=day] .rp-steps li.done{background:#e8f8f0;border-color:#a7dcc6}
+:root[data-mode=day] .sim-track li.fail{background:#fdeeee;border-color:#f0b0b0}
+:root[data-mode=day] .sim-track li.wait{background:#fff4e3}
+:root[data-mode=day] .sim-log.ok{color:#0b8a5f}:root[data-mode=day] .sim-log.bad{color:#c53030}
+:root[data-mode=day] .sev.warning{color:#a35a00;border-color:#f1c894}:root[data-mode=day] .sev.error,:root[data-mode=day] .sev.critical{color:#c53030;border-color:#f0b0b0}
+.rp-log{background:#0c1220;border-color:#1f2a3a}.rp-out{background:var(--panel-solid)}
+.rp-out p{color:var(--text)}
+
+@media(max-width:800px){header{padding:12px 16px}nav{gap:12px}nav a:not(.nav-contact):not(.pill-link){display:none}.isle{border-radius:20px}.decisions{padding:0 18px}}
+@media(prefers-reduced-motion:reduce){.backdrop .cl{animation:none}*{transition-duration:.01s!important}}

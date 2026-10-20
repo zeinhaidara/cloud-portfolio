@@ -110,7 +110,7 @@ body[data-mode=night] .swap .n{transition-delay:.35s}body[data-mode=day] .swap .
 .note{font-size:13px!important;margin:18px 0 0!important}
 
 /* ---- dock ---- */
-.dock{position:fixed;left:0;right:0;bottom:0;z-index:9;height:78px;display:flex;align-items:center;justify-content:center;gap:10px;padding:0 20px}
+.dock{position:fixed;left:0;right:0;bottom:0;z-index:9;height:78px;display:flex;align-items:center;justify-content:safe center;gap:8px;padding:0 20px;overflow-x:auto;scrollbar-width:none}.dock::-webkit-scrollbar{display:none}.dock>*{flex:none}
 .dock button{display:flex;align-items:center;gap:8px;white-space:nowrap;font-size:13px;font-weight:700;background:var(--panel);border:1.5px solid var(--line);border-radius:30px;padding:9px 15px;cursor:pointer;box-shadow:0 4px 14px rgba(10,15,30,.08);transition:background var(--t) var(--ease),border-color .3s,transform .25s var(--out)}
 .dock button i{width:9px;height:9px;border-radius:50%;background:var(--c)}
 .dock button:hover,.dock button[aria-pressed=true]{border-color:var(--c);transform:translateY(-3px)}

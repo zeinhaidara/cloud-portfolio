@@ -10,6 +10,11 @@ const PROJECTS = [
     tags: ['EKS Fargate', 'Argo CD', 'Terraform', 'Trivy', 'Checkov', 'GuardDuty'], main: ['Read the case study', 'healthcare.html'],
     src: 'https://github.com/zeinhaidara/healthcare-eks-secops', note: 'Includes a ship-a-change simulator. Synthetic data only; no compliance claim.',
     island: { b: 'shield' }, planet: { orbit: 14, speed: 0.08, phase: 2.2, size: 1.2, shape: 'shield' } },
+  { id: 'gcp', title: 'AI Log Analyzer', sub: 'GCP · Gemini + BigQuery', color: '#f2b705', kind: 'CASE STUDY · GOOGLE CLOUD',
+    blurb: 'Upload a log and an ADK agent on private Cloud Run investigates it with Gemini on Vertex AI, using similar past incidents from BigQuery as context. Event-driven through Pub/Sub, with Firestore, Cloud Storage and private Google API egress.',
+    tags: ['Cloud Run', 'Gemini', 'ADK', 'BigQuery', 'Pub/Sub', 'Firestore', 'VPC'], main: ['Read the case study', 'gcp.html'],
+    src: 'https://github.com/zeinhaidara/gcp-ai-log-analyzer', note: 'Team project with a colleague. Live app runs on synthetic logs.',
+    island: { b: 'observatory' }, planet: { orbit: 34, speed: 0.03, phase: 0.85, size: 1.1, shape: 'octa' } },
   { id: 'threetier', title: 'Three-tier delivery', sub: 'EC2 + ECS Fargate', color: '#7c5cff', kind: 'AWS · APPLICATION PLATFORM',
     blurb: 'One FastAPI and MySQL application on two compute paths, private EC2 Auto Scaling and ECS Fargate, behind an ALB. A load-test workflow drives Auto Scaling under sustained traffic.',
     tags: ['EC2', 'ECS Fargate', 'RDS', 'Terraform', 'Load testing'], main: ['View the repository', 'https://github.com/zeinhaidara/aws-3-tier-github-actions'],
@@ -47,15 +52,16 @@ const BUILD = {
   shield: (c) => `<circle class="pulse" cx="0" cy="-40" r="34" fill="none" stroke="${c}" stroke-width="3"/><path d="M0 -82 L32 -70 V-44 Q32 -16 0 -2 Q-32 -16 -32 -44 V-70Z" fill="${c}" stroke="${INK}" stroke-width="2.5"/><path d="M-13 -44 L-3 -33 L15 -55" fill="none" stroke="#fff" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/>`,
   tower: (c) => [0, 1, 2].map((i) => `<rect x="${-24 + i * 3}" y="${-24 - i * 22}" width="${48 - i * 6}" height="20" rx="4" fill="${['#c7b8ff', '#9f88ff', c][i]}" stroke="${INK}" stroke-width="2.5"/><circle cx="${-12 + i * 3}" cy="${-14 - i * 22}" r="2.5" fill="${INK}"/><circle cx="${-4 + i * 3}" cy="${-14 - i * 22}" r="2.5" fill="#22c55e"/>`).join(''),
   gear: (c) => `<rect x="-40" y="-12" width="80" height="10" rx="5" fill="${INK}"/><g class="gear"><circle cx="-10" cy="-42" r="22" fill="none" stroke="${c}" stroke-width="10" stroke-dasharray="8 6"/><circle cx="-10" cy="-42" r="12" fill="${c}" stroke="${INK}" stroke-width="2.5"/></g><rect x="14" y="-30" width="20" height="18" rx="3" fill="#ffd34d" stroke="${INK}" stroke-width="2.5"/>`,
+  observatory: (c) => `<rect x="-22" y="-40" width="44" height="38" rx="4" fill="#e8edf6" stroke="${INK}" stroke-width="2.5"/><path d="M-26 -40 A26 26 0 0 1 26 -40Z" fill="${c}" stroke="${INK}" stroke-width="2.5"/><rect x="4" y="-80" width="9" height="32" rx="3" fill="${INK}" transform="rotate(35 8 -48)"/>`,
   bridge: (c) => `<path d="M-44 -8 Q-10 -46 24 -8" fill="none" stroke="${c}" stroke-width="7"/><path d="M-44 -8 H24" stroke="${INK}" stroke-width="4"/><rect x="28" y="-30" width="6" height="24" fill="#8b5a2b"/><circle cx="31" cy="-42" r="16" fill="#3fbf6f" stroke="${INK}" stroke-width="2.5"/><rect x="-6" y="-64" width="2.5" height="30" fill="${INK}"/><path d="M-3.5 -64 h22 l-6 6 6 6 h-22z" fill="${c}"/>`,
 };
 const islands = {};
 // Island positions per screen shape. Wide: one sweeping row; tall (phones): featured on top, then two by two.
 const LAYOUTS = {
   wide: { viewBox: '150 90 1080 690', routes: ['M330 290 Q500 200 670 300', 'M670 300 Q840 210 1010 290', 'M670 300 Q660 480 800 620', 'M1010 290 Q1130 450 1090 610'],
-    pos: { orbital: [330, 290, 190], healthcare: [670, 300, 220], threetier: [1010, 290, 185], pipeline: [800, 620, 175], northbridge: [1090, 610, 175] } },
-  tall: { viewBox: '0 30 600 880', routes: ['M150 500 Q190 330 300 240', 'M300 240 Q410 330 450 500', 'M150 500 Q90 640 150 760', 'M450 500 Q510 640 450 760'],
-    pos: { healthcare: [300, 240, 210], orbital: [150, 500, 170], threetier: [450, 500, 170], pipeline: [150, 760, 160], northbridge: [450, 760, 160] } },
+    pos: { orbital: [330, 290, 190], healthcare: [670, 300, 220], threetier: [1010, 290, 185], pipeline: [800, 620, 175], northbridge: [1090, 610, 175], gcp: [520, 620, 175] } },
+  tall: { viewBox: '0 30 600 1120', routes: ['M150 500 Q190 330 300 240', 'M300 240 Q410 330 450 500', 'M150 500 Q90 640 150 760', 'M450 500 Q510 640 450 760'],
+    pos: { healthcare: [300, 240, 210], orbital: [150, 500, 170], threetier: [450, 500, 170], pipeline: [150, 760, 160], northbridge: [450, 760, 160], gcp: [300, 1010, 160] } },
 };
 const pickLayout = () => (innerWidth < 760 || innerWidth / innerHeight < 0.9 ? 'tall' : 'wide');
 let layout = null;
@@ -192,7 +198,7 @@ function marks() {
 // The 3D world (world.js) draws both modes. If WebGL is unavailable, the flat SVG islands are the fallback and night is disabled.
 function loadWorld() {
   if (!worldLoad) {
-    worldLoad = import('./world.js?v=10').then((m) => {
+    worldLoad = import('./world.js?v=12').then((m) => {
       world = m.createWorld({ canvas: $('stage'), labelsHost: $('plabels'), projects: PROJECTS, onPick: focus, onInteract: () => body.classList.add('touched'), mode });
       world.flyTo(focused);
       world.setMarks(focused, seen);
@@ -217,6 +223,7 @@ function loadWorld() {
 function applyMode(next) {
   mode = next;
   body.dataset.mode = mode;
+  try { sessionStorage.setItem('zein-mode', mode); } catch { /* storage blocked: mode still works on this page */ }
   const t = $('mode');
   t.setAttribute('aria-pressed', String(mode === 'night'));
   t.setAttribute('aria-label', mode === 'night' ? 'Switch to day' : 'Switch to night');
@@ -246,10 +253,12 @@ addEventListener('keydown', (e) => {
   if (e.key === 'Escape') overview();
   else if (e.key === 'ArrowRight') hop(1);
   else if (e.key === 'ArrowLeft') hop(-1);
-  else if (/^[1-5]$/.test(e.key)) focus(PROJECTS[Number(e.key) - 1].id);
+  else if (/^[1-9]$/.test(e.key) && PROJECTS[Number(e.key) - 1]) focus(PROJECTS[Number(e.key) - 1].id);
 });
 const hash = location.hash.slice(1);
-if (hash === 'night') applyMode('night');
-else if (PROJECTS.some((p) => p.id === hash)) focus(hash);
+let stored = null;
+try { stored = sessionStorage.getItem('zein-mode'); } catch { /* storage blocked */ }
+if (hash === 'night' || (hash !== 'day' && stored === 'night')) applyMode('night');
+if (PROJECTS.some((p) => p.id === hash)) focus(hash);
 loadWorld();
 requestAnimationFrame(() => body.classList.add('ready'));

@@ -2,7 +2,8 @@ import * as THREE from 'three';
 
 // One 3D world of floating islands, by day and by night. setMode() blends sky, light, clouds,
 // stars and every lantern; the islands themselves never change. Contact lives in the balloon.
-export function createWorld({ canvas, labelsHost, projects, onPick, onInteract = () => {}, mode = 'day' }) {
+// solo: render one project's island inside a page section (case-study hero) instead of the whole archipelago.
+export function createWorld({ canvas, labelsHost, projects, onPick = () => {}, onInteract = () => {}, mode = 'day', solo = null }) {
   const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   const renderer = new THREE.WebGLRenderer({ canvas, antialias: true });
   renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
@@ -24,6 +25,7 @@ export function createWorld({ canvas, labelsHost, projects, onPick, onInteract =
   };
   const glows = []; // materials that light up at night: { mat, max, min }
   const lamps = []; // point lights that switch on at night: { light, max }
+  const beams = []; // translucent light beams that appear at night
 
   /* ---------- sky dome (three-stop gradient) ---------- */
   const skyU = { top: { value: P.top[0].clone() }, horizon: { value: P.horizon[0].clone() }, bottom: { value: P.bottom[0].clone() } };
@@ -66,10 +68,12 @@ export function createWorld({ canvas, labelsHost, projects, onPick, onInteract =
     return new THREE.CanvasTexture(c);
   };
   const orbMat = new THREE.MeshBasicMaterial({ color: P.orb[0].clone() });
-  scene.add(new THREE.Mesh(new THREE.SphereGeometry(2.6, 40, 40), orbMat));
+  const orb = new THREE.Mesh(new THREE.SphereGeometry(2.6, 40, 40), orbMat);
+  scene.add(orb);
   const halo = new THREE.Sprite(new THREE.SpriteMaterial({ map: glowTex(), color: P.halo[0].clone(), blending: THREE.AdditiveBlending, depthWrite: false, fog: false }));
   halo.scale.set(18, 18, 1);
   scene.add(halo);
+  if (solo) { orb.position.set(-26, 16, -48); halo.position.copy(orb.position); core.position.set(-10, 14, 12); }
 
   /* ---------- clouds you can poke, and a sea of clouds below ---------- */
   const cloudMat = new THREE.MeshStandardMaterial({ color: P.cloud[0].clone(), emissive: 0xffffff, emissiveIntensity: P.cloudEm[0], roughness: 1, flatShading: true, transparent: true });
@@ -87,7 +91,7 @@ export function createWorld({ canvas, labelsHost, projects, onPick, onInteract =
       c.add(m);
     }
     const low = i % 2 === 0; // low clouds drift under the islands, high ones ring the archipelago
-    c.userData = { r: low ? rand(8, 30) : rand(36, 48), a: (i / 11) * Math.PI * 2 + Math.random() * 0.4, y: low ? rand(-12, -8) : rand(3, 9), v: rand(0.008, 0.02), s: rand(0.8, 1.3), poof: -1 };
+    c.userData = { r: low ? rand(8, 34) : rand(41, 52), a: (i / 11) * Math.PI * 2 + Math.random() * 0.4, y: low ? rand(-12, -8) : rand(3, 9), v: rand(0.008, 0.02), s: rand(0.8, 1.3), poof: -1 };
     scene.add(c);
     clouds.push(c);
   }
@@ -239,6 +243,36 @@ export function createWorld({ canvas, labelsHost, projects, onPick, onInteract =
       anim.push((t) => { wheel.rotation.z = -t * 1.2; crate.position.x = (((t * 0.35) % 1) - 0.5) * 1.3 * s; });
       return g;
     },
+    observatory(c, s, anim) {
+      const g = new THREE.Group();
+      const base = new THREE.Mesh(new THREE.CylinderGeometry(0.55 * s, 0.62 * s, 0.85 * s, 10), flat('#e8edf6'));
+      base.position.y = 0.42 * s;
+      const head = new THREE.Group();
+      head.position.y = 0.85 * s;
+      const dome = new THREE.Mesh(new THREE.SphereGeometry(0.6 * s, 16, 10, 0, Math.PI * 2, 0, Math.PI / 2), flat(c, { roughness: 0.5 }));
+      const tilt = 0.9, len = 0.85 * s;
+      const scope = new THREE.Mesh(new THREE.CylinderGeometry(0.08 * s, 0.12 * s, len, 10), glowMat('#1d2340', '#8fd0ff', 1.4));
+      scope.rotation.z = -tilt;
+      scope.position.set(Math.sin(tilt) * len * 0.35, 0.42 * s, 0);
+      const bh = 6 * s, beamGeo = new THREE.ConeGeometry(1.3 * s, bh, 24, 1, true);
+      beamGeo.translate(0, -bh / 2, 0); // apex at the telescope tip
+      const beam = new THREE.Mesh(beamGeo, new THREE.MeshBasicMaterial({ color: 0xffd76a, transparent: true, opacity: 0, side: THREE.DoubleSide, depthWrite: false, blending: THREE.AdditiveBlending }));
+      beam.rotation.z = Math.PI - tilt;
+      beam.position.set(Math.sin(tilt) * len * 0.85, 0.42 * s + Math.cos(tilt) * len * 0.5, 0);
+      beams.push(beam.material);
+      head.add(dome, scope, beam);
+      const logs = new THREE.Group();
+      for (let i = 0; i < 3; i++) {
+        const sheet = new THREE.Mesh(new THREE.BoxGeometry(0.5 * s, 0.05 * s, 0.36 * s), i === 2 ? glowMat('#fff6d6', '#f2b705', 1.2) : flat('#ffffff'));
+        sheet.position.y = (0.03 + i * 0.07) * s;
+        sheet.rotation.y = i * 0.25;
+        logs.add(sheet);
+      }
+      logs.position.set(-0.85 * s, 0, 0.35 * s);
+      g.add(base, head, logs);
+      anim.push((t) => { head.rotation.y = t * 0.35; });
+      return g;
+    },
     bridge(c, s) {
       const g = new THREE.Group();
       const arch = new THREE.Mesh(new THREE.TorusGeometry(0.6 * s, 0.08 * s, 8, 24, Math.PI), glowMat(c, c, 0.6));
@@ -277,7 +311,7 @@ export function createWorld({ canvas, labelsHost, projects, onPick, onInteract =
 
   /* ---------- decorative islets around the edge ---------- */
   const islets = [];
-  for (let i = 0; i < 9; i++) {
+  for (let i = 0; i < (solo ? 5 : 9); i++) {
     const s = rand(0.55, 1.05), R = 1.55 * s, H = 0.4 * s;
     const g = new THREE.Group();
     g.add(rockBase(s, R, H));
@@ -291,7 +325,7 @@ export function createWorld({ canvas, labelsHost, projects, onPick, onInteract =
     }
     if (i % 2 === 0) { const l = lantern(s, false); l.position.set(R * 0.5, 0, 0); top.add(l); }
     g.add(top);
-    g.userData = { r: rand(38, 56), a: (i / 9) * Math.PI * 2 + rand(0, 0.5), y: rand(-6, 5), v: rand(0.006, 0.014), bob: rand(0, 6) };
+    g.userData = { r: solo ? rand(16, 30) : rand(43, 60), a: (i / 9) * Math.PI * 2 + rand(0, 0.5), y: rand(-6, 5), v: rand(0.006, 0.014), bob: rand(0, 6) };
     scene.add(g);
     islets.push(g);
   }
@@ -300,7 +334,7 @@ export function createWorld({ canvas, labelsHost, projects, onPick, onInteract =
   const birdMat = new THREE.MeshBasicMaterial({ color: 0x2b3350 });
   const birdBody = new THREE.BoxGeometry(0.12, 0.1, 0.42), birdWing = new THREE.BoxGeometry(0.62, 0.025, 0.22);
   const flocks = [];
-  [[31, 12, 0.11, 0], [24, 15, -0.09, 2.5]].forEach(([r, y, v, a0]) => {
+  [[33, 13, 0.11, 0], [24, 16, -0.09, 2.5]].forEach(([r, y, v, a0]) => {
     const flock = new THREE.Group();
     const birds = [];
     for (let i = 0; i < 5; i++) {
@@ -326,7 +360,7 @@ export function createWorld({ canvas, labelsHost, projects, onPick, onInteract =
   /* ---------- fireflies by night ---------- */
   const FF = 160, ffBase = new Float32Array(FF * 3), ffPos = new Float32Array(FF * 3), ffPh = new Float32Array(FF);
   for (let i = 0; i < FF; i++) {
-    const r = rand(5, 34), a = rand(0, 6.28);
+    const r = rand(5, 38), a = rand(0, 6.28);
     ffBase.set([Math.cos(a) * r, rand(-1, 6), Math.sin(a) * r], i * 3);
     ffPh[i] = rand(0, 6.28);
   }
@@ -351,19 +385,18 @@ export function createWorld({ canvas, labelsHost, projects, onPick, onInteract =
     labels[id] = l;
   }
   projects.forEach((p, idx) => {
-    const q = p.planet, orbit = ORBIT(idx), s = 1.5 * q.size, colHex = col(p.color).getHex();
+    const q = p.planet, orbit = solo ? 0 : ORBIT(idx), s = 1.5 * q.size, colHex = col(p.color).getHex();
     const ring = new THREE.Mesh(new THREE.RingGeometry(orbit - 0.05, orbit + 0.05, 200), new THREE.MeshBasicMaterial({ color: P.ring[0].clone(), side: THREE.DoubleSide, transparent: true, opacity: P.ringOp[0], fog: false }));
     ring.rotation.x = Math.PI / 2;
     ring.position.y = -1.2;
-    scene.add(ring);
+    if (!solo) scene.add(ring);
     rings.push(ring);
 
     const pm = new THREE.MeshStandardMaterial({ color: colHex, emissive: colHex, emissiveIntensity: 0.35, roughness: 0.4 });
     glows.push({ mat: pm, max: 1.4, min: 0.35 });
     const packet = new THREE.Mesh(new THREE.BoxGeometry(0.5, 0.5, 0.5), pm);
     packet.userData = { orbit, a: q.phase + Math.PI * 0.9, v: q.speed * 2.4 };
-    scene.add(packet);
-    packets.push(packet);
+    if (!solo) { scene.add(packet); packets.push(packet); }
 
     const g = new THREE.Group();
     const anim = [];
@@ -377,11 +410,11 @@ export function createWorld({ canvas, labelsHost, projects, onPick, onInteract =
     bodies[p.id] = { id: p.id, g, island, hit, anim, s, lift: s * 2.9 + 0.6, focus: 9 + s * 3.2, hover: 0,
       place(t, dt) { if (!reduced) this.angle += dt * q.speed * 0.6; this.g.position.set(Math.cos(this.angle) * orbit, Math.sin(t * 0.9 + idx * 1.3) * 0.3, Math.sin(this.angle) * orbit); },
       angle: q.phase };
-    addLabel(p.id, p.title, p.color);
+    if (!solo) addLabel(p.id, p.title, p.color);
   });
 
   /* ---------- the "Say hi" balloon ---------- */
-  {
+  if (!solo) {
     const s = 1.5, g = new THREE.Group(), balloon = new THREE.Group(), anim = [];
     const env = new THREE.Mesh(new THREE.SphereGeometry(1.2 * s, 14, 12), flat('#ff5d6c', { roughness: 0.6 }));
     env.scale.y = 1.15;
@@ -466,6 +499,7 @@ export function createWorld({ canvas, labelsHost, projects, onPick, onInteract =
     lit = sstep(0.35, 0.9, m);
     glows.forEach((g) => { g.mat.emissiveIntensity = (g.min || 0) + (g.max - (g.min || 0)) * lit; });
     lamps.forEach((l) => { l.light.intensity = l.max * lit; });
+    beams.forEach((b) => { b.opacity = 0.1 * lit; });
     ffMat.opacity = lit * 0.9;
     const birds = 1 - sstep(0, 0.6, m);
     birdK = birds;
@@ -482,15 +516,16 @@ export function createWorld({ canvas, labelsHost, projects, onPick, onInteract =
   const tmp = new THREE.Vector3();
   let W = 1, H = 1;
   function resize() {
-    W = window.innerWidth; H = window.innerHeight;
+    W = canvas.clientWidth || window.innerWidth; H = canvas.clientHeight || window.innerHeight;
     renderer.setSize(W, H, false);
     camera.aspect = W / H;
-    camera.fov = W / H < 0.9 ? 64 : 50; // phones: wider lens and a step back so every island fits
-    HOME = W / H < 0.9 ? 64 : 56;
+    camera.fov = solo ? 40 : W / H < 0.9 ? 64 : 50; // phones: wider lens and a step back so every island fits
+    HOME = solo ? (W / H < 0.9 ? 20 : 15) : W / H < 0.9 ? 74 : 62;
     if (!goal.follow) goal.dist = HOME;
     camera.updateProjectionMatrix();
   }
   window.addEventListener('resize', resize);
+  if (window.ResizeObserver) new ResizeObserver(resize).observe(canvas);
   resize();
 
   /* ---------- input: drag, zoom, hover, parallax, click ---------- */
@@ -499,13 +534,14 @@ export function createWorld({ canvas, labelsHost, projects, onPick, onInteract =
   const interact = () => { if (!touched) { touched = true; onInteract(); } };
   canvas.addEventListener('pointerdown', (e) => { down = { x: e.clientX, y: e.clientY }; moved = 0; canvas.setPointerCapture(e.pointerId); canvas.classList.add('drag'); });
   canvas.addEventListener('pointermove', (e) => {
-    if (e.pointerType === 'mouse') { mouse.x = (e.clientX / W) * 2 - 1; mouse.y = (e.clientY / H) * 2 - 1; }
+    const rc = canvas.getBoundingClientRect();
+    if (e.pointerType === 'mouse') { mouse.x = ((e.clientX - rc.left) / W) * 2 - 1; mouse.y = ((e.clientY - rc.top) / H) * 2 - 1; }
     if (down) {
       const dx = e.clientX - down.x, dy = e.clientY - down.y;
       moved += Math.abs(dx) + Math.abs(dy);
       if (moved > 6) interact();
       rig.yaw -= dx * 0.005;
-      rig.pitch = Math.min(1.35, Math.max(0.1, rig.pitch + dy * 0.005));
+      if (!solo) rig.pitch = Math.min(1.35, Math.max(0.1, rig.pitch + dy * 0.005));
       down = { x: e.clientX, y: e.clientY };
     } else {
       hovered = pick(e);
@@ -524,7 +560,7 @@ export function createWorld({ canvas, labelsHost, projects, onPick, onInteract =
   };
   canvas.addEventListener('pointerup', release);
   canvas.addEventListener('pointercancel', release);
-  canvas.addEventListener('wheel', (e) => {
+  if (!solo) canvas.addEventListener('wheel', (e) => {
     e.preventDefault();
     interact();
     const lim = goal.follow ? [8, 30] : [22, 100];
@@ -534,7 +570,8 @@ export function createWorld({ canvas, labelsHost, projects, onPick, onInteract =
   const ray = new THREE.Raycaster(), ndc = new THREE.Vector2();
   const hits = () => Object.values(bodies).map((b) => b.hit);
   function cast(e) {
-    ndc.set((e.clientX / W) * 2 - 1, -(e.clientY / H) * 2 + 1);
+    const rc = canvas.getBoundingClientRect();
+    ndc.set(((e.clientX - rc.left) / W) * 2 - 1, -((e.clientY - rc.top) / H) * 2 + 1);
     ray.setFromCamera(ndc, camera);
   }
   function pick(e) {
@@ -551,7 +588,9 @@ export function createWorld({ canvas, labelsHost, projects, onPick, onInteract =
   /* ---------- loop ---------- */
   const clock = new THREE.Clock();
   let t = 0;
+  let paused = false;
   function frame() {
+    if (paused) { clock.getDelta(); requestAnimationFrame(frame); return; }
     const dt = Math.min(clock.getDelta(), 0.05);
     const k = reduced ? 1 : 1 - Math.pow(0.0015, dt);
     t += dt;
@@ -571,7 +610,7 @@ export function createWorld({ canvas, labelsHost, projects, onPick, onInteract =
       b.island.scale.setScalar(1 + 0.07 * b.hover);
       b.g.position.y += 0.5 * b.hover;
       b.anim.forEach((fn) => fn(t, dt, camera));
-      labels[b.id].classList.toggle('hot', hovered === b.id);
+      if (labels[b.id]) labels[b.id].classList.toggle('hot', hovered === b.id);
     }
     for (const pk of packets) {
       if (!reduced) pk.userData.a += dt * pk.userData.v;
@@ -615,7 +654,7 @@ export function createWorld({ canvas, labelsHost, projects, onPick, onInteract =
         ffPos[i * 3 + 2] = ffBase[i * 3 + 2] + Math.cos(t * 0.6 + ph) * 0.8;
       }
       ffGeo.attributes.position.needsUpdate = true;
-      ffMat.size = 0.26 + Math.sin(t * 3) * 0.06;
+      ffMat.size = (solo ? 0.09 : 0.26) + Math.sin(t * 3) * (solo ? 0.02 : 0.06);
     }
     const mt = meteor.userData;
     if (mix > 0.8 && !reduced) {
@@ -644,16 +683,16 @@ export function createWorld({ canvas, labelsHost, projects, onPick, onInteract =
     halo.material.opacity = 0.85 + Math.sin(t * 1.5) * 0.08;
     if (!reduced) stars.rotation.y += dt * 0.004;
 
-    if (goal.follow) tmp.copy(bodies[goal.follow].g.position); else tmp.set(0, 0, 0);
+    if (goal.follow) tmp.copy(bodies[goal.follow].g.position); else tmp.set(0, solo ? 1.4 : 0, 0);
     rig.target.lerp(tmp, k);
     rig.dist += (goal.dist * (1 + 0.12 * bump) - rig.dist) * k;
-    const pitchGoal = goal.follow ? 0.38 : 0.6;
+    const pitchGoal = solo ? 0.32 : goal.follow ? 0.38 : 0.6;
     if (!down) rig.pitch += (pitchGoal - rig.pitch) * k * 0.5;
-    if (!goal.follow && !down && !reduced) rig.yaw += dt * 0.025;
+    if (!goal.follow && !down && !reduced) rig.yaw += dt * (solo ? 0.12 : 0.025);
     const offGoal = goal.follow && W > 900 ? 210 : 0;
     rig.off += (offGoal - rig.off) * k;
     // keep the archipelago clear of the intro text: up on desktop (text bottom-left), down on phones (text on top)
-    const offYGoal = goal.follow ? 0 : (W / H < 0.9 ? -0.06 : 0.08) * H;
+    const offYGoal = goal.follow || solo ? 0 : (W / H < 0.9 ? -0.06 : 0.08) * H;
     rig.offY += (offYGoal - rig.offY) * k;
     camera.setViewOffset(W, H, rig.off, rig.offY, W, H);
     rig.px += ((reduced || down ? 0 : mouse.x) - rig.px) * Math.min(1, dt * 2.5); // gentle mouse parallax
@@ -670,6 +709,7 @@ export function createWorld({ canvas, labelsHost, projects, onPick, onInteract =
       tmp.y += b.lift;
       tmp.project(camera);
       const l = labels[b.id];
+      if (!l) continue;
       l.style.visibility = tmp.z < 1 ? 'visible' : 'hidden';
       l.style.transform = 'translate(' + ((tmp.x * 0.5 + 0.5) * W) + 'px,' + ((-tmp.y * 0.5 + 0.5) * H - 10) + 'px) translate(-50%,-100%)';
     }
@@ -684,6 +724,7 @@ export function createWorld({ canvas, labelsHost, projects, onPick, onInteract =
       if (to === tween.to && tween.from === tween.to) return;
       tween.from = mix; tween.to = to; tween.start = performance.now();
     },
+    pause(p) { paused = !!p; },
     flyTo(id) {
       goal.follow = id && bodies[id] ? id : null;
       goal.dist = goal.follow ? bodies[id].focus : HOME;
