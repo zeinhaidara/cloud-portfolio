@@ -27,12 +27,12 @@ Demo environments are torn down after capture to control cost, so each case stud
 
 ## About this site
 
-A static site on GitHub Pages with no build step. The homepage shows the projects as cloud islands by day and 3D planets (Three.js) by night.
+A static site on GitHub Pages with no build step. The homepage is a 3D world (Three.js) where each project is a floating island, viewable by day or by night.
 
 | File | Purpose |
 |---|---|
-| `index.html`, `app.css`, `app.js` | Homepage: day scene, project panel, day/night switch |
-| `world.js` | Night scene (Three.js, loaded on demand) |
+| `index.html`, `app.css`, `app.js` | Homepage: project panel, day/night switch, flat fallback for devices without WebGL |
+| `world.js` | 3D island world for both day and night |
 | `healthcare.html`, `pipeline.js` | Healthcare SecOps case study and pipeline simulator |
 | `orbital.html`, `style.css` | Orbital Expeditions case study and shared case-study styles |
 | `classic.html` | Plain project list for non-3D use |

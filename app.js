@@ -1,4 +1,4 @@
-// Homepage: one page, two moods. Day = cloud islands (SVG), night = planets (world.js, loaded lazily).
+// Homepage: one 3D world of project islands (world.js) by day and by night. Flat SVG islands are the no-WebGL fallback.
 const PROJECTS = [
   { id: 'orbital', title: 'Orbital Expeditions', sub: 'EKS microservices', color: '#ff8a1f', kind: 'CASE STUDY · AWS EKS',
     blurb: 'A fictional space travel storefront: six microservices on EKS, an event-driven order flow through EventBridge and SQS, Terraform and Helm delivery, and Grafana dashboards.',
@@ -24,6 +24,12 @@ const PROJECTS = [
     island: { b: 'bridge' }, planet: { orbit: 29, speed: 0.035, phase: 1.3, size: 1.05, shape: 'octa' } },
 ];
 
+// The balloon in the 3D world opens this card; it is not one of the five explorable projects.
+const CONTACT = { id: 'contact', title: 'Hi, I’m Zein', color: '#ff5d6c', kind: 'ABOUT · CONTACT',
+  blurb: 'Cloud engineer building secure, observable platforms on AWS and Azure: infrastructure as code, least-privilege access, and delivery pipelines that say no to bad changes. Open to cloud and platform engineering roles.',
+  tags: ['AWS', 'Azure', 'Kubernetes', 'Terraform', 'GitOps', 'Security'], main: ['Email me', 'mailto:zeinhaidara@gmail.com'],
+  src: 'https://github.com/zeinhaidara', note: 'zeinhaidara@gmail.com' };
+const ALL = [...PROJECTS, CONTACT];
 const $ = (id) => document.getElementById(id);
 const NS = 'http://www.w3.org/2000/svg';
 const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -109,13 +115,22 @@ function buildDock() {
     $('dock').appendChild(b);
     dockBtns[p.id] = b;
   });
+  const hi = document.createElement('button');
+  hi.type = 'button';
+  hi.className = 'hi';
+  hi.style.setProperty('--c', CONTACT.color);
+  hi.innerHTML = '<i></i>Say hi';
+  hi.addEventListener('click', () => (focused === 'contact' ? overview() : focus('contact')));
+  $('dock').appendChild(hi);
+  dockBtns.contact = hi;
 }
 
 function focus(id) {
-  const p = PROJECTS.find((x) => x.id === id);
+  const p = ALL.find((x) => x.id === id);
   if (!p) return;
   focused = id;
-  seen.add(id);
+  const isNew = id !== 'contact' && !seen.has(id);
+  if (id !== 'contact') seen.add(id);
   save();
   const panel = $('panel');
   panel.style.setProperty('--c', p.color);
@@ -136,6 +151,17 @@ function focus(id) {
   body.classList.add('panel-open');
   marks();
   if (world) world.flyTo(id);
+  if (isNew && seen.size === PROJECTS.length) celebrate();
+}
+function celebrate() {
+  if (world) world.celebrate([...PROJECTS.map((p) => p.color), CONTACT.color, '#ffd34d']);
+  const t = $('toast');
+  t.hidden = false;
+  t.classList.remove('show');
+  void t.offsetWidth;
+  t.classList.add('show');
+  clearTimeout(celebrate.timer);
+  celebrate.timer = setTimeout(() => { t.hidden = true; }, 7000);
 }
 function overview() {
   focused = null;
@@ -149,54 +175,69 @@ function hop(dir) {
   focus(PROJECTS[(i + dir + PROJECTS.length) % PROJECTS.length].id);
 }
 function marks() {
+  dockBtns.contact.setAttribute('aria-pressed', String(focused === 'contact'));
   PROJECTS.forEach((p) => {
     dockBtns[p.id].setAttribute('aria-pressed', String(focused === p.id));
     dockBtns[p.id].classList.toggle('seen', seen.has(p.id));
-    islands[p.id].classList.toggle('seen', seen.has(p.id));
-    islands[p.id].classList.toggle('dim', !!focused && focused !== p.id);
+    if (islands[p.id]) {
+      islands[p.id].classList.toggle('seen', seen.has(p.id));
+      islands[p.id].classList.toggle('dim', !!focused && focused !== p.id);
+    }
   });
   $('score').textContent = seen.size + ' / ' + PROJECTS.length + ' explored';
   if (world) world.setMarks(focused, seen);
 }
 
 /* ---------- day / night ---------- */
+// The 3D world (world.js) draws both modes. If WebGL is unavailable, the flat SVG islands are the fallback and night is disabled.
 function loadWorld() {
   if (!worldLoad) {
-    worldLoad = import('./world.js?v=7').then((m) => {
-      world = m.createWorld({ canvas: $('stage'), labelsHost: $('plabels'), projects: PROJECTS, onPick: focus });
+    worldLoad = import('./world.js?v=10').then((m) => {
+      world = m.createWorld({ canvas: $('stage'), labelsHost: $('plabels'), projects: PROJECTS, onPick: focus, onInteract: () => body.classList.add('touched'), mode });
       world.flyTo(focused);
       world.setMarks(focused, seen);
+      body.classList.add('gl');
       return world;
     }).catch((err) => {
-      console.warn('3D unavailable', err);
+      console.warn('3D unavailable, using flat islands', err);
+      body.classList.add('nogl');
+      if (mode === 'night') applyMode('day');
+      buildIslands();
+      addEventListener('resize', buildIslands);
+      marks();
       const t = $('mode');
       t.disabled = true;
-      t.title = '3D view unavailable on this device';
+      t.title = 'Night view needs WebGL';
       return null;
     });
   }
   return worldLoad;
 }
 
-async function setMode(next) {
-  if (next === mode) return;
-  const t = $('mode');
-  if (next === 'night') {
-    if (!world) { t.classList.add('loading'); await loadWorld(); t.classList.remove('loading'); }
-    if (!world) return;
-  }
+function applyMode(next) {
   mode = next;
   body.dataset.mode = mode;
+  const t = $('mode');
   t.setAttribute('aria-pressed', String(mode === 'night'));
-  t.setAttribute('aria-label', mode === 'night' ? 'Switch to day: cloud islands' : 'Switch to night: projects as 3D planets');
-  if (world) world.setActive(mode === 'night');
+  t.setAttribute('aria-label', mode === 'night' ? 'Switch to day' : 'Switch to night');
+}
+
+async function setMode(next) {
+  if (next === mode) return;
+  if (!world) {
+    const t = $('mode');
+    t.classList.add('loading');
+    await loadWorld();
+    t.classList.remove('loading');
+    if (!world) return;
+  }
+  applyMode(next);
+  world.setMode(mode);
   history.replaceState(null, '', mode === 'night' ? '#night' : location.pathname + location.search);
 }
 
 /* ---------- boot ---------- */
-buildIslands();
 buildDock();
-addEventListener('resize', buildIslands);
 marks();
 $('mode').addEventListener('click', () => setMode(mode === 'day' ? 'night' : 'day'));
 $('close').addEventListener('click', overview);
@@ -208,8 +249,7 @@ addEventListener('keydown', (e) => {
   else if (/^[1-5]$/.test(e.key)) focus(PROJECTS[Number(e.key) - 1].id);
 });
 const hash = location.hash.slice(1);
-if (hash === 'night') setMode('night');
+if (hash === 'night') applyMode('night');
 else if (PROJECTS.some((p) => p.id === hash)) focus(hash);
-// Warm up the 3D scene in the background so the first switch is instant.
-addEventListener('load', () => setTimeout(loadWorld, 1200));
+loadWorld();
 requestAnimationFrame(() => body.classList.add('ready'));
