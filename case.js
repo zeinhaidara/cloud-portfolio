@@ -25,8 +25,8 @@ apply(mode);
 const canvas = document.getElementById('hero-canvas');
 if (canvas) {
   const d = canvas.dataset;
-  const project = { id: d.id, title: '', color: d.color, island: { b: d.building }, planet: { size: Number(d.size), phase: Number(d.phase), speed: 0 } };
-  import('./world.js?v=12').then((m) => {
+  const project = { id: d.id, title: '', color: d.color, island: { b: d.building, climate: d.climate }, planet: { size: Number(d.size), phase: Number(d.phase), speed: 0 } };
+  import('./world.js?v=13').then((m) => {
     hero = m.createWorld({ canvas, labelsHost: null, projects: [project], mode, solo: d.id });
     canvas.parentElement.classList.add('on');
     if ('IntersectionObserver' in window) {

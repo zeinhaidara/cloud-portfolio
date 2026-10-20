@@ -4,29 +4,29 @@ const PROJECTS = [
     blurb: 'A fictional space travel storefront: six microservices on EKS, an event-driven order flow through EventBridge and SQS, Terraform and Helm delivery, and Grafana dashboards.',
     tags: ['EKS', 'DynamoDB', 'RDS', 'EventBridge', 'SQS', 'Terraform'], main: ['Read the case study', 'orbital.html'],
     src: 'https://github.com/zeinhaidara/aws-retail-microservices-eks', note: 'Live demo retired Oct 2026. Captures are in the case study.',
-    island: { b: 'rocket' }, planet: { orbit: 9, speed: 0.11, phase: 0.4, size: 1.25, shape: 'ringed' } },
+    island: { b: 'rocket', climate: 'desert' }, planet: { orbit: 9, speed: 0.11, phase: 0.4, size: 1.25, shape: 'ringed' } },
   { id: 'healthcare', title: 'Healthcare SecOps', sub: 'Featured · secure platform', color: '#12b981', kind: 'CASE STUDY · SECURE PLATFORM',
     blurb: 'A patient API on EKS Fargate behind scan gates, GitOps with Argo CD, Terraform approvals, least-privilege IAM and detective controls. Every change and accepted risk is logged with evidence.',
     tags: ['EKS Fargate', 'Argo CD', 'Terraform', 'Trivy', 'Checkov', 'GuardDuty'], main: ['Read the case study', 'healthcare.html'],
     src: 'https://github.com/zeinhaidara/healthcare-eks-secops', note: 'Includes a ship-a-change simulator. Synthetic data only; no compliance claim.',
-    island: { b: 'shield' }, planet: { orbit: 14, speed: 0.08, phase: 2.2, size: 1.2, shape: 'shield' } },
+    island: { b: 'shield', climate: 'castle' }, planet: { orbit: 14, speed: 0.08, phase: 2.2, size: 1.2, shape: 'shield' } },
   { id: 'gcp', title: 'AI Log Analyzer', sub: 'GCP · Gemini + BigQuery', color: '#f2b705', kind: 'CASE STUDY · GOOGLE CLOUD',
     blurb: 'Upload a log and an ADK agent on private Cloud Run investigates it with Gemini on Vertex AI, using similar past incidents from BigQuery as context. Event-driven through Pub/Sub, with Firestore, Cloud Storage and private Google API egress.',
     tags: ['Cloud Run', 'Gemini', 'ADK', 'BigQuery', 'Pub/Sub', 'Firestore', 'VPC'], main: ['Read the case study', 'gcp.html'],
     src: 'https://github.com/zeinhaidara/gcp-ai-log-analyzer', note: 'Team project with a colleague. Live app runs on synthetic logs.',
-    island: { b: 'observatory' }, planet: { orbit: 34, speed: 0.03, phase: 0.85, size: 1.1, shape: 'octa' } },
+    island: { b: 'observatory', climate: 'snow' }, planet: { orbit: 34, speed: 0.03, phase: 0.85, size: 1.1, shape: 'octa' } },
   { id: 'threetier', title: 'Three-tier delivery', sub: 'EC2 + ECS Fargate', color: '#7c5cff', kind: 'AWS · APPLICATION PLATFORM',
     blurb: 'One FastAPI and MySQL application on two compute paths, private EC2 Auto Scaling and ECS Fargate, behind an ALB. A load-test workflow drives Auto Scaling under sustained traffic.',
     tags: ['EC2', 'ECS Fargate', 'RDS', 'Terraform', 'Load testing'], main: ['View the repository', 'https://github.com/zeinhaidara/aws-3-tier-github-actions'],
-    island: { b: 'tower' }, planet: { orbit: 19, speed: 0.06, phase: 4.1, size: 1, shape: 'stack' } },
+    island: { b: 'tower', climate: 'city' }, planet: { orbit: 19, speed: 0.06, phase: 4.1, size: 1, shape: 'stack' } },
   { id: 'pipeline', title: 'GitHub → AWS pipeline', sub: 'OIDC, no stored keys', color: '#2f9bff', kind: 'AWS · SECURE CI/CD',
     blurb: 'A tested, security-scanned change moves through dev, stage and main to an S3 website, with short-lived OIDC credentials and no long-lived AWS keys.',
     tags: ['GitHub Actions', 'OIDC', 'IAM', 'S3'], main: ['View the repository', 'https://github.com/zeinhaidara/github-to-aws-pipeline'],
-    island: { b: 'gear' }, planet: { orbit: 24, speed: 0.045, phase: 5.5, size: 0.9, shape: 'knot' } },
+    island: { b: 'gear', climate: 'volcanic' }, planet: { orbit: 24, speed: 0.045, phase: 5.5, size: 0.9, shape: 'knot' } },
   { id: 'northbridge', title: 'Northbridge Health', sub: 'Azure AKS · in progress', color: '#1e6ad6', kind: 'AZURE · PLATFORM BLUEPRINT',
     blurb: 'An Azure referral-platform blueprint with reusable Terraform modules, AKS, private endpoints, workload identity, Key Vault and staged delivery. Resilience evidence is still pending.',
     tags: ['Azure AKS', 'Key Vault', 'Terraform', 'Helm'], main: ['View the repository', 'https://github.com/zeinhaidara/azure-endtoend-platform'], note: 'Work in progress.',
-    island: { b: 'bridge' }, planet: { orbit: 29, speed: 0.035, phase: 1.3, size: 1.05, shape: 'octa' } },
+    island: { b: 'bridge', climate: 'tropical' }, planet: { orbit: 29, speed: 0.035, phase: 1.3, size: 1.05, shape: 'octa' } },
 ];
 
 // The balloon in the 3D world opens this card; it is not one of the five explorable projects.
@@ -56,6 +56,8 @@ const BUILD = {
   bridge: (c) => `<path d="M-44 -8 Q-10 -46 24 -8" fill="none" stroke="${c}" stroke-width="7"/><path d="M-44 -8 H24" stroke="${INK}" stroke-width="4"/><rect x="28" y="-30" width="6" height="24" fill="#8b5a2b"/><circle cx="31" cy="-42" r="16" fill="#3fbf6f" stroke="${INK}" stroke-width="2.5"/><rect x="-6" y="-64" width="2.5" height="30" fill="${INK}"/><path d="M-3.5 -64 h22 l-6 6 6 6 h-22z" fill="${c}"/>`,
 };
 const islands = {};
+const GROUND = { desert: ['#efc37c', '#d6a35c', '#c46a3a', '#9c4f2a'], castle: ['#86cf6a', '#68b24f', '#9aa0ad', '#747a88'], snow: ['#f4f8ff', '#cfdcee', '#8a9bb6', '#6b7b96'],
+  city: ['#cfd5df', '#aeb6c4', '#8a6c52', '#6e5440'], volcanic: ['#4b3c3c', '#3a2e2e', '#5a3a2e', '#2e2626'], tropical: ['#8fe06a', '#ecd59a', '#a8743f', '#8b5a2b'] };
 // Island positions per screen shape. Wide: one sweeping row; tall (phones): featured on top, then two by two.
 const LAYOUTS = {
   wide: { viewBox: '150 90 1080 690', routes: ['M330 290 Q500 200 670 300', 'M670 300 Q840 210 1010 290', 'M670 300 Q660 480 800 620', 'M1010 290 Q1130 450 1090 610'],
@@ -76,6 +78,7 @@ function buildIslands() {
   $('packets').replaceChildren();
   PROJECTS.forEach((p, i) => {
     const [x, y, w] = L.pos[p.id], b = p.island.b, h = w / 4;
+    const gc = GROUND[p.island.climate] || ['#7bd96a', '#5cc451', '#b07a4a', '#8b5a2b'];
     const lw = Math.max(p.title.length, p.sub.length * 0.72) * 8.6 + 34;
     const signY = y - h - (b === 'shield' ? 100 : 86);
     const g = document.createElementNS(NS, 'g');
@@ -85,10 +88,10 @@ function buildIslands() {
     g.setAttribute('aria-label', p.title);
     g.innerHTML = `<g class="bob" style="animation-delay:${-i * 1.1}s">
       <ellipse cx="${x}" cy="${y + w * 0.75}" rx="${w * 0.3}" ry="8" fill="${INK}" opacity=".08"/>
-      <path d="M${x - w / 2} ${y} L${x} ${y + h} L${x - w * 0.05} ${y + w * 0.55} L${x - w * 0.3} ${y + w * 0.32}Z" fill="#b07a4a"/>
-      <path d="M${x} ${y + h} L${x + w / 2} ${y} L${x + w * 0.28} ${y + w * 0.36} L${x - w * 0.05} ${y + w * 0.55}Z" fill="#8b5a2b"/>
-      <path d="M${x - w / 2} ${y} L${x} ${y - h} L${x + w / 2} ${y} L${x} ${y + h}Z" fill="#7bd96a" stroke="#4fae45" stroke-width="3"/>
-      <path d="M${x - w / 2} ${y} L${x} ${y + h} L${x + w / 2} ${y}" fill="none" stroke="#5cc451" stroke-width="7"/>
+      <path d="M${x - w / 2} ${y} L${x} ${y + h} L${x - w * 0.05} ${y + w * 0.55} L${x - w * 0.3} ${y + w * 0.32}Z" fill="${gc[2]}"/>
+      <path d="M${x} ${y + h} L${x + w / 2} ${y} L${x + w * 0.28} ${y + w * 0.36} L${x - w * 0.05} ${y + w * 0.55}Z" fill="${gc[3]}"/>
+      <path d="M${x - w / 2} ${y} L${x} ${y - h} L${x + w / 2} ${y} L${x} ${y + h}Z" fill="${gc[0]}" stroke="${gc[1]}" stroke-width="3"/>
+      <path d="M${x - w / 2} ${y} L${x} ${y + h} L${x + w / 2} ${y}" fill="none" stroke="${gc[1]}" stroke-width="7"/>
       <g transform="translate(${x} ${y + 4})">${BUILD[b](p.color)}</g>
       <g class="sign" transform="translate(${x} ${signY})"><rect x="${-lw / 2}" y="-22" width="${lw}" height="46" rx="14"/>
         <circle class="sdot" cx="${-lw / 2 + 16}" cy="-6" r="5" fill="${p.color}"/>
@@ -198,7 +201,7 @@ function marks() {
 // The 3D world (world.js) draws both modes. If WebGL is unavailable, the flat SVG islands are the fallback and night is disabled.
 function loadWorld() {
   if (!worldLoad) {
-    worldLoad = import('./world.js?v=12').then((m) => {
+    worldLoad = import('./world.js?v=13').then((m) => {
       world = m.createWorld({ canvas: $('stage'), labelsHost: $('plabels'), projects: PROJECTS, onPick: focus, onInteract: () => body.classList.add('touched'), mode });
       world.flyTo(focused);
       world.setMarks(focused, seen);
