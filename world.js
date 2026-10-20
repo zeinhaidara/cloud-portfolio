@@ -14,14 +14,14 @@ export function createWorld({ canvas, labelsHost, projects, onPick = () => {}, o
 
   /* ---------- palette: [day, night] ---------- */
   const P = {
-    top: [col('#3d9bf0'), col('#04060c')], horizon: [col('#d4ecff'), col('#1c2747')], bottom: [col('#94cdff'), col('#0a1020')],
-    fog: [col('#cfe7ff'), col('#0d1426')],
-    hemiSky: [col('#eaf6ff'), col('#7d8fc4')], hemiGround: [col('#8fb87a'), col('#1a1f33')], hemi: [1.6, 0.55],
-    dirColor: [col('#fff2dc'), col('#9fb6ff')], dir: [1.5, 0.45],
-    orb: [col('#ffd34d'), col('#eef2ff')], halo: [col('#ffb347'), col('#8fa8ff')], core: [col('#fff0d8'), col('#b9c8ff')], coreI: [4.5, 1.2],
-    cloud: [col('#ffffff'), col('#1c2540')], cloudEm: [0.35, 0], cloudOp: [1, 0.3],
-    sea: [col('#ffffff'), col('#0e1528')], seaEm: [0.3, 0], seaOp: [0.75, 0.45],
-    ring: [col('#ffffff'), col('#7f95d6')], ringOp: [0.55, 0.35],
+    top: [col('#5f97c9'), col('#04060c')], horizon: [col('#c9dceb'), col('#1c2747')], bottom: [col('#8fb4d4'), col('#0a1020')],
+    fog: [col('#bfd3e4'), col('#0d1426')],
+    hemiSky: [col('#e2edf6'), col('#7d8fc4')], hemiGround: [col('#7f9f72'), col('#1a1f33')], hemi: [1.25, 0.55],
+    dirColor: [col('#ffe9cf'), col('#9fb6ff')], dir: [1.15, 0.45],
+    orb: [col('#f6c453'), col('#eef2ff')], halo: [col('#f0a64a'), col('#8fa8ff')], core: [col('#ffeccf'), col('#b9c8ff')], coreI: [3.2, 1.2],
+    cloud: [col('#f4f7fb'), col('#1c2540')], cloudEm: [0.2, 0], cloudOp: [0.95, 0.3],
+    sea: [col('#e6eef6'), col('#0e1528')], seaEm: [0.1, 0], seaOp: [0.6, 0.45],
+    ring: [col('#f4f8fc'), col('#7f95d6')], ringOp: [0.4, 0.35],
   };
   const glows = []; // materials that light up at night: { mat, max, min }
   const lamps = []; // point lights that switch on at night: { light, max }
@@ -576,6 +576,31 @@ export function createWorld({ canvas, labelsHost, projects, onPick = () => {}, o
     islets.push(g);
   });
 
+
+  /* ---------- a faint rainbow and paper planes by day ---------- */
+  const bowMats = [];
+  const bow = new THREE.Group();
+  ['#e88a8a', '#e9b77a', '#e6d98a', '#9fd39a', '#8fb8e0', '#ab9ad8'].forEach((c, i) => {
+    const m = new THREE.MeshBasicMaterial({ color: col(c), transparent: true, opacity: 0, depthWrite: false, fog: false, side: THREE.DoubleSide });
+    bowMats.push(m);
+    bow.add(new THREE.Mesh(new THREE.TorusGeometry(70 - i * 1.6, 0.8, 6, 64, Math.PI), m));
+  });
+  bow.position.set(88, -30, 18);
+  bow.rotation.y = -Math.PI / 2 + 0.25;
+  if (!solo) scene.add(bow);
+  const planes = [];
+  const paper = new THREE.MeshStandardMaterial({ color: 0xffffff, roughness: 0.9, flatShading: true, side: THREE.DoubleSide });
+  for (let i = 0; i < (solo ? 1 : 3); i++) {
+    const g = new THREE.Group();
+    const geo = new THREE.BufferGeometry();
+    geo.setAttribute('position', new THREE.Float32BufferAttribute([0, 0, 0.7, -0.45, 0.05, -0.4, 0, -0.08, -0.4, 0, 0, 0.7, 0.45, 0.05, -0.4, 0, -0.08, -0.4], 3));
+    geo.computeVertexNormals();
+    g.add(new THREE.Mesh(geo, paper));
+    g.userData = { r: solo ? 9 : rand(18, 34), y: solo ? 4 : rand(4, 10), a: rand(0, 6.28), v: rand(0.12, 0.2) * (i % 2 ? -1 : 1), ph: rand(0, 6) };
+    scene.add(g);
+    planes.push(g);
+  }
+
   /* ---------- birds by day ---------- */
   const birdMat = new THREE.MeshBasicMaterial({ color: 0x2b3350 });
   const birdBody = new THREE.BoxGeometry(0.12, 0.1, 0.42), birdWing = new THREE.BoxGeometry(0.62, 0.025, 0.22);
@@ -725,6 +750,9 @@ export function createWorld({ canvas, labelsHost, projects, onPick = () => {}, o
     skyU.horizon.value.copy(P.horizon[0]).lerp(P.horizon[1], m);
     skyU.bottom.value.copy(P.bottom[0]).lerp(P.bottom[1], m);
     scene.fog.color.copy(P.fog[0]).lerp(P.fog[1], m);
+    const dayK = 1 - sstep(0, 0.6, m);
+    bowMats.forEach((b) => { b.opacity = 0.24 * dayK; });
+    planes.forEach((p) => { p.visible = dayK > 0.02; p.scale.setScalar(Math.max(0.001, dayK)); });
     hemi.color.copy(P.hemiSky[0]).lerp(P.hemiSky[1], m);
     hemi.groundColor.copy(P.hemiGround[0]).lerp(P.hemiGround[1], m);
     hemi.intensity = lerp(P.hemi, m);
@@ -927,7 +955,14 @@ export function createWorld({ canvas, labelsHost, projects, onPick = () => {}, o
       bu.pts.material.opacity = 1 - bu.life;
       if (bu.life >= 1) { scene.remove(bu.pts); bu.pts.geometry.dispose(); bu.pts.material.dispose(); bursts.splice(i, 1); }
     }
-    halo.material.opacity = 0.85 + Math.sin(t * 1.5) * 0.08;
+    for (const p of planes) {
+      if (!p.visible) continue;
+      const u = p.userData;
+      if (!reduced) u.a += dt * u.v;
+      p.position.set(Math.cos(u.a) * u.r, u.y + Math.sin(t * 0.8 + u.ph) * 0.8, Math.sin(u.a) * u.r);
+      p.rotation.set(Math.sin(t * 0.8 + u.ph) * 0.15, -u.a + (u.v > 0 ? Math.PI : 0), (u.v > 0 ? -1 : 1) * 0.35);
+    }
+    halo.material.opacity = (0.62 + 0.23 * mix) + Math.sin(t * 1.5) * 0.06;
     if (!reduced) stars.rotation.y += dt * 0.004;
 
     if (goal.follow) tmp.copy(bodies[goal.follow].g.position); else tmp.set(0, solo ? 1.4 : 0, 0);

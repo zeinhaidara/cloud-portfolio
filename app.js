@@ -201,7 +201,7 @@ function marks() {
 // The 3D world (world.js) draws both modes. If WebGL is unavailable, the flat SVG islands are the fallback and night is disabled.
 function loadWorld() {
   if (!worldLoad) {
-    worldLoad = import('./world.js?v=13').then((m) => {
+    worldLoad = import('./world.js?v=14').then((m) => {
       world = m.createWorld({ canvas: $('stage'), labelsHost: $('plabels'), projects: PROJECTS, onPick: focus, onInteract: () => body.classList.add('touched'), mode });
       world.flyTo(focused);
       world.setMarks(focused, seen);

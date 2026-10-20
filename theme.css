@@ -1,6 +1,6 @@
 /* Case-study theme: the islands' day and night, layered over style.css. Mode lives on <html data-mode>. */
 :root{--t:1.1s;--ease:cubic-bezier(.65,0,.35,1);--ok:#12b981}
-:root[data-mode=day]{--bg:#eef6ff;--panel:rgba(255,255,255,.82);--panel-solid:#fff;--line:rgba(29,35,64,.12);--text:#1d2340;--muted:#55607e;--accent:#e07a00;--node:#fff;--node2:#f3f8ff;--chip:#eef3fb;--btn:#1d2340;--btn-ink:#fff;--shadow:0 18px 50px rgba(40,80,140,.12)}
+:root[data-mode=day]{--bg:#e7eef4;--panel:rgba(248,250,252,.8);--panel-solid:#f8fafc;--line:rgba(29,35,64,.12);--text:#1d2340;--muted:#55607e;--accent:#e07a00;--node:#fff;--node2:#f3f8ff;--chip:#eef3fb;--btn:#1d2340;--btn-ink:#fff;--shadow:0 18px 50px rgba(40,80,140,.12)}
 :root[data-mode=night]{--bg:#0b1020;--panel:rgba(20,27,42,.78);--panel-solid:#141b2a;--line:#27324a;--text:#eff2f6;--muted:#a6afbc;--accent:#ffad48;--node:#141b2a;--node2:#0c1220;--chip:#1b2436;--btn:#ffad48;--btn-ink:#14100a;--shadow:0 18px 50px rgba(0,0,0,.35)}
 body{background:var(--bg);transition:background-color var(--t) var(--ease),color var(--t) var(--ease)}
 body,.brand span,nav a,p,summary,.tags span,.muted,figcaption{transition:color var(--t) var(--ease),background-color var(--t) var(--ease),border-color var(--t) var(--ease)}
@@ -8,10 +8,10 @@ body,.brand span,nav a,p,summary,.tags span,.muted,figcaption{transition:color v
 /* sky behind the page: two layers that cross-fade */
 .backdrop{position:fixed;inset:0;z-index:-1;pointer-events:none}
 .backdrop i{position:absolute;inset:0;transition:opacity var(--t) var(--ease)}
-.backdrop .day{background:linear-gradient(#8fd0ff 0%,#d4ecff 38%,#f4f9ff 70%,#fff3e6 100%)}
+.backdrop .day{background:linear-gradient(#a9c6de 0%,#cfdde9 38%,#e6edf3 70%,#efe7dc 100%)}
 .backdrop .night{opacity:0;background:radial-gradient(#fff 1px,transparent 1.6px) 13px 41px/97px 89px,radial-gradient(#cfd8e8 .8px,transparent 1.4px) 61px 7px/131px 113px,radial-gradient(#fff 1.1px,transparent 1.7px) 29px 83px/173px 157px,linear-gradient(#04060c 0%,#0e1530 55%,#1a2444 100%)}
 :root[data-mode=night] .backdrop .day{opacity:0}:root[data-mode=night] .backdrop .night{opacity:1}
-.backdrop .cl{position:absolute;width:150px;height:44px;border-radius:40px;background:#fff;opacity:.75;animation:drift 90s linear infinite;transition:opacity var(--t) var(--ease)}
+.backdrop .cl{position:absolute;width:150px;height:44px;border-radius:40px;background:#f4f7fa;opacity:.55;animation:drift 90s linear infinite;transition:opacity var(--t) var(--ease)}
 .backdrop .cl::before,.backdrop .cl::after{content:"";position:absolute;background:#fff;border-radius:50%}
 .backdrop .cl::before{width:70px;height:70px;left:22px;top:-36px}.backdrop .cl::after{width:50px;height:50px;right:22px;top:-24px}
 .backdrop .c1{top:14%;left:-180px}.backdrop .c2{top:48%;left:-180px;animation-duration:120s;animation-delay:-50s;transform:scale(.7)}.backdrop .c3{top:78%;left:-180px;animation-duration:150s;animation-delay:-100s;transform:scale(.85)}
@@ -31,7 +31,7 @@ nav{gap:22px}
 .mode:focus-visible{outline:2.5px solid var(--accent);outline-offset:3px}
 
 /* the project's island */
-.isle{position:relative;height:clamp(300px,42vw,470px);margin:6px 0 30px;border-radius:28px;overflow:hidden;border:1px solid var(--line);box-shadow:var(--shadow);background:linear-gradient(#8fd0ff,#d4ecff 60%,#fff3e6);transition:border-color var(--t) var(--ease)}
+.isle{position:relative;height:clamp(300px,42vw,470px);margin:6px 0 30px;border-radius:28px;overflow:hidden;border:1px solid var(--line);box-shadow:var(--shadow);background:linear-gradient(#7fa9cc,#c9dceb 60%,#e9e2d8);transition:border-color var(--t) var(--ease)}
 :root[data-mode=night] .isle{background:linear-gradient(#04060c,#111a33 60%,#1c2747)}
 .isle canvas{position:absolute;inset:0;width:100%;height:100%;display:block;opacity:0;transition:opacity 1.2s var(--ease);cursor:grab;touch-action:pan-y}
 .isle.on canvas{opacity:1}.isle canvas:active{cursor:grabbing}

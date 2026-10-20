@@ -1,6 +1,6 @@
 /* Homepage: one fixed screen, two moods. Every colour comes from the mode variables below. */
 :root{--ease:cubic-bezier(.65,0,.35,1);--out:cubic-bezier(.2,.8,.3,1);--t:1.3s;--ok:#12b981}
-body[data-mode=day]{--ink:#1d2340;--muted:#55607e;--panel:rgba(255,255,255,.92);--line:rgba(29,35,64,.14);--chip:#eef3fb;--cta:#1d2340;--cta-ink:#fff;--accent:#e07a00}
+body[data-mode=day]{--ink:#1d2340;--muted:#4f5a72;--panel:rgba(248,250,252,.9);--line:rgba(29,35,64,.14);--chip:#eef3fb;--cta:#1d2340;--cta-ink:#fff;--accent:#e07a00}
 body[data-mode=night]{--ink:#eff2f6;--muted:#a6afbc;--panel:rgba(19,26,36,.9);--line:#2a3340;--chip:#1b2431;--cta:#eff2f6;--cta-ink:#0c1017;--accent:#ffad48}
 *{box-sizing:border-box}
 html,body{height:100%;margin:0;overflow:hidden;overscroll-behavior:none}
@@ -14,7 +14,7 @@ button{font:inherit;color:inherit}
 #stage.drag{cursor:grabbing}#stage.hover{cursor:pointer}
 #stage{transition:opacity 1.2s var(--ease)}body:not(.gl) #stage{opacity:0;pointer-events:none}
 
-.sky{position:fixed;inset:0;z-index:1;pointer-events:none;background:linear-gradient(#8fd0ff 0%,#c9e8ff 48%,#ffe6cc 100%);transition:opacity 1s var(--ease) .1s}
+.sky{position:fixed;inset:0;z-index:1;pointer-events:none;background:linear-gradient(#7fa9cc 0%,#c9dceb 48%,#e9e2d8 100%);transition:opacity 1s var(--ease) .1s}
 body[data-mode=night] .sky{opacity:0}
 body[data-mode=day] .sky{transition:opacity .9s var(--ease)}
 body.gl .sky{opacity:0;transition:opacity 1.4s var(--ease)}
@@ -61,7 +61,7 @@ b.check::after{content:"✓";font-weight:700}
 
 /* ---- planet labels ---- */
 .plabel{position:absolute;left:0;top:0;display:flex;align-items:center;white-space:nowrap;font:700 12px 'Space Grotesk',sans-serif;letter-spacing:.06em;color:#eff2f6;background:rgba(19,26,36,.78);border:1px solid #2a3340;border-radius:20px;padding:5px 11px;transition:opacity .4s,background var(--t) var(--ease),color var(--t) var(--ease),border-color var(--t) var(--ease)}
-body[data-mode=day] .plabel{color:#1d2340;background:rgba(255,255,255,.94);border-color:rgba(29,35,64,.16);box-shadow:0 4px 14px rgba(29,35,64,.12)}
+body[data-mode=day] .plabel{color:#1d2340;background:rgba(248,250,252,.92);border-color:rgba(29,35,64,.16);box-shadow:0 4px 14px rgba(29,35,64,.12)}
 .plabel i{width:7px;height:7px;border-radius:50%;background:var(--c);margin-right:7px}
 .plabel.dim{opacity:.25}
 .plabel.hot{border-color:var(--c);opacity:1;transform-origin:center bottom}.plabel.hot i{box-shadow:0 0 0 4px color-mix(in srgb,var(--c) 30%,transparent)}
