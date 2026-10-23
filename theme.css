@@ -76,13 +76,9 @@ footer{max-width:none;padding:22px max(28px,calc((100% - 1320px)/2 + 56px));back
 @media(max-width:800px){header{padding:12px 16px}nav{gap:12px}nav a:not(.nav-contact):not(.pill-link){display:none}.isle{border-radius:20px}.decisions{padding:0 18px}}
 @media(prefers-reduced-motion:reduce){.backdrop .cl{animation:none}*{transition-duration:.01s!important}}
 
-/* live sky chip (weather.js) */
+/* sky chip (sky.js) */
 .wx-chip{display:inline-flex;align-items:center;gap:6px;height:34px;padding:0 13px;border:1.5px solid var(--line);border-radius:20px;background:var(--panel-solid,var(--panel));color:inherit;font:inherit;font-size:13px;font-weight:600;cursor:pointer;white-space:nowrap;flex:none;transition:border-color .3s,background-color var(--t) var(--ease)}
-.wx-chip:hover,.wx-chip.on{border-color:var(--accent)}
+.wx-chip:hover{border-color:var(--accent)}
 .wx-chip:focus-visible{outline:2.5px solid var(--accent);outline-offset:3px}
-.wx-chip[hidden]{display:none}
 .wx-chip span{font-size:15px;line-height:1}
-.wx-chip.busy span{animation:wx-pulse 1s ease-in-out infinite}
-@keyframes wx-pulse{50%{opacity:.3;transform:scale(.85)}}
-@media(max-width:480px){.wx-chip:not(.on) b{display:none}.wx-chip{padding:0 10px}}
-@media(prefers-reduced-motion:reduce){.wx-chip.busy span{animation:none}}
+@media(max-width:480px){.wx-chip b{display:none}.wx-chip{padding:0 10px}}

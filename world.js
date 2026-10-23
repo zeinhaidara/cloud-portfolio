@@ -3,7 +3,7 @@ import * as THREE from 'three';
 // One 3D world of floating islands, by day and by night. setMode() blends sky, light, clouds,
 // stars and every lantern; the islands themselves never change. Contact lives in the balloon.
 // solo: render one project's island inside a page section (case-study hero) instead of the whole archipelago.
-// setTime() adds the visitor's dawn and dusk glow; setWeather() layers their live sky on top: tinted sky and fog,
+// setTime() adds a dawn or dusk glow; setWeather() layers a weather on top: tinted sky and fog,
 // dimmer sun, and rain, snow, embers or gusts.
 export function createWorld({ canvas, labelsHost, projects, onPick = () => {}, onInteract = () => {}, mode = 'day', solo = null, weather = null, time = null }) {
   const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -25,7 +25,7 @@ export function createWorld({ canvas, labelsHost, projects, onPick = () => {}, o
     sea: [col('#e6eef6'), col('#0e1528')], seaEm: [0.1, 0], seaOp: [0.6, 0.45],
     ring: [col('#f4f8fc'), col('#7f95d6')], ringOp: [0.4, 0.35],
   };
-  /* ---------- live weather: how far each sky pulls the palette, [day, night] colours ----------
+  /* ---------- weather: how far each sky pulls the palette, [day, night] colours ----------
      k: sky tint strength · sun: sun visibility (>1 brighter) · stars · lamps: lanterns on by day · fog: [near, far]
      bow: rainbow · birds: birds and planes · fall: particles · n: particle count · wind: cloud and rain drift */
   const WX = {
@@ -678,7 +678,7 @@ export function createWorld({ canvas, labelsHost, projects, onPick = () => {}, o
   fallLines.frustumCulled = fallDots.frustumCulled = false;
   scene.add(fallLines, fallDots);
   const CALM = { k: 0, sun: 1, stars: 1, lamps: 0, fog: [60, 240], bow: 1, birds: 1, wind: 0 };
-  let wxCur = 'clear', wxNext = 'clear', wk = 0, windy = false, windK = 0, flash = 0, nextFlash = 3, fallN = 0;
+  let wxCur = 'clear', wxNext = 'clear', wk = 0, flash = 0, nextFlash = 3, fallN = 0;
   function setFall() {
     const w = WX[wxCur], type = w && w.fall;
     fallN = type ? Math.round(w.n * (solo ? 0.35 : 1)) : 0;
@@ -693,7 +693,7 @@ export function createWorld({ canvas, labelsHost, projects, onPick = () => {}, o
   function stepFall(dt, e) {
     const w = WX[wxCur];
     if (!fallN || !w) return;
-    const type = w.fall, wind = w.wind + windK * 2, move = reduced ? 0 : dt;
+    const type = w.fall, wind = w.wind, move = reduced ? 0 : dt;
     const B = Math.min(42, Math.max(8, rig.dist * 0.6)), Bh = B * 0.75; // denser around a focused island
     const cx = rig.target.x, cy = rig.target.y + B * 0.2, cz = rig.target.z, lines = fallLines.visible;
     for (let i = 0; i < fallN; i++) {
@@ -719,7 +719,7 @@ export function createWorld({ canvas, labelsHost, projects, onPick = () => {}, o
     m.color.copy(f.day).lerp(f.night, mix);
     m.opacity = f.op * e;
   }
-  if (weather && WX[weather.wx]) { wxCur = wxNext = weather.wx; wk = 1; windy = !!weather.windy; windK = windy ? 1 : 0; }
+  if (WX[weather]) { wxCur = wxNext = weather; wk = 1; }
   setFall();
 
   /* ---------- projects on their orbits ---------- */
@@ -827,7 +827,7 @@ export function createWorld({ canvas, labelsHost, projects, onPick = () => {}, o
   const lerp = (pair, m) => pair[0] + (pair[1] - pair[0]) * m;
   let lit = 0, birdK = 1, sunK = 1, starK = 1, windMul = 1;
   const tc = new THREE.Color(), FLASH = col('#dfe6ff');
-  // Day/night first, then dawn/dusk glow, then the live weather pulls everything toward its own sky by e (0 calm → 1 full weather).
+  // Day/night first, then dawn/dusk glow, then the weather pulls everything toward its own sky by e (0 calm → 1 full weather).
   function applyMix(m) {
     const w = WX[wxCur] || CALM, e = WX[wxCur] ? sstep(0, 1, wk) : 0;
     const pull = (v) => 1 + (v - 1) * e;
@@ -895,7 +895,7 @@ export function createWorld({ canvas, labelsHost, projects, onPick = () => {}, o
     const birds = (1 - sstep(0, 0.6, m)) * fly;
     birdK = birds;
     flocks.forEach((f) => { f.visible = birds > 0.01; });
-    windMul = 1 + w.wind * e * 1.5 + windK * 2;
+    windMul = 1 + w.wind * e * 1.5;
   }
   applyMix(mix);
 
@@ -997,7 +997,6 @@ export function createWorld({ canvas, labelsHost, projects, onPick = () => {}, o
     // weather cross-fade: the old sky eases out, then the new one eases in
     if (wxNext !== wxCur) { wk -= dt / 1.2; if (wk <= 0 || reduced) { wk = 0; wxCur = wxNext; setFall(); } }
     else if (WX[wxCur] && wk < 1) wk = reduced ? 1 : Math.min(1, wk + dt / 2);
-    windK += ((windy ? 1 : 0) - windK) * Math.min(1, dt * 0.8);
     for (const key in glow) glow[key] += (glowGoal[key] - glow[key]) * (reduced ? 1 : Math.min(1, dt * 0.6));
     const wNow = WX[wxCur];
     if (wNow && wNow.flash && !reduced && wk > 0.5) {
@@ -1141,10 +1140,7 @@ export function createWorld({ canvas, labelsHost, projects, onPick = () => {}, o
       glowGoal.dawn = c ? c.dawn : 0;
       glowGoal.dusk = c ? c.dusk : 0;
     },
-    setWeather(s) {
-      wxNext = s && WX[s.wx] ? s.wx : 'clear';
-      windy = !!(s && s.windy);
-    },
+    setWeather(wx) { wxNext = WX[wx] ? wx : 'clear'; },
     pause(p) { paused = !!p; },
     flyTo(id) {
       goal.follow = id && bodies[id] ? id : null;
