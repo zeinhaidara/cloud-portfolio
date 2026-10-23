@@ -3,7 +3,9 @@ import * as THREE from 'three';
 // One 3D world of floating islands, by day and by night. setMode() blends sky, light, clouds,
 // stars and every lantern; the islands themselves never change. Contact lives in the balloon.
 // solo: render one project's island inside a page section (case-study hero) instead of the whole archipelago.
-export function createWorld({ canvas, labelsHost, projects, onPick = () => {}, onInteract = () => {}, mode = 'day', solo = null }) {
+// setTime() adds the visitor's dawn and dusk glow; setWeather() layers their live sky on top: tinted sky and fog,
+// dimmer sun, and rain, snow, embers or gusts.
+export function createWorld({ canvas, labelsHost, projects, onPick = () => {}, onInteract = () => {}, mode = 'day', solo = null, weather = null, time = null }) {
   const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   const renderer = new THREE.WebGLRenderer({ canvas, antialias: true });
   renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
@@ -23,6 +25,29 @@ export function createWorld({ canvas, labelsHost, projects, onPick = () => {}, o
     sea: [col('#e6eef6'), col('#0e1528')], seaEm: [0.1, 0], seaOp: [0.6, 0.45],
     ring: [col('#f4f8fc'), col('#7f95d6')], ringOp: [0.4, 0.35],
   };
+  /* ---------- live weather: how far each sky pulls the palette, [day, night] colours ----------
+     k: sky tint strength · sun: sun visibility (>1 brighter) · stars · lamps: lanterns on by day · fog: [near, far]
+     bow: rainbow · birds: birds and planes · fall: particles · n: particle count · wind: cloud and rain drift */
+  const WX = {
+    clear: null,
+    cloudy: { top: ['#8fa3b8', '#0b0f1a'], hor: ['#c3ccd6', '#1a2133'], cloud: ['#e6ebf0', '#2a3248'], k: 0.6, sun: 0.7, stars: 0.35, lamps: 0, fog: [50, 210], bow: 0, birds: 1, wind: 0.4 },
+    fog: { top: ['#b9c1c9', '#141a26'], hor: ['#d3d8dc', '#1c2230'], cloud: ['#eef1f4', '#2a3045'], k: 0.85, sun: 0.45, stars: 0.1, lamps: 0.4, fog: [14, 85], bow: 0, birds: 0, wind: 0 },
+    rain: { top: ['#6f7f91', '#080c16'], hor: ['#a7b3c0', '#151b2b'], cloud: ['#a3adbb', '#1f2638'], k: 0.8, sun: 0.5, stars: 0, lamps: 0.3, fog: [40, 170], bow: 1, birds: 0, fall: 'rain', n: 2600, wind: 0.6 },
+    storm: { top: ['#4a5263', '#05070d'], hor: ['#7f8899', '#10131f'], cloud: ['#737c8e', '#151a28'], k: 0.9, sun: 0.25, stars: 0, lamps: 0.6, fog: [35, 150], bow: 0, birds: 0, fall: 'rain', n: 4800, wind: 1.6, flash: true },
+    snow: { top: ['#b8c6d4', '#0e1422'], hor: ['#e3e9ef', '#1d2538'], cloud: ['#ffffff', '#2c3550'], k: 0.7, sun: 0.7, stars: 0.2, lamps: 0.25, fog: [38, 170], bow: 0, birds: 0, fall: 'snow', n: 2200, wind: 0.3 },
+    wind: { top: ['#6ea6d4', '#050912'], hor: ['#d6e4ee', '#1b2643'], cloud: ['#f4f7fb', '#1c2540'], k: 0.25, sun: 1, stars: 1, lamps: 0, fog: [60, 240], bow: 0, birds: 1, fall: 'gust', n: 160, wind: 3 },
+    hot: { top: ['#f0a050', '#1c0d0a'], hor: ['#ffd08a', '#4a1f12'], cloud: ['#fff0dc', '#3a2018'], k: 0.88, sun: 1.35, stars: 0.8, lamps: 0, fog: [55, 220], bow: 0, birds: 0.4, fall: 'ember', n: 700, wind: 0.2 },
+  };
+  /* time of day: pink dawn around sunrise; golden hour, sunset and purple twilight around sunset. sun tints sun, halo and light */
+  const TIME = {
+    dawn: { top: ['#9db4dd', '#1d2148'], hor: ['#ffc3a0', '#5e3f63'], cloud: ['#ffe0d2', '#4a4064'], sun: '#ffb27a', k: 0.75 },
+    dusk: { top: ['#7d8fc9', '#1a1a42'], hor: ['#ff9a5a', '#6a3656'], cloud: ['#ffc8a0', '#463a62'], sun: '#ff8a3d', k: 0.85 },
+  };
+  for (const w of [...Object.values(WX), ...Object.values(TIME)]) if (w) ['top', 'hor', 'cloud'].forEach((key) => { w[key] = w[key].map(col); });
+  for (const T of Object.values(TIME)) T.sun = col(T.sun);
+  const glow = { dawn: time ? time.dawn : 0, dusk: time ? time.dusk : 0 }, glowGoal = { ...glow };
+  const FALL = { rain: { day: col('#5f7896'), night: col('#a9c3ea'), op: 0.55 }, gust: { day: col('#9fb2c4'), night: col('#c8d6ee'), op: 0.35 },
+    snow: { day: col('#c3d1e3'), night: col('#e8f0ff'), op: 0.95 }, ember: { day: col('#e2571c'), night: col('#ff8a3d'), op: 0.95 } };
   const glows = []; // materials that light up at night: { mat, max, min }
   const lamps = []; // point lights that switch on at night: { light, max }
   const beams = []; // translucent light beams that appear at night
@@ -67,7 +92,7 @@ export function createWorld({ canvas, labelsHost, projects, onPick = () => {}, o
     g.fillStyle = grd; g.fillRect(0, 0, 128, 128);
     return new THREE.CanvasTexture(c);
   };
-  const orbMat = new THREE.MeshBasicMaterial({ color: P.orb[0].clone() });
+  const orbMat = new THREE.MeshBasicMaterial({ color: P.orb[0].clone(), transparent: true });
   const orb = new THREE.Mesh(new THREE.SphereGeometry(2.6, 40, 40), orbMat);
   scene.add(orb);
   const halo = new THREE.Sprite(new THREE.SpriteMaterial({ map: glowTex(), color: P.halo[0].clone(), blending: THREE.AdditiveBlending, depthWrite: false, fog: false }));
@@ -641,6 +666,62 @@ export function createWorld({ canvas, labelsHost, projects, onPick = () => {}, o
   const fireflies = new THREE.Points(ffGeo, ffMat);
   scene.add(fireflies);
 
+  /* ---------- weather particles: a box of rain, snow, embers or gusts that travels with the camera's target ---------- */
+  const FMAX = 4800, fOff = new Float32Array(FMAX * 3), fSeed = new Float32Array(FMAX);
+  const lineArr = new Float32Array(FMAX * 6), dotArr = new Float32Array(FMAX * 3);
+  const lineGeo = new THREE.BufferGeometry(), dotGeo = new THREE.BufferGeometry();
+  lineGeo.setAttribute('position', new THREE.BufferAttribute(lineArr, 3).setUsage(THREE.DynamicDrawUsage));
+  dotGeo.setAttribute('position', new THREE.BufferAttribute(dotArr, 3).setUsage(THREE.DynamicDrawUsage));
+  const lineMat = new THREE.LineBasicMaterial({ transparent: true, opacity: 0, depthWrite: false });
+  const dotMat = new THREE.PointsMaterial({ map: glowTex(), size: 0.35, transparent: true, opacity: 0, depthWrite: false });
+  const fallLines = new THREE.LineSegments(lineGeo, lineMat), fallDots = new THREE.Points(dotGeo, dotMat);
+  fallLines.frustumCulled = fallDots.frustumCulled = false;
+  scene.add(fallLines, fallDots);
+  const CALM = { k: 0, sun: 1, stars: 1, lamps: 0, fog: [60, 240], bow: 1, birds: 1, wind: 0 };
+  let wxCur = 'clear', wxNext = 'clear', wk = 0, windy = false, windK = 0, flash = 0, nextFlash = 3, fallN = 0;
+  function setFall() {
+    const w = WX[wxCur], type = w && w.fall;
+    fallN = type ? Math.round(w.n * (solo ? 0.35 : 1)) : 0;
+    fallLines.visible = type === 'rain' || type === 'gust';
+    fallDots.visible = type === 'snow' || type === 'ember';
+    for (let i = 0; i < fallN * 3; i++) fOff[i] = rand(-1, 1);
+    for (let i = 0; i < fallN; i++) fSeed[i] = Math.random();
+    lineGeo.setDrawRange(0, fallN * 2);
+    dotGeo.setDrawRange(0, fallN);
+  }
+  const wrap = (v) => (v > 1 ? v - 2 : v < -1 ? v + 2 : v);
+  function stepFall(dt, e) {
+    const w = WX[wxCur];
+    if (!fallN || !w) return;
+    const type = w.fall, wind = w.wind + windK * 2, move = reduced ? 0 : dt;
+    const B = Math.min(42, Math.max(8, rig.dist * 0.6)), Bh = B * 0.75; // denser around a focused island
+    const cx = rig.target.x, cy = rig.target.y + B * 0.2, cz = rig.target.z, lines = fallLines.visible;
+    for (let i = 0; i < fallN; i++) {
+      const s = fSeed[i], j = i * 3;
+      let vx, vy, vz = 0;
+      if (type === 'rain') { vy = -(20 + s * 10); vx = wind * 5; }
+      else if (type === 'snow') { vy = -(1.1 + s * 1.3); vx = wind * 2 + Math.sin(t * 1.3 + s * 20) * 0.7; vz = Math.cos(t * 1.1 + s * 17) * 0.5; }
+      else if (type === 'ember') { vy = 1 + s * 1.8; vx = wind + Math.sin(t * 1.7 + s * 30) * 0.9; vz = Math.cos(t * 1.4 + s * 23) * 0.7; }
+      else { vx = 16 + s * 14 + wind * 3; vy = Math.sin(t * 2 + s * 9) * 0.8; }
+      fOff[j] = wrap(fOff[j] + (vx * move) / B);
+      fOff[j + 1] = wrap(fOff[j + 1] + (vy * move) / Bh);
+      fOff[j + 2] = wrap(fOff[j + 2] + (vz * move) / B);
+      const x = cx + fOff[j] * B, y = cy + fOff[j + 1] * Bh, z = cz + fOff[j + 2] * B;
+      if (lines) {
+        const len = (type === 'rain' ? 0.9 : 3 + s * 4) * (solo ? 0.4 : 1), sp = Math.hypot(vx, vy, vz) || 1, o = i * 6;
+        lineArr[o] = x; lineArr[o + 1] = y; lineArr[o + 2] = z;
+        lineArr[o + 3] = x - (vx / sp) * len; lineArr[o + 4] = y - (vy / sp) * len; lineArr[o + 5] = z - (vz / sp) * len;
+      } else { dotArr[j] = x; dotArr[j + 1] = y; dotArr[j + 2] = z; }
+    }
+    (lines ? lineGeo : dotGeo).attributes.position.needsUpdate = true;
+    dotMat.size = rig.dist * (type === 'ember' ? 0.011 : 0.018) * (solo ? 2 : 1); // flakes keep their on-screen size at any zoom
+    const f = FALL[type], m = lines ? lineMat : dotMat;
+    m.color.copy(f.day).lerp(f.night, mix);
+    m.opacity = f.op * e;
+  }
+  if (weather && WX[weather.wx]) { wxCur = wxNext = weather.wx; wk = 1; windy = !!weather.windy; windK = windy ? 1 : 0; }
+  setFall();
+
   /* ---------- projects on their orbits ---------- */
   const ORBIT = (i) => 8 + i * 5.2;
   const bodies = {}, labels = {}, rings = [], packets = [];
@@ -744,40 +825,77 @@ export function createWorld({ canvas, labelsHost, projects, onPick = () => {}, o
   const ease = (x) => (x < 0.5 ? 4 * x * x * x : 1 - Math.pow(-2 * x + 2, 3) / 2);
   const sstep = (a, b, x) => { const t = Math.min(1, Math.max(0, (x - a) / (b - a))); return t * t * (3 - 2 * t); };
   const lerp = (pair, m) => pair[0] + (pair[1] - pair[0]) * m;
-  let lit = 0, birdK = 1;
+  let lit = 0, birdK = 1, sunK = 1, starK = 1, windMul = 1;
+  const tc = new THREE.Color(), FLASH = col('#dfe6ff');
+  // Day/night first, then dawn/dusk glow, then the live weather pulls everything toward its own sky by e (0 calm → 1 full weather).
   function applyMix(m) {
+    const w = WX[wxCur] || CALM, e = WX[wxCur] ? sstep(0, 1, wk) : 0;
+    const pull = (v) => 1 + (v - 1) * e;
+    const tint = (c, pair, k) => c.lerp(tc.copy(pair[0]).lerp(pair[1], m), k);
+    const hide = (1 - e * w.k) * (1 - m * 0.35); // heavy cloud hides sunrise and sunset; twilight is subtler than golden hour
+    const timeGlow = Object.entries(TIME).map(([key, T]) => [T, glow[key] * hide]).filter(([, g]) => g > 0.01);
     skyU.top.value.copy(P.top[0]).lerp(P.top[1], m);
     skyU.horizon.value.copy(P.horizon[0]).lerp(P.horizon[1], m);
     skyU.bottom.value.copy(P.bottom[0]).lerp(P.bottom[1], m);
     scene.fog.color.copy(P.fog[0]).lerp(P.fog[1], m);
-    const dayK = 1 - sstep(0, 0.6, m);
-    bowMats.forEach((b) => { b.opacity = 0.24 * dayK; });
-    planes.forEach((p) => { p.visible = dayK > 0.02; p.scale.setScalar(Math.max(0.001, dayK)); });
+    for (const [T, g] of timeGlow) {
+      tint(skyU.top.value, T.top, g * T.k * 0.7);
+      tint(skyU.horizon.value, T.hor, g * T.k);
+      tint(skyU.bottom.value, T.hor, g * T.k * (0.65 - 0.35 * m)); // warm by day, only a hint once it is dark
+      tint(scene.fog.color, T.hor, g * T.k * (0.9 - 0.3 * m));
+    }
+    if (e) {
+      tint(skyU.top.value, w.top, e * w.k);
+      tint(skyU.horizon.value, w.hor, e * w.k);
+      tint(skyU.bottom.value, w.hor, e * w.k * 0.6);
+      tint(scene.fog.color, w.hor, e * w.k);
+    }
+    if (flash > 0.01) { skyU.top.value.lerp(FLASH, flash * 0.5); skyU.horizon.value.lerp(FLASH, flash * 0.35); }
+    scene.fog.near = 60 + (w.fog[0] - 60) * e;
+    scene.fog.far = 240 + (w.fog[1] - 240) * e;
+    const dayK = 1 - sstep(0, 0.6, m), fly = pull(w.birds);
+    bowMats.forEach((b) => { b.opacity = 0.24 * dayK * pull(w.bow); });
+    planes.forEach((p) => { p.visible = dayK * fly > 0.02; p.scale.setScalar(Math.max(0.001, dayK * fly)); });
+    sunK = pull(w.sun);
     hemi.color.copy(P.hemiSky[0]).lerp(P.hemiSky[1], m);
     hemi.groundColor.copy(P.hemiGround[0]).lerp(P.hemiGround[1], m);
-    hemi.intensity = lerp(P.hemi, m);
+    hemi.intensity = lerp(P.hemi, m) * pull(0.8 + 0.2 * Math.min(1, w.sun)) + flash * 1.6;
     dir.color.copy(P.dirColor[0]).lerp(P.dirColor[1], m);
-    dir.intensity = lerp(P.dir, m);
+    dir.intensity = lerp(P.dir, m) * sunK;
     core.color.copy(P.core[0]).lerp(P.core[1], m);
     core.intensity = lerp(P.coreI, m);
     orbMat.color.copy(P.orb[0]).lerp(P.orb[1], m);
+    orbMat.opacity = sstep(0.3, 0.8, sunK); // the sun or moon slips behind heavy cloud
     halo.material.color.copy(P.halo[0]).lerp(P.halo[1], m);
     cloudMat.color.copy(P.cloud[0]).lerp(P.cloud[1], m);
+    for (const [T, g] of timeGlow) {
+      const sunG = g * (1 - m * 0.6); // the warm light fades as twilight deepens
+      dir.color.lerp(T.sun, sunG * 0.6);
+      orbMat.color.lerp(T.sun, sunG * 0.5);
+      halo.material.color.lerp(T.sun, sunG * 0.6);
+      tint(cloudMat.color, T.cloud, g * 0.8);
+    }
+    if (e) tint(cloudMat.color, w.cloud, e);
     cloudMat.emissiveIntensity = lerp(P.cloudEm, m);
-    cloudMat.opacity = lerp(P.cloudOp, m);
+    const cOp = lerp(P.cloudOp, m);
+    cloudMat.opacity = cOp + (Math.max(cOp, 0.85) - cOp) * e * w.k;
     seaMat.color.copy(P.sea[0]).lerp(P.sea[1], m);
+    if (e) tint(seaMat.color, w.cloud, e * 0.7);
     seaMat.emissiveIntensity = lerp(P.seaEm, m);
     seaMat.opacity = lerp(P.seaOp, m);
-    starMat.opacity = sstep(0.3, 1, m);
+    starK = pull(w.stars);
+    starMat.opacity = sstep(0.3, 1, m) * starK;
     rings.forEach((r) => { r.material.color.copy(P.ring[0]).lerp(P.ring[1], m); r.material.opacity = lerp(P.ringOp, m); });
-    lit = sstep(0.35, 0.9, m);
+    const night = sstep(0.35, 0.9, m);
+    lit = Math.max(night, w.lamps * e); // dark skies switch the lanterns on, even by day
     glows.forEach((g) => { g.mat.emissiveIntensity = (g.min || 0) + (g.max - (g.min || 0)) * lit; });
     lamps.forEach((l) => { l.light.intensity = l.max * lit; });
     beams.forEach((b) => { b.opacity = 0.1 * lit; });
-    ffMat.opacity = lit * 0.9;
-    const birds = 1 - sstep(0, 0.6, m);
+    ffMat.opacity = night * 0.9 * (w.fall === 'rain' || w.fall === 'snow' ? 1 - e : 1);
+    const birds = (1 - sstep(0, 0.6, m)) * fly;
     birdK = birds;
     flocks.forEach((f) => { f.visible = birds > 0.01; });
+    windMul = 1 + w.wind * e * 1.5 + windK * 2;
   }
   applyMix(mix);
 
@@ -875,8 +993,20 @@ export function createWorld({ canvas, labelsHost, projects, onPick = () => {}, o
       mix = tween.from + (tween.to - tween.from) * ease(x);
       bump = Math.sin(Math.PI * x);
       if (x >= 1) tween.from = tween.to;
-      applyMix(mix);
     }
+    // weather cross-fade: the old sky eases out, then the new one eases in
+    if (wxNext !== wxCur) { wk -= dt / 1.2; if (wk <= 0 || reduced) { wk = 0; wxCur = wxNext; setFall(); } }
+    else if (WX[wxCur] && wk < 1) wk = reduced ? 1 : Math.min(1, wk + dt / 2);
+    windK += ((windy ? 1 : 0) - windK) * Math.min(1, dt * 0.8);
+    for (const key in glow) glow[key] += (glowGoal[key] - glow[key]) * (reduced ? 1 : Math.min(1, dt * 0.6));
+    const wNow = WX[wxCur];
+    if (wNow && wNow.flash && !reduced && wk > 0.5) {
+      nextFlash -= dt;
+      if (nextFlash <= 0) { flash = 1; nextFlash = Math.random() < 0.4 ? 0.18 : rand(4, 10); } // sometimes a quick double strike
+    }
+    flash *= Math.pow(0.004, dt);
+    applyMix(mix);
+    stepFall(dt, wNow ? sstep(0, 1, wk) : 0);
 
     for (const b of Object.values(bodies)) {
       b.place(t, dt);
@@ -894,7 +1024,7 @@ export function createWorld({ canvas, labelsHost, projects, onPick = () => {}, o
     }
     for (const c of clouds) {
       const u = c.userData;
-      if (!reduced) u.a += dt * u.v;
+      if (!reduced) u.a += dt * u.v * windMul;
       c.position.set(Math.cos(u.a) * u.r, u.y + Math.sin(t * 0.3 + u.r) * 0.4, Math.sin(u.a) * u.r);
       let ps = 1;
       if (u.poof >= 0) { // puff up, vanish, then slowly re-form
@@ -945,7 +1075,7 @@ export function createWorld({ canvas, labelsHost, projects, onPick = () => {}, o
     if (mt.life < 1) {
       mt.life += dt / 1.1;
       meteor.position.addScaledVector(mt.v, dt);
-      meteor.material.opacity = Math.sin(Math.PI * Math.min(1, mt.life)) * 0.9 * sstep(0.8, 1, mix);
+      meteor.material.opacity = Math.sin(Math.PI * Math.min(1, mt.life)) * 0.9 * sstep(0.8, 1, mix) * starK;
     } else meteor.material.opacity = 0;
     for (let i = bursts.length - 1; i >= 0; i--) {
       const bu = bursts[i], arr = bu.pts.geometry.attributes.position.array;
@@ -958,11 +1088,12 @@ export function createWorld({ canvas, labelsHost, projects, onPick = () => {}, o
     for (const p of planes) {
       if (!p.visible) continue;
       const u = p.userData;
-      if (!reduced) u.a += dt * u.v;
+      if (!reduced) u.a += dt * u.v * (1 + (windMul - 1) * 0.4);
       p.position.set(Math.cos(u.a) * u.r, u.y + Math.sin(t * 0.8 + u.ph) * 0.8, Math.sin(u.a) * u.r);
       p.rotation.set(Math.sin(t * 0.8 + u.ph) * 0.15, -u.a + (u.v > 0 ? Math.PI : 0), (u.v > 0 ? -1 : 1) * 0.35);
     }
-    halo.material.opacity = (0.62 + 0.23 * mix) + Math.sin(t * 1.5) * 0.06;
+    halo.material.opacity = ((0.62 + 0.23 * mix) + Math.sin(t * 1.5) * 0.06) * Math.min(1, sunK);
+    halo.scale.setScalar(18 * Math.max(1, sunK)); // a scorching sun swells
     if (!reduced) stars.rotation.y += dt * 0.004;
 
     if (goal.follow) tmp.copy(bodies[goal.follow].g.position); else tmp.set(0, solo ? 1.4 : 0, 0);
@@ -1005,6 +1136,14 @@ export function createWorld({ canvas, labelsHost, projects, onPick = () => {}, o
       const to = m === 'night' ? 1 : 0;
       if (to === tween.to && tween.from === tween.to) return;
       tween.from = mix; tween.to = to; tween.start = performance.now();
+    },
+    setTime(c) {
+      glowGoal.dawn = c ? c.dawn : 0;
+      glowGoal.dusk = c ? c.dusk : 0;
+    },
+    setWeather(s) {
+      wxNext = s && WX[s.wx] ? s.wx : 'clear';
+      windy = !!(s && s.windy);
     },
     pause(p) { paused = !!p; },
     flyTo(id) {

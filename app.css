@@ -133,3 +133,14 @@ body[data-mode=night] .swap .n{transition-delay:.35s}body[data-mode=day] .swap .
 }
 @media(max-height:620px) and (min-width:901px){.intro h1{font-size:36px}.intro{bottom:92px}}
 @media(prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition-duration:.01s!important;transition-delay:0s!important}}
+
+/* live sky chip (weather.js) */
+.wx-chip{display:inline-flex;align-items:center;gap:6px;height:34px;padding:0 13px;border:1.5px solid var(--line);border-radius:20px;background:var(--panel-solid,var(--panel));color:inherit;font:inherit;font-size:13px;font-weight:600;cursor:pointer;white-space:nowrap;flex:none;transition:border-color .3s,background-color var(--t) var(--ease)}
+.wx-chip:hover,.wx-chip.on{border-color:var(--accent)}
+.wx-chip:focus-visible{outline:2.5px solid var(--accent);outline-offset:3px}
+.wx-chip[hidden]{display:none}
+.wx-chip span{font-size:15px;line-height:1}
+.wx-chip.busy span{animation:wx-pulse 1s ease-in-out infinite}
+@keyframes wx-pulse{50%{opacity:.3;transform:scale(.85)}}
+@media(max-width:480px){.wx-chip:not(.on) b{display:none}.wx-chip{padding:0 10px}}
+@media(prefers-reduced-motion:reduce){.wx-chip.busy span{animation:none}}

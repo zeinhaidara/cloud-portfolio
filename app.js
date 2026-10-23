@@ -1,4 +1,5 @@
 // Homepage: one 3D world of project islands (world.js) by day and by night. Flat SVG islands are the no-WebGL fallback.
+import { startWeather, autoMode, skyClock } from './weather.js?v=15';
 const PROJECTS = [
   { id: 'orbital', title: 'Orbital Expeditions', sub: 'EKS microservices', color: '#ff8a1f', kind: 'CASE STUDY · AWS EKS',
     blurb: 'A fictional space travel storefront: six microservices on EKS, an event-driven order flow through EventBridge and SQS, Terraform and Helm delivery, and Grafana dashboards.',
@@ -39,7 +40,7 @@ const $ = (id) => document.getElementById(id);
 const NS = 'http://www.w3.org/2000/svg';
 const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
 const body = document.body;
-let focused = null, mode = 'day', world = null, worldLoad = null;
+let focused = null, mode = 'day', world = null, worldLoad = null, manual = false, sky = null;
 const seen = new Set(read());
 
 function read() { try { return JSON.parse(sessionStorage.getItem('zein-seen') || '[]'); } catch { return []; } }
@@ -201,8 +202,8 @@ function marks() {
 // The 3D world (world.js) draws both modes. If WebGL is unavailable, the flat SVG islands are the fallback and night is disabled.
 function loadWorld() {
   if (!worldLoad) {
-    worldLoad = import('./world.js?v=14').then((m) => {
-      world = m.createWorld({ canvas: $('stage'), labelsHost: $('plabels'), projects: PROJECTS, onPick: focus, onInteract: () => body.classList.add('touched'), mode });
+    worldLoad = import('./world.js?v=15').then((m) => {
+      world = m.createWorld({ canvas: $('stage'), labelsHost: $('plabels'), projects: PROJECTS, onPick: focus, onInteract: () => body.classList.add('touched'), mode, weather: sky && sky.state, time: skyClock(sky && sky.state) });
       world.flyTo(focused);
       world.setMarks(focused, seen);
       body.classList.add('gl');
@@ -223,10 +224,10 @@ function loadWorld() {
   return worldLoad;
 }
 
+// Until the visitor flips the switch, day and night follow their real sky (or clock).
 function applyMode(next) {
   mode = next;
   body.dataset.mode = mode;
-  try { sessionStorage.setItem('zein-mode', mode); } catch { /* storage blocked: mode still works on this page */ }
   const t = $('mode');
   t.setAttribute('aria-pressed', String(mode === 'night'));
   t.setAttribute('aria-label', mode === 'night' ? 'Switch to day' : 'Switch to night');
@@ -243,13 +244,17 @@ async function setMode(next) {
   }
   applyMode(next);
   world.setMode(mode);
-  history.replaceState(null, '', mode === 'night' ? '#night' : location.pathname + location.search);
+  if (manual) history.replaceState(null, '', mode === 'night' ? '#night' : location.pathname + location.search);
 }
 
 /* ---------- boot ---------- */
 buildDock();
 marks();
-$('mode').addEventListener('click', () => setMode(mode === 'day' ? 'night' : 'day'));
+$('mode').addEventListener('click', () => {
+  manual = true;
+  try { sessionStorage.setItem('zein-mode', mode === 'day' ? 'night' : 'day'); } catch { /* storage blocked: mode still works on this page */ }
+  setMode(mode === 'day' ? 'night' : 'day');
+});
 $('close').addEventListener('click', overview);
 addEventListener('keydown', (e) => {
   if (e.target.closest && e.target.closest('input,textarea')) return;
@@ -261,7 +266,13 @@ addEventListener('keydown', (e) => {
 const hash = location.hash.slice(1);
 let stored = null;
 try { stored = sessionStorage.getItem('zein-mode'); } catch { /* storage blocked */ }
-if (hash === 'night' || (hash !== 'day' && stored === 'night')) applyMode('night');
+sky = startWeather({ before: $('mode'), onChange: (s) => {
+  if (world) { world.setWeather(s); world.setTime(skyClock(s)); }
+  if (!manual) setMode(autoMode(s));
+} });
+const picked = hash === 'night' || hash === 'day' ? hash : stored === 'night' || stored === 'day' ? stored : null;
+manual = !!picked;
+applyMode(picked || autoMode(sky.state));
 if (PROJECTS.some((p) => p.id === hash)) focus(hash);
 loadWorld();
 requestAnimationFrame(() => body.classList.add('ready'));
