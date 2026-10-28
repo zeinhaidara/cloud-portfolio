@@ -32,8 +32,8 @@ const PROJECTS = [
 // The balloon in the 3D world opens this card; it is not one of the five explorable projects.
 const CONTACT = { id: 'contact', title: 'Hi, I’m Zein', color: '#ff5d6c', kind: 'ABOUT · CONTACT',
   blurb: 'Cloud engineer building secure, observable platforms on AWS, Azure and Google Cloud: infrastructure as code, least-privilege access, and delivery pipelines that say no to bad changes. Always glad to talk about interesting cloud and platform problems.',
-  tags: ['AWS', 'Azure', 'GCP', 'Kubernetes', 'Terraform', 'GitOps', 'Security'], main: ['Email me', 'mailto:zeinhaidara@gmail.com'],
-  src: 'https://github.com/zeinhaidara', note: 'zeinhaidara@gmail.com' };
+  tags: ['AWS', 'Azure', 'GCP', 'Kubernetes', 'Terraform', 'GitOps', 'Security'], main: ['Email me', 'mailto:zeinmoulayehaidara@gmail.com'],
+  src: 'https://github.com/zeinhaidara', note: 'zeinmoulayehaidara@gmail.com' };
 const ALL = [...PROJECTS, CONTACT];
 const $ = (id) => document.getElementById(id);
 const NS = 'http://www.w3.org/2000/svg';
