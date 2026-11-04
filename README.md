@@ -2,7 +2,7 @@
 
 Cloud engineer focused on AWS, Azure, Google Cloud, Kubernetes, and infrastructure automation.
 
-**Portfolio:** https://zeinhaidara.github.io/cloud-portfolio/ · **Contact:** zeinmoulayehaidara@gmail.com · **GitHub:** [@zeinhaidara](https://github.com/zeinhaidara)
+**Portfolio:** https://zeinhaidara.github.io/cloud-portfolio/ · **Contact:** zeinhaidara@gmail.com · **GitHub:** [@zeinhaidara](https://github.com/zeinhaidara)
 
 Each project is built the way production platforms are: infrastructure as code, least-privilege access, automated delivery, and evidence captured from running systems.
 
