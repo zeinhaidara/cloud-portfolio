@@ -1,0 +1,17 @@
+{
+  "name": "cloud-portfolio",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "node scripts/build.mjs",
+    "check": "node scripts/build.mjs --check && node scripts/check-links.mjs && node scripts/model-check.mjs",
+    "check:external": "node scripts/check-links.mjs --external",
+    "test:browser": "node scripts/browser-check.mjs",
+    "test:lighthouse": "node scripts/lighthouse.mjs",
+    "preview": "node scripts/serve.mjs"
+  },
+  "devDependencies": {
+    "lighthouse": "12.8.2",
+    "playwright": "1.56.1"
+  }
+}

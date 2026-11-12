@@ -1,0 +1,132 @@
+{
+  "site": {
+    "title": "Zein · Cloud Engineering Atlas",
+    "owner": "Moulaye Zein Haidara",
+    "short": "Zein",
+    "tagline": "Cloud, DevSecOps and Linux engineering, charted as one island.",
+    "url": "https://zeinhaidara.github.io/cloud-portfolio/",
+    "github": "https://github.com/zeinhaidara",
+    "email": "zeinhaidara@gmail.com"
+  },
+  "tokens": {
+    "light": { "paper": "#f6f1e4", "surface": "#fffaf0", "ink": "#1f2430", "muted": "#4f5666", "line": "#cdc3ab", "sea": "#bfe0e4", "sea2": "#a9d3d9", "outline": "#1f2430" },
+    "dark": { "paper": "#0f141d", "surface": "#18202e", "ink": "#eef0f4", "muted": "#aab3c3", "line": "#2d3749", "sea": "#11283a", "sea2": "#0d2030", "outline": "#05080d" }
+  },
+  "regions": [
+    {
+      "id": "provisioning", "n": 1, "place": "Sunmeadow", "name": "Cloud Infrastructure & Provisioning", "range": [1, 5],
+      "climate": "Sunny meadow", "scene": "meadow", "weather": "petals",
+      "blurb": "Warm light over open ground. Builders raise scaffolding here: networks, roles, hardened hosts and the storage that outlives them.",
+      "seed": [235, 335],
+      "palette": { "sky": "#cfeaf5", "far": "#a8d48f", "land": "#7cc06a", "land2": "#5aa450", "feature": "#e8b04a", "pop": "#e2574c" },
+      "accent": { "light": "#2c6627", "dark": "#9ad67f" }
+    },
+    {
+      "id": "cicd-gitops", "n": 2, "place": "Galefield Plains", "name": "CI/CD & GitOps", "range": [6, 10],
+      "climate": "Windy plains", "scene": "plains", "weather": "wind",
+      "blurb": "The wind never stops, and neither do the windmills. Pipelines, release tags and drift checks turn with it.",
+      "seed": [300, 190],
+      "palette": { "sky": "#d9eef0", "far": "#cfe0a0", "land": "#b9cf78", "land2": "#8fb15a", "feature": "#f3efe2", "pop": "#d9603b" },
+      "accent": { "light": "#48620f", "dark": "#c6dd82" }
+    },
+    {
+      "id": "containers-kubernetes", "n": 3, "place": "Stormhaven Docks", "name": "Containers & Kubernetes", "range": [11, 15],
+      "climate": "Stormy harbor", "scene": "harbor", "weather": "rain",
+      "blurb": "Rain on stacked cargo and a swell against the quay. Charts, controllers and policies keep the containers lashed down.",
+      "seed": [265, 480],
+      "palette": { "sky": "#9fb1c2", "far": "#6f8799", "land": "#55708a", "land2": "#3d566e", "feature": "#e0763a", "pop": "#2f9c95" },
+      "accent": { "light": "#274f6d", "dark": "#8fc1e6" }
+    },
+    {
+      "id": "security-compliance", "n": 4, "place": "Lanternwood", "name": "Security & Compliance", "range": [16, 20],
+      "climate": "Dark forest", "scene": "forest", "weather": "fireflies",
+      "blurb": "Low light under old pines, a fortress in the clearing, fireflies on watch. Keys rotate, buckets close, secrets stay out of Git.",
+      "seed": [470, 205],
+      "palette": { "sky": "#45506b", "far": "#2f4a45", "land": "#24403a", "land2": "#1a3030", "feature": "#8a8f9c", "pop": "#f2d25c" },
+      "accent": { "light": "#27564a", "dark": "#8fd3b6" }
+    },
+    {
+      "id": "observability", "n": 5, "place": "Beacon Highlands", "name": "Monitoring, Observability & Alerting", "range": [21, 25],
+      "climate": "Rainy highlands", "scene": "highlands", "weather": "rain",
+      "blurb": "Lighthouses on wet hills and lightning far off. Metrics, logs and burn-rate alerts are the lamps that stay lit.",
+      "seed": [685, 185],
+      "palette": { "sky": "#a9b8c4", "far": "#8aa39a", "land": "#6f9482", "land2": "#557a6b", "feature": "#f2ede0", "pop": "#f0c64a" },
+      "accent": { "light": "#3a536f", "dark": "#a8c5e2" }
+    },
+    {
+      "id": "automation", "n": 6, "place": "Cogwood Workshop", "name": "Automation & Scripting", "range": [26, 30],
+      "climate": "Quiet forest workshop", "scene": "workshop", "weather": "none",
+      "blurb": "A workshop among the trees where gears keep steady time. Scripts and small tools do the repetitive work.",
+      "seed": [470, 355],
+      "palette": { "sky": "#e3dcc4", "far": "#b7c48f", "land": "#9aae6c", "land2": "#7c9153", "feature": "#b9763f", "pop": "#d8a43a" },
+      "accent": { "light": "#84461a", "dark": "#e3a66b" }
+    },
+    {
+      "id": "finops", "n": 7, "place": "Goldsand Desert", "name": "Cost Optimization & FinOps", "range": [31, 35],
+      "climate": "Scorching desert", "scene": "desert", "weather": "dust",
+      "blurb": "Heat shimmer over dunes and old gold mines. Every grain is counted here.",
+      "seed": [640, 490],
+      "palette": { "sky": "#fbe3b0", "far": "#f0c27a", "land": "#e7ab5a", "land2": "#cf8a3d", "feature": "#8a5a33", "pop": "#f4c531" },
+      "accent": { "light": "#8f430d", "dark": "#f2b866" }
+    },
+    {
+      "id": "networking", "n": 8, "place": "Frostlink Archipelago", "name": "Networking & Connectivity", "range": [36, 40],
+      "climate": "Icy archipelago", "scene": "ice", "weather": "snow",
+      "blurb": "Bridges between frozen islets, snowfall and an aurora overhead. Everything here is about getting across.",
+      "seed": [520, 92],
+      "palette": { "sky": "#d7ecf7", "far": "#b8d8ec", "land": "#eaf5fb", "land2": "#c5e2f1", "feature": "#6f8fb0", "pop": "#57d6b0" },
+      "accent": { "light": "#1c5880", "dark": "#9fd6f5" }
+    },
+    {
+      "id": "reliability", "n": 9, "place": "Mount Failover", "name": "Disaster Recovery & Reliability", "range": [41, 45],
+      "climate": "Volcano beside a calm lake", "scene": "volcano", "weather": "embers",
+      "blurb": "A restless volcano and, right beside it, a lake that never ripples. Recovery lives between the two.",
+      "seed": [815, 335],
+      "palette": { "sky": "#f2d3c3", "far": "#9a6a5c", "land": "#6e5049", "land2": "#57b0b4", "feature": "#e2552d", "pop": "#f4a340" },
+      "accent": { "light": "#9a3119", "dark": "#f39a7c" }
+    },
+    {
+      "id": "advanced", "n": 10, "place": "Clearsky Summit", "name": "Advanced / Cross-Cutting", "range": [46, 50],
+      "climate": "Summit above the clouds", "scene": "summit", "weather": "none",
+      "blurb": "Above the weather, calm and clear. The work up here ties the other regions together.",
+      "seed": [640, 325],
+      "palette": { "sky": "#cfe3fb", "far": "#e9eef7", "land": "#9aa7bd", "land2": "#f8fafd", "feature": "#5d6b84", "pop": "#e2574c" },
+      "accent": { "light": "#384b75", "dark": "#b3c4ec" }
+    }
+  ],
+  "capital": {
+    "id": "capital", "n": 0, "place": "Port Zein", "name": "Capital & Harbor", "range": null,
+    "climate": "Mild harbor town", "scene": "capital", "weather": "none",
+    "blurb": "The harbor town where the larger platforms are moored: multi-service systems that ran on real cloud, plus the site and profile that point to them.",
+    "seed": [440, 540],
+    "palette": { "sky": "#d6ecee", "far": "#a5cfc0", "land": "#e9d7b0", "land2": "#c9b382", "feature": "#c5533d", "pop": "#2f7fa0" },
+    "accent": { "light": "#963623", "dark": "#f0a48f" }
+  },
+  "archive": {
+    "id": "archive", "n": -1, "place": "Driftwood Islet", "name": "Archive", "range": null,
+    "climate": "Quiet islet offshore", "scene": "archive", "weather": "none",
+    "blurb": "A small islet for work that is finished and archived. Read-only, kept for the record.",
+    "seed": [905, 600],
+    "palette": { "sky": "#dedbd2", "far": "#bdb9ac", "land": "#a9a595", "land2": "#8d897a", "feature": "#777363", "pop": "#b08d57" },
+    "accent": { "light": "#57534a", "dark": "#cfc9b6" }
+  },
+  "placement": {
+    "_comment": "Non-Code-Clinic repos. home is where the case study lives; also lists regions that cross-list it, chosen from the project's domain field.",
+    "healthcare-eks-secops": { "home": "capital", "also": ["security-compliance"], "legacy": "healthcare.html", "order": 1 },
+    "aws-retail-microservices-eks": { "home": "capital", "also": ["containers-kubernetes"], "legacy": "orbital.html", "order": 2 },
+    "gcp-ai-log-analyzer": { "home": "capital", "also": ["observability"], "legacy": "gcp.html", "order": 3 },
+    "aws-3-tier-github-actions": { "home": "capital", "also": ["provisioning"], "order": 4 },
+    "azure-aks-referral-platform": { "home": "capital", "also": ["containers-kubernetes"], "order": 5 },
+    "github-actions-oidc-s3-pipeline": { "home": "capital", "also": ["cicd-gitops"], "order": 6 },
+    "cloud-portfolio": { "home": "capital", "also": [], "order": 7 },
+    "zeinhaidara": { "home": "capital", "also": [], "order": 8 },
+    "forest-run-unity-game": { "home": "archive", "also": [], "order": 1 }
+  },
+  "redirects": {
+    "classic.html": "projects.html",
+    "space.html": "index.html",
+    "healthcare.html": "projects/healthcare-eks-secops.html",
+    "gcp.html": "projects/gcp-ai-log-analyzer.html",
+    "orbital.html": "projects/aws-retail-microservices-eks.html"
+  }
+}
