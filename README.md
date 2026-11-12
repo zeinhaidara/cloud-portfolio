@@ -2,7 +2,7 @@
 
 [Explore the island](https://zeinhaidara.github.io/cloud-portfolio/) · [All projects](https://zeinhaidara.github.io/cloud-portfolio/projects.html)
 
-A static, keyboard-accessible island atlas for cloud, DevSecOps and Linux engineering. Vanilla HTML/CSS/JavaScript, inline SVG scenery and small weather canvases. GitHub Pages serves the committed generated output. The site has no runtime dependencies, WebGL, video, audio or external font requests.
+A static cloud engineering portfolio with the original full-screen 3D floating-island style. Regional systems occupy three concentric world orbits; project islands orbit their own regional centers. Three.js 0.160.0 is vendored locally with its MIT license. GitHub Pages serves the committed generated output.
 
 Every public repository has a case study. Validation badges distinguish real cloud execution, CI with mocks, source review and work not run. Historical screenshots do not imply that an environment is still running.
 
@@ -55,11 +55,14 @@ node scripts/check-links.mjs --external
 npm ci
 npx playwright install chromium
 npm run test:browser
+npm run test:world
 npm run test:lighthouse
 ```
 
 Browser checks cover home, a region, a detailed case study and the all-projects list at 375, 768 and 1440 pixels in both themes, search, empty states, theme persistence, keyboard map navigation, legacy fragments, reduced motion and no-JavaScript pages. CHROME_PATH can select an installed Chrome. Lighthouse writes mobile reports to .lighthouse/ and enforces performance 90/accessibility 95 on four pages. Development dependencies serve only these checks.
 
-Theme and calm settings persist when storage is available. Reduced motion disables weather and ambient animation. The build checks text, accent and badge contrast in both themes; Lighthouse checks rendered accessibility. Manual visual inspection complements automation.
+The 3D world has no global time, day/night or weather controls. Each region keeps its own fixed lighting, fictional temperature, terrain, flora, wildlife and local particles simultaneously. The capital opens first; World overview reveals every regional orbit. Temperatures describe the illustrated world, not real weather. Reduced motion freezes ambient movement. The build checks text, accent and badge contrast in both themes; Lighthouse checks rendered accessibility. Manual visual inspection complements automation.
 
 The GCP case study retains the existing teammate credit. Unsupported aggregate security claims were removed; healthcare links its underlying register. Northbridge states the lack of retained deployment/resilience evidence and failing Terraform validation. Renamed repositories use their current URLs.
+
+The WebGL landing page supersedes the former 300 KiB flat-map budget: the build checks a 900 KiB uncompressed budget including the vendored engine. A no-JavaScript/no-WebGL region list remains available, alongside the all-projects page. `src/world3d.js` extends the original renderer; `src/orbital.js` handles regional navigation; `scripts/lib/orbital-home.mjs` generates the homepage and its project data. No wall-clock time or live weather service drives this world.

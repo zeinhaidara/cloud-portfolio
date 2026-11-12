@@ -7,6 +7,7 @@
     "check": "node scripts/build.mjs --check && node scripts/check-links.mjs && node scripts/model-check.mjs",
     "check:external": "node scripts/check-links.mjs --external",
     "test:browser": "node scripts/browser-check.mjs",
+    "test:world": "node scripts/world-check.mjs",
     "test:lighthouse": "node scripts/lighthouse.mjs",
     "preview": "node scripts/serve.mjs"
   },
