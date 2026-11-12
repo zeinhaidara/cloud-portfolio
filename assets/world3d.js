@@ -1021,7 +1021,7 @@ export function createWorld({ canvas, labelsHost, projects, onPick = () => {}, o
   }, { passive: false });
 
   const ray = new THREE.Raycaster(), ndc = new THREE.Vector2();
-  const hits = () => Object.values(bodies).map((b) => b.hit);
+  const hits = () => Object.values(bodies).filter(b=>b.g.visible && !b.id.startsWith('uncharted:')).map((b) => b.hit);
   function cast(e) {
     const rc = canvas.getBoundingClientRect();
     ndc.set(((e.clientX - rc.left) / W) * 2 - 1, -((e.clientY - rc.top) / H) * 2 + 1);
