@@ -19,9 +19,9 @@ try {
     assert.ok(html.includes('projects/31-fixture.html'), path);
     assert.ok(!html.includes('Private sentinel'), path);
   }
-  assert.ok(readFileSync(join(dir, 'index.html'), 'utf8').includes('1 of 5 charted'));
-  const firstLoad = ['index.html', 'assets/site.css', 'assets/site.js', 'assets/fonts/young-serif-latin.woff2'].reduce((n, path) => n + statSync(path).size, 0);
-  assert.ok(firstLoad < 300 * 1024, `Home first load ${firstLoad} bytes exceeds budget`);
+  assert.ok(readFileSync(join(dir, 'index.html'), 'utf8').includes('31-fixture'));
+  const firstLoad = ['index.html', 'assets/orbital.css', 'assets/orbital.js', 'assets/world3d.js', 'assets/vendor/three.module.min.js'].reduce((n, path) => n + statSync(path).size, 0);
+  assert.ok(firstLoad < 900 * 1024, `Home first load ${firstLoad} bytes exceeds budget`);
   console.log(`Passed: new challenge fills every index, private entry excluded; home first load ${(firstLoad / 1024).toFixed(1)} KiB uncompressed excluding images.`);
 } finally {
   // dir is the direct, verified return value of mkdtempSync under the OS temp directory.

@@ -1,3 +1,4 @@
+import { orbitalHome } from './lib/orbital-home.mjs';
 // Static site generator for the island atlas. No dependencies.
 // Reads data/projects.json and data/world.json, writes every page into the repo root.
 //   node scripts/build.mjs
@@ -217,15 +218,7 @@ const emit = (path, html) => out.set(path, html);
 const flagships = projects.filter((p) => p.tier === 'Flagship' && p.home === 'capital').sort((a, b) => a.order - b.order);
 const charted = projects.filter((p) => Number.isInteger(p.challenge_number)).length;
 const totalSlots = regions.reduce((s, r) => s + r.slots.length, 0);
-emit('index.html', page({
-  path: 'index.html', title: site.title, bodyClass: 'home',
-  desc: `${site.owner}: ${projects.length} public cloud, DevSecOps and Linux projects charted as one island. Ten regions, a capital harbor, and an honest validation level on every project.`,
-  crumbs: [['Island', 'index.html']],
-  body: (rel) => `<section class="hero"><p class="eyebrow">Cloud · DevSecOps · Linux</p><h1>One island. <span>Every project on the chart.</span></h1><p class="lede">I am ${esc(site.owner)}. This atlas maps ${projects.length} public repositories: ${flagships.length} platforms that ran on real cloud, and ${charted} of ${totalSlots} planned Code Clinic challenges. Each one says how it was validated.</p><p class="hero-cta"><a class="btn" href="${rel}projects.html">All projects, filterable</a><a class="btn ghost" href="#legend">Region legend</a></p></section>
-<section class="map-section" id="map" aria-labelledby="map-h"><h2 id="map-h" class="vh">Island map</h2><div class="map-wrap">${mapSvg(rel)}<aside class="map-info" id="map-info" aria-live="polite"><p class="mi-eyebrow" id="mi-range">Hover or focus a region</p><p class="mi-title" id="mi-name">The island</p><p id="mi-climate">Ten regions, one capital, one archive islet.</p><p class="mi-count" id="mi-count">${projects.length} projects charted</p></aside></div><p class="map-hint">Regions open their chapters; small dots open individual case studies. Tab through the map, or use the legend below.</p></section>
-<section class="legend-section" id="legend" aria-labelledby="legend-h"><h2 id="legend-h">Legend</h2><p class="sec-intro">Ten Code Clinic regions, five challenges each, plus the capital for larger platforms and an islet for archived work.</p>${legend(rel, null)}</section>
-<section aria-labelledby="cap-h" class="rg-capital"><h2 id="cap-h">Moored in the capital</h2><p class="sec-intro">Multi-service platforms. <a class="tl" href="${rel}${world.capital.href}">Visit ${esc(world.capital.place)}</a> for all of them.</p><div class="cards">${flagships.map((p) => card(p, rel)).join('')}</div></section>`,
-}));
+emit('index.html', orbitalHome({places,projects,site,esc}));
 
 // region pages
 for (const pl of places) {
@@ -312,6 +305,7 @@ const minCss = (c) => c.replace(/\/\*[\s\S]*?\*\//g, '').replace(/\s*\n\s*/g, ''
 const pairs = checkContrast();
 emit('assets/site.css', minCss(paletteCss() + read('src/site.css')) + '\n');
 emit('assets/site.js', read('src/site.js'));
+for (const f of ['orbital.js','orbital.css','world3d.js']) emit('assets/'+f,read('src/'+f));
 
 // ---------------------------------------------------------------- write / freshness check
 const stale = [];

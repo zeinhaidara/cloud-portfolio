@@ -847,13 +847,13 @@
     "visibility": "PUBLIC",
     "name": "cloud-portfolio",
     "title": "Cloud portfolio site",
-    "summary": "Static GitHub Pages portfolio rebuilt as an SVG island atlas with themed regions, generated case studies and a filterable project index.",
+    "summary": "Static GitHub Pages portfolio with a 3D world of regional floating islands, generated case studies and a filterable project index.",
     "domain": "Portfolio",
     "stack": [
       "HTML",
       "CSS",
       "JavaScript",
-      "SVG",
+      "Three.js",
       "Node.js",
       "GitHub Pages"
     ],

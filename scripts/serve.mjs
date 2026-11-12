@@ -13,7 +13,7 @@ export function serve(port = 4173) {
     }
     try {
       let path = resolve(root, '.' + decodeURIComponent(url.pathname.slice('/cloud-portfolio'.length)));
-      if (!path.startsWith(resolve(root) + sep)) throw new Error('Outside root');
+      if (path !== resolve(root) && !path.startsWith(resolve(root) + sep)) throw new Error('Outside root');
       if (statSync(path).isDirectory()) path = resolve(path, 'index.html');
       const mime = { '.html': 'text/html; charset=utf-8', '.css': 'text/css', '.js': 'text/javascript', '.jpg': 'image/jpeg', '.png': 'image/png', '.woff2': 'font/woff2', '.xml': 'application/xml' };
       const headers = { 'Content-Type': mime[extname(path)] || 'text/plain', 'Cache-Control': 'public, max-age=600', Vary: 'Accept-Encoding' };

@@ -19,8 +19,8 @@ try {
     for (const path of pages) {
       await page.goto(base + path); await page.evaluate(() => document.fonts.ready);
       assert.equal(await page.locator('h1').count(), 1, path);
-      if (path === 'index.html') assert.equal(await page.locator('.project-pin').count(), projectCount);
-      assert.equal(await page.locator('html').getAttribute('data-theme'), theme);
+      if (path === 'index.html') {await page.waitForFunction(()=>document.body.classList.contains('gl') || document.body.classList.contains('nogl'));await page.waitForTimeout(1800);assert.equal(await page.locator('[data-region]').count(),12);}
+      if(path!=='index.html') assert.equal(await page.locator('html').getAttribute('data-theme'), theme);
       assert.ok(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1), `Overflow: ${path} ${width} ${theme}`);
       // Render offscreen sections for full-page visual QA; normal browsing renders them on scroll.
       await page.addStyleTag({ content: '*{content-visibility:visible!important}' });
@@ -53,9 +53,7 @@ try {
   await page.waitForURL('**/projects/gcp-ai-log-analyzer.html#application-data-flow');
   assert.equal(await page.locator('#application-data-flow').count(), 1);
   await page.goto(base + 'index.html');
-  await page.locator('.map .cell').first().focus();
-  await page.keyboard.press('Enter');
-  await page.waitForURL('**/regions/provisioning.html');
+  await page.locator('[data-region=provisioning]').focus();await page.keyboard.press('Enter');await page.waitForFunction(()=>!document.getElementById('panel').hidden);assert.equal(await page.locator('#p-title').textContent(),'Sunmeadow');
   await context.close();
   const nojs = await browser.newContext({ javaScriptEnabled: false });
   const staticPage = await nojs.newPage();
