@@ -847,27 +847,26 @@
     "visibility": "PUBLIC",
     "name": "cloud-portfolio",
     "title": "Cloud portfolio site",
-    "summary": "Static GitHub Pages portfolio with a Three.js island homepage and three case studies.",
+    "summary": "Static GitHub Pages portfolio rebuilt as an SVG island atlas with themed regions, generated case studies and a filterable project index.",
     "domain": "Portfolio",
     "stack": [
       "HTML",
       "CSS",
       "JavaScript",
-      "Three.js",
+      "SVG",
+      "Node.js",
       "GitHub Pages"
     ],
     "tier": "Keep",
     "repo_url": "https://github.com/zeinhaidara/cloud-portfolio",
     "demo_url": "https://zeinhaidara.github.io/cloud-portfolio/",
-    "outcome": "Live; all pages and assets return 200.",
-    "status": "Live",
-    "validation_level": "run on real cloud",
-    "known_limitations": [
-      "gcp.html links to a README anchor (#application-data-flow) that does not exist"
-    ],
+    "outcome": "Island build, link checks and responsive browser checks pass locally; publication pending merge.",
+    "status": "Island rebuild awaiting merge; existing portfolio live",
+    "validation_level": "not run (island rebuild not yet deployed; static build and browser checks only)",
+    "known_limitations": [],
     "next_steps": [],
     "archived": false,
-    "last_push": "2026-11-04"
+    "last_push": "2026-11-12"
   },
   {
     "visibility": "PUBLIC",

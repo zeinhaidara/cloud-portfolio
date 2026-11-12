@@ -120,7 +120,11 @@
     if (params.get('q')) { q.value = params.get('q'); var top = document.getElementById('q-top'); if (top) top.value = q.value; }
     if (params.get('region') && sel.region.querySelector('[value="' + params.get('region').replace(/[^\w-]/g, '') + '"]')) sel.region.value = params.get('region');
     form.addEventListener('input', apply); form.addEventListener('submit', function (e) { e.preventDefault(); });
-    form.addEventListener('reset', function () { setTimeout(apply, 0); });
+    form.addEventListener('reset', function (e) {
+      e.preventDefault(); q.value = '';
+      Object.keys(sel).forEach(function (key) { sel[key].value = ''; });
+      apply();
+    });
     document.getElementById('empty-clear').addEventListener('click', function () { form.reset(); });
     apply();
   }

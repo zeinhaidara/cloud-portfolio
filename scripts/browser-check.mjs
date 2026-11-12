@@ -23,6 +23,9 @@ try {
       assert.ok(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1), `Overflow: ${path} ${width} ${theme}`);
       // Render offscreen sections for full-page visual QA; normal browsing renders them on scroll.
       await page.addStyleTag({ content: '*{content-visibility:visible!important}' });
+      await page.evaluate(async () => {
+        await Promise.all([...document.images].map(async (img) => { img.loading = 'eager'; try { await img.decode(); } catch {} }));
+      });
       await page.screenshot({ path: `memory/screenshots/${path.replaceAll('/', '-')}-${width}-${theme}.png`, fullPage: true });
       results.push({ path, width, theme, overflow: false });
     }
