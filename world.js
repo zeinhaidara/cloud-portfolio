@@ -1,8 +1,6 @@
-import * as THREE from './vendor/three.module.min.js';
+import * as THREE from 'three';
 
-// Regional floating-island world restored from the original renderer. Fixed space backdrop; local climates.
-// Legacy palette helpers initialize the backdrop; no global time or weather setters are exposed.
-//
+// One 3D world of floating islands, by day and by night. setMode() blends sky, light, clouds,
 // stars and every lantern; the islands themselves never change. Contact lives in the balloon.
 // solo: render one project's island inside a page section (case-study hero) instead of the whole archipelago.
 // setTime() adds a dawn or dusk glow; setWeather() layers a weather on top: tinted sky and fog,
@@ -10,7 +8,7 @@ import * as THREE from './vendor/three.module.min.js';
 export function createWorld({ canvas, labelsHost, projects, onPick = () => {}, onInteract = () => {}, mode = 'day', solo = null, weather = null, time = null }) {
   const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   const renderer = new THREE.WebGLRenderer({ canvas, antialias: true });
-  renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 1.5));
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
   const scene = new THREE.Scene();
   const camera = new THREE.PerspectiveCamera(50, 1, 0.1, 900);
   const col = (c) => new THREE.Color(c);
@@ -172,7 +170,7 @@ export function createWorld({ canvas, labelsHost, projects, onPick = () => {}, o
     city: { top: '#cfd5df', lip: '#aeb6c4', rock: '#8a6c52', rock2: '#6e5440' },
     volcanic: { top: '#4b3c3c', lip: '#3a2e2e', rock: '#2e2626', rock2: '#5a3a2e' },
     tropical: { top: '#8fe06a', lip: '#ecd59a', rock: '#a8743f', rock2: '#8b5a2b' },
-    forest: { top: '#244a3d', lip: '#19362e', rock: '#38434c', rock2: '#232a37' },
+    forest: { top: '#5fbf55', lip: '#479c40', rock: '#8b6a45', rock2: '#6e5236' },
     rocky: { top: '#a2a6ae', lip: '#8a8e97', rock: '#6f737c', rock2: '#575b63' },
     ice: { top: '#e6f4ff', lip: '#bfe2ff', rock: '#9cc7ea', rock2: '#7aaed8' },
     village: { top: '#9bd77a', lip: '#7cbf5c', rock: '#a8743f', rock2: '#8b5a2b' },
@@ -576,9 +574,9 @@ export function createWorld({ canvas, labelsHost, projects, onPick = () => {}, o
     isl.add(rockBase(s, R, H, climate));
     const top = new THREE.Group();
     top.position.y = H / 2;
-    if (!p.uncharted) top.add(BUILD[p.island.b](p.color, s, anim));
-    if (p.hub) decorate(climate, s, R, top, anim, p.color);
-    const lp = lantern(s, false);
+    top.add(BUILD[p.island.b](p.color, s, anim));
+    decorate(climate, s, R, top, anim, p.color);
+    const lp = lantern(s, true);
     lp.position.set(Math.cos(4.2) * R * 0.75, 0, Math.sin(4.2) * R * 0.75);
     top.add(lp);
     isl.add(top);
@@ -588,7 +586,7 @@ export function createWorld({ canvas, labelsHost, projects, onPick = () => {}, o
 
   /* ---------- decorative islets around the edge ---------- */
   const islets = [];
-  const ISLET_CLIMATES = true ? [] : solo ? ['forest', 'ice', 'village', 'rainy', 'rocky'] : ['forest', 'rocky', 'ice', 'village', 'rainy', 'tropical', 'forest', 'village', 'rocky'];
+  const ISLET_CLIMATES = solo ? ['forest', 'ice', 'village', 'rainy', 'rocky'] : ['forest', 'rocky', 'ice', 'village', 'rainy', 'tropical', 'forest', 'village', 'rocky'];
   ISLET_CLIMATES.forEach((climate, i) => {
     const s = rand(0.6, 1.05), R = 1.55 * s, H = 0.4 * s, anim = [];
     const g = new THREE.Group();
@@ -725,20 +723,13 @@ export function createWorld({ canvas, labelsHost, projects, onPick = () => {}, o
   setFall();
 
   /* ---------- projects on their orbits ---------- */
-  const centers = {};
-  projects.filter(p=>p.hub).forEach(p=>{
-    const i=p.index, ring=i===0?0:i<=4?32:i<=8?64:94;
-    const a=i===0?0:((i-1)%4)/4*Math.PI*2+(i>4?.6:0);
-    centers[p.region]=new THREE.Vector3(Math.cos(a)*ring, i===10?8:0, Math.sin(a)*ring);
-  });
-  const ORBIT = (i) => [32,64,94][i%3];
+  const ORBIT = (i) => 8 + i * 5.2;
   const bodies = {}, labels = {}, rings = [], packets = [];
   function addLabel(id, title, color, extraClass) {
-    const l = document.createElement('button');
-    l.type='button';
+    const l = document.createElement('div');
     l.className = 'plabel' + (extraClass ? ' ' + extraClass : '');
     l.style.setProperty('--c', color);
-    const dot=document.createElement('i');const text=document.createTextNode(title);l.append(dot,text);
+    l.innerHTML = '<i></i>' + title + '<b class="check" aria-hidden="true"></b>';
     l.addEventListener('click', () => onPick(id));
     l.addEventListener('pointerenter', () => { hovered = id; });
     l.addEventListener('pointerleave', () => { if (hovered === id) hovered = null; });
@@ -746,18 +737,18 @@ export function createWorld({ canvas, labelsHost, projects, onPick = () => {}, o
     labels[id] = l;
   }
   projects.forEach((p, idx) => {
-    const q = p.planet, orbit = p.hub ? 0 : 12 + (p.slot%2)*2, s = 1.5 * q.size, colHex = col(p.color).getHex();
+    const q = p.planet, orbit = solo ? 0 : ORBIT(idx), s = 1.5 * q.size, colHex = col(p.color).getHex();
     const ring = new THREE.Mesh(new THREE.RingGeometry(orbit - 0.05, orbit + 0.05, 200), new THREE.MeshBasicMaterial({ color: P.ring[0].clone(), side: THREE.DoubleSide, transparent: true, opacity: P.ringOp[0], fog: false }));
     ring.rotation.x = Math.PI / 2;
     ring.position.y = -1.2;
-    if (!solo && !p.hub && p.slot===0) { ring.position.add(centers[p.region]);scene.add(ring); }
+    if (!solo) scene.add(ring);
     rings.push(ring);
 
     const pm = new THREE.MeshStandardMaterial({ color: colHex, emissive: colHex, emissiveIntensity: 0.35, roughness: 0.4 });
     glows.push({ mat: pm, max: 1.4, min: 0.35 });
     const packet = new THREE.Mesh(new THREE.BoxGeometry(0.5, 0.5, 0.5), pm);
     packet.userData = { orbit, a: q.phase + Math.PI * 0.9, v: q.speed * 2.4 };
-    // Regional orbital rings stay centered on their own archipelago.
+    if (!solo) { scene.add(packet); packets.push(packet); }
 
     const g = new THREE.Group();
     const anim = [];
@@ -768,63 +759,11 @@ export function createWorld({ canvas, labelsHost, projects, onPick = () => {}, o
     hit.userData.id = p.id;
     g.add(hit);
     scene.add(g);
-    const dark=p.region==='security-compliance', storm=['containers-kubernetes','observability'].includes(p.region);
-    island.traverse(o=>{if(o.isMesh && o.material?.isMeshStandardMaterial){const m=o.material.clone();m.color.multiplyScalar(dark?.48:storm?.8:1.1);m.emissive.copy(m.color);m.emissiveIntensity=dark?.08:storm?.2:.55;o.material=m;}});
-    if(p.uncharted)island.traverse(o=>{if(o.isMesh){o.material.transparent=true;o.material.opacity=.28;}});
-    bodies[p.id] = { id: p.id, region:p.region, hub:p.hub, g, island, hit, anim, s, lift: s * 2.9 + 0.6, focus: p.hub ? 43 : 9 + s * 3.2, hover: 0,
-      place(t, dt) { if (!reduced) this.angle += dt * q.speed * 0.6; this.g.position.copy(centers[p.region]);this.g.position.x+=Math.cos(this.angle)*orbit;this.g.position.z+=Math.sin(this.angle)*orbit;if(!reduced)this.g.position.y+=Math.sin(t*.9+idx)*.3; },
+    bodies[p.id] = { id: p.id, g, island, hit, anim, s, lift: s * 2.9 + 0.6, focus: 9 + s * 3.2, hover: 0,
+      place(t, dt) { if (!reduced) this.angle += dt * q.speed * 0.6; this.g.position.set(Math.cos(this.angle) * orbit, Math.sin(t * 0.9 + idx * 1.3) * 0.3, Math.sin(this.angle) * orbit); },
       angle: q.phase };
-    if (!solo && !p.uncharted) addLabel(p.id, p.title, p.color, p.hub?'region-label':'project-label');
+    if (!solo) addLabel(p.id, p.title, p.color);
   });
-
-
-  const regionalEffects=[];
-  for(const p of projects.filter(p=>p.hub)) {
-    const center=centers[p.region], root=new THREE.Group();root.position.copy(center);scene.add(root);
-    const anim=[], s=1;
-    // Low-poly wildlife inhabits the region rather than following the visitor.
-    const cold=p.region==='networking'||p.region==='advanced';
-    const desert=p.region==='finops';
-    for(let i=0;i<3;i++) {
-      const animal=new THREE.Group(), coat=flat(cold?'#f0f6ff':desert?'#b6a16a':p.region==='security-compliance'?'#b28766':'#ead8bd');
-      const body=new THREE.Mesh(new THREE.IcosahedronGeometry(.32,0),coat);body.scale.set(1.4,.7,.7);
-      const head=new THREE.Mesh(new THREE.IcosahedronGeometry(.21,0),coat);head.position.set(.4,.16,0);
-      animal.add(body,head);
-      for(let k=0;k<4;k++){const leg=new THREE.Mesh(new THREE.BoxGeometry(.06,.25,.06),coat);leg.position.set(k<2?-.22:.22,-.22,k%2?-.14:.14);animal.add(leg);}
-      if(!desert)for(const z of [-.12,.12]){const ear=new THREE.Mesh(new THREE.ConeGeometry(.08,.3,4),coat);ear.position.set(.42,.4,z);animal.add(ear);}
-      animal.position.set(Math.cos(i*2.1)*4,.8,Math.sin(i*2.1)*4);animal.scale.setScalar(1.6);root.add(animal);
-      anim.push(t=>{animal.rotation.y=Math.sin(t*.3+i)*.4;animal.position.y=.8+Math.abs(Math.sin(t+i))*.08;});
-    }
-    if(p.region==='security-compliance') {
-      const trees=new THREE.Group();decorate('castle',1.4,4,trees,anim,p.color);root.add(trees);
-    }
-    if(p.region==='containers-kubernetes') {
-      for(let i=0;i<5;i++){const cargo=new THREE.Mesh(new THREE.BoxGeometry(1.4,.7,.7),flat(i%2?'#dd7849':'#338b9c'));cargo.position.set((i%3)*1.5-2,.6+Math.floor(i/3)*.8,-2);root.add(cargo);}
-      const water=new THREE.Mesh(new THREE.CylinderGeometry(5.8,5.8,.15,32),flat('#2b6788',{transparent:true,opacity:.65}));water.position.y=-.5;root.add(water);
-    }
-    if(p.region==='cicd-gitops') {
-      const pole=new THREE.Mesh(new THREE.CylinderGeometry(.18,.4,3,6),flat('#eee4cc'));pole.position.set(3,2,0);root.add(pole);
-      const blades=new THREE.Group();blades.position.set(3,3.5,.3);for(const a of [0,Math.PI/2]){const b=new THREE.Mesh(new THREE.BoxGeometry(3,.18,.1),flat('#fff8df'));b.rotation.z=a;blades.add(b);}root.add(blades);anim.push(t=>blades.rotation.z=t*.6);
-    }
-    const kind=['containers-kubernetes','observability'].includes(p.region)?'rain':p.region==='networking'?'snow':p.region==='security-compliance'?'fireflies':p.region==='finops'?'dust':p.region==='reliability'?'embers':null;
-    if(kind) {
-      const n=kind==='rain'?200:80, positions=new Float32Array(n*3), seed=[];
-      for(let i=0;i<n;i++){seed.push([rand(-16,16),rand(0,12),rand(-16,16)]);positions.set(seed[i],i*3);}
-      const geo=new THREE.BufferGeometry();geo.setAttribute('position',new THREE.BufferAttribute(positions,3));
-      const mat=new THREE.PointsMaterial({color:kind==='fireflies'?0xffe88a:kind==='embers'?0xff713c:kind==='dust'?0xeec481:0xc9e8ff,size:kind==='snow'?.18:.12,transparent:true,opacity:.75,depthWrite:false});
-      const particles=new THREE.Points(geo,mat);root.add(particles);
-      anim.push(t=>{for(let i=0;i<n;i++){positions[i*3]=seed[i][0]+Math.sin(t+i)*.35;positions[i*3+1]=kind==='fireflies'?2+Math.sin(t+i)*2:((seed[i][1]+t*(kind==='rain'?-10:kind==='embers'?2:-.7))%12+12)%12;}geo.attributes.position.needsUpdate=true;});
-      if(kind==='rain'){const cloud=raincloud(4,anim);cloud.position.y=10;root.add(cloud);}
-    }
-    if(p.region==='networking') {
-      const aurora=new THREE.Mesh(new THREE.TorusGeometry(6,.24,4,32,Math.PI),new THREE.MeshBasicMaterial({color:0x66e9bc,transparent:true,opacity:.45}));aurora.position.y=5;root.add(aurora);anim.push(t=>{aurora.material.opacity=.3+Math.sin(t*.4)*.12;aurora.lookAt(camera.position);});
-    }
-    if(p.region==='reliability'){const lake=new THREE.Mesh(new THREE.CylinderGeometry(1.3,1.3,.08,24),flat('#60bfd0',{emissive:0x267b94,emissiveIntensity:.4,roughness:.1}));lake.position.set(2,.65,1);root.add(lake);}
-    if(p.region==='containers-kubernetes'||p.region==='observability'){const bolt=new THREE.Mesh(new THREE.ConeGeometry(.35,3,3),new THREE.MeshBasicMaterial({color:0xfff4c6}));bolt.position.set(-2,7,0);root.add(bolt);anim.push(t=>bolt.visible=t%14<.12);}
-    regionalEffects.push({root,anim});
-  }
-  // Concentric world orbits contain separate regional systems.
-  for(const radius of [32,64,94]){const orbit=new THREE.Mesh(new THREE.RingGeometry(radius-.04,radius+.04,192),new THREE.MeshBasicMaterial({color:0x8aaed0,side:THREE.DoubleSide,transparent:true,opacity:.2}));orbit.rotation.x=-Math.PI/2;orbit.position.y=-3;scene.add(orbit);}
 
   /* ---------- the "Say hi" balloon ---------- */
   if (!solo) {
@@ -961,7 +900,7 @@ export function createWorld({ canvas, labelsHost, projects, onPick = () => {}, o
   applyMix(mix);
 
   /* ---------- camera rig ---------- */
-  const FAR = 230;
+  const FAR = 170;
   let HOME = 54;
   const rig = { yaw: -1.58, // opens looking through the widest gap between islands
     pitch: 0.95, dist: FAR, target: new THREE.Vector3(), off: 0, offY: 0, px: 0, py: 0 };
@@ -973,7 +912,7 @@ export function createWorld({ canvas, labelsHost, projects, onPick = () => {}, o
     renderer.setSize(W, H, false);
     camera.aspect = W / H;
     camera.fov = solo ? 40 : W / H < 0.9 ? 64 : 50; // phones: wider lens and a step back so every island fits
-    HOME = solo ? (W / H < 0.9 ? 20 : 15) : W / H < 0.9 ? 310 : 225;
+    HOME = solo ? (W / H < 0.9 ? 20 : 15) : W / H < 0.9 ? 74 : 62;
     if (!goal.follow) goal.dist = HOME;
     camera.updateProjectionMatrix();
   }
@@ -1016,12 +955,12 @@ export function createWorld({ canvas, labelsHost, projects, onPick = () => {}, o
   if (!solo) canvas.addEventListener('wheel', (e) => {
     e.preventDefault();
     interact();
-    const lim = goal.follow ? [10, 95] : [45, 350];
+    const lim = goal.follow ? [8, 30] : [22, 100];
     goal.dist = Math.min(lim[1], Math.max(lim[0], goal.dist * (1 + Math.sign(e.deltaY) * 0.08)));
   }, { passive: false });
 
   const ray = new THREE.Raycaster(), ndc = new THREE.Vector2();
-  const hits = () => Object.values(bodies).filter(b=>b.g.visible && !b.id.startsWith('uncharted:')).map((b) => b.hit);
+  const hits = () => Object.values(bodies).map((b) => b.hit);
   function cast(e) {
     const rc = canvas.getBoundingClientRect();
     ndc.set(((e.clientX - rc.left) / W) * 2 - 1, -((e.clientY - rc.top) / H) * 2 + 1);
@@ -1046,7 +985,7 @@ export function createWorld({ canvas, labelsHost, projects, onPick = () => {}, o
     if (paused) { clock.getDelta(); requestAnimationFrame(frame); return; }
     const dt = Math.min(clock.getDelta(), 0.05);
     const k = reduced ? 1 : 1 - Math.pow(0.0015, dt);
-    if (!reduced) t += dt;
+    t += dt;
 
     let bump = 0;
     if (tween.from !== tween.to) {
@@ -1066,17 +1005,14 @@ export function createWorld({ canvas, labelsHost, projects, onPick = () => {}, o
     }
     flash *= Math.pow(0.004, dt);
     applyMix(mix);
-    if(!reduced)regionalEffects.forEach(e=>e.anim.forEach(fn=>fn(t)));
     stepFall(dt, wNow ? sstep(0, 1, wk) : 0);
 
     for (const b of Object.values(bodies)) {
       b.place(t, dt);
-      b.g.visible = !goal.follow || !b.region || b.region===bodies[goal.follow]?.region;
-      if(b.region && b.island.children[1]) b.island.children[1].visible = !!b.hub || (!!goal.follow && bodies[goal.follow]?.region===b.region);
       b.hover += ((hovered === b.id ? 1 : 0) - b.hover) * Math.min(1, dt * 10);
       b.island.scale.setScalar(1 + 0.07 * b.hover);
       b.g.position.y += 0.5 * b.hover;
-      if (!reduced) b.anim.forEach((fn) => fn(t, dt, camera));
+      b.anim.forEach((fn) => fn(t, dt, camera));
       if (labels[b.id]) labels[b.id].classList.toggle('hot', hovered === b.id);
     }
     for (const pk of packets) {
@@ -1097,7 +1033,7 @@ export function createWorld({ canvas, labelsHost, projects, onPick = () => {}, o
       }
       c.scale.setScalar(Math.max(0.001, u.s * ps * sstep(14, 30, c.position.distanceTo(camera.position)))); // never fill the lens
     }
-    if(!reduced) sea.rotation.y += dt * 0.003;
+    sea.rotation.y += dt * 0.003;
     for (const g of islets) {
       const u = g.userData;
       if (!reduced) u.a += dt * u.v;
@@ -1186,23 +1122,25 @@ export function createWorld({ canvas, labelsHost, projects, onPick = () => {}, o
       tmp.project(camera);
       const l = labels[b.id];
       if (!l) continue;
-      const p=projects.find(p=>p.id===b.id);
-      const local=goal.follow && p?.region===projects.find(p=>p.id===goal.follow)?.region;
-      const show=!p || (p.hub ? !goal.follow || local : local);
-      l.style.visibility = show && tmp.z<1 && tmp.x>-1 && tmp.x<1 && tmp.y>-1 && tmp.y<1 ? 'visible' : 'hidden';
+      l.style.visibility = tmp.z < 1 ? 'visible' : 'hidden';
       l.style.transform = 'translate(' + ((tmp.x * 0.5 + 0.5) * W) + 'px,' + ((-tmp.y * 0.5 + 0.5) * H - 10) + 'px) translate(-50%,-100%)';
     }
-    regionalEffects.forEach(e=>e.root.visible=!goal.follow || e.root.position.distanceTo(centers[bodies[goal.follow]?.region] || rig.target)<1);
-    clouds.forEach(c=>c.visible=false);sea.visible=false;fireflies.visible=false;orb.visible=false;halo.visible=false;
-    if(bodies.contact && goal.follow)bodies.contact.g.visible=bodies.contact.g.position.distanceTo(camera.position)>26;
-    starMat.size=.18;
-    scene.fog.near=280;scene.fog.far=700;
     renderer.render(scene, camera);
     requestAnimationFrame(frame);
   }
   requestAnimationFrame(frame);
 
   return {
+    setMode(m) {
+      const to = m === 'night' ? 1 : 0;
+      if (to === tween.to && tween.from === tween.to) return;
+      tween.from = mix; tween.to = to; tween.start = performance.now();
+    },
+    setTime(c) {
+      glowGoal.dawn = c ? c.dawn : 0;
+      glowGoal.dusk = c ? c.dusk : 0;
+    },
+    setWeather(wx) { wxNext = WX[wx] ? wx : 'clear'; },
     pause(p) { paused = !!p; },
     flyTo(id) {
       goal.follow = id && bodies[id] ? id : null;
@@ -1211,7 +1149,7 @@ export function createWorld({ canvas, labelsHost, projects, onPick = () => {}, o
     setMarks(focused, seen) {
       for (const id in labels) {
         labels[id].classList.toggle('seen', seen.has(id));
-        labels[id].classList.remove('dim');
+        labels[id].classList.toggle('dim', !!focused && focused !== id);
       }
     },
     celebrate(colors) {
