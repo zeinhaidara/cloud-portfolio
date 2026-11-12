@@ -97,6 +97,11 @@ main>section,.study>section,.study>.legacy{margin-top:44px}
 .m-compass .m-compass-e{fill:var(--muted)}
 .m-compass text{font:600 13px ui-monospace,monospace;fill:var(--ink)}
 .cell{cursor:pointer;text-decoration:none}
+.project-pin .pin-hit{fill:transparent}
+.project-pin .pin-dot{fill:var(--surface);stroke:var(--outline);stroke-width:2}
+.project-pin:hover .pin-dot,.project-pin:focus-visible .pin-dot{fill:var(--accent);stroke:var(--paper);stroke-width:3}
+.project-pin:focus-visible{outline:none}
+.project-pin:focus-visible .pin-hit{stroke:var(--ink);stroke-width:2}
 .cell-shape{fill:var(--c-land);stroke:var(--outline);stroke-width:1.6;stroke-dasharray:2 6;stroke-linejoin:round;transition:fill .15s}
 .rg-archive .cell-shape{stroke-dasharray:none;stroke-width:3}
 .cell.is-uncharted .cell-shape{fill:color-mix(in srgb,var(--c-land) 55%,var(--paper))}

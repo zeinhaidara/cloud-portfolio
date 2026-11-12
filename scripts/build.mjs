@@ -135,8 +135,13 @@ function mapSvg(rel, { mini = false, current = null } = {}) {
   const coastPath = `<path class="m-shore" d="${smoothPath(coast)}"/><path class="m-coast" d="${smoothPath(coast)}"/>`;
   const ice = floes.map((f) => `<path class="rg-networking m-floe" d="${smoothPath(f)}"/>`).join('');
   const hereDot = mini && current ? `<circle class="mm-dot" cx="${r1(placeById[current].center[0])}" cy="${r1(placeById[current].center[1])}" r="26"/>` : '';
+  const projectPins = mini ? '' : places.map((pl) => pl.projects.map((p, i) => {
+    const x = pl.center[0] + (pl.id === 'security-compliance' ? -60 : pl.id === 'archive' ? -30 : (i - (pl.projects.length - 1) / 2) * 22);
+    const y = pl.center[1] + (pl.id === 'security-compliance' ? (i - 2) * 22 : pl.id === 'archive' ? 0 : -48);
+    return `<a class="project-pin rg-${pl.id}" href="${rel}${p.href}" aria-label="${esc(p.title)}: ${esc(p.val.label)}"><title>${esc(p.title)} · ${esc(p.val.label)}</title><circle class="pin-hit" cx="${r1(x)}" cy="${r1(y)}" r="11"/><circle class="pin-dot" cx="${r1(x)}" cy="${r1(y)}" r="5"/></a>`;
+  }).join('')).join('');
   const label = mini ? '' : ` role="group" aria-label="Map of the island: ten regions, the capital harbor and the archive islet. Each region is a link."`;
-  return `<svg class="${mini ? 'minimap' : 'map'}" viewBox="0 0 ${VIEW.w} ${VIEW.h}"${mini ? ' aria-hidden="true" focusable="false"' : label}>${sea}${swells}${compass}${mini ? '' : `<path class="m-shore" d="${smoothPath(world.archive.poly)}"/>`}${ice}<path class="m-under" d="${smoothPath(coast)}"/>${[...mainland, world.archive].map(cell).join('')}${mini ? '' : coastPath}${hereDot}</svg>`;
+  return `<svg class="${mini ? 'minimap' : 'map'}" viewBox="0 0 ${VIEW.w} ${VIEW.h}"${mini ? ' aria-hidden="true" focusable="false"' : label}>${sea}${swells}${compass}${mini ? '' : `<path class="m-shore" d="${smoothPath(world.archive.poly)}"/>`}${ice}<path class="m-under" d="${smoothPath(coast)}"/>${[...mainland, world.archive].map(cell).join('')}${mini ? '' : coastPath}${projectPins}${hereDot}</svg>`;
 }
 
 // ---------------------------------------------------------------- shared markup
@@ -217,7 +222,7 @@ emit('index.html', page({
   desc: `${site.owner}: ${projects.length} public cloud, DevSecOps and Linux projects charted as one island. Ten regions, a capital harbor, and an honest validation level on every project.`,
   crumbs: [['Island', 'index.html']],
   body: (rel) => `<section class="hero"><p class="eyebrow">Cloud · DevSecOps · Linux</p><h1>One island. <span>Every project on the chart.</span></h1><p class="lede">I am ${esc(site.owner)}. This atlas maps ${projects.length} public repositories: ${flagships.length} platforms that ran on real cloud, and ${charted} of ${totalSlots} planned Code Clinic challenges. Each one says how it was validated.</p><p class="hero-cta"><a class="btn" href="${rel}projects.html">All projects, filterable</a><a class="btn ghost" href="#legend">Region legend</a></p></section>
-<section class="map-section" id="map" aria-labelledby="map-h"><h2 id="map-h" class="vh">Island map</h2><div class="map-wrap">${mapSvg(rel)}<aside class="map-info" id="map-info" aria-live="polite"><p class="mi-eyebrow" id="mi-range">Hover or focus a region</p><p class="mi-title" id="mi-name">The island</p><p id="mi-climate">Ten regions, one capital, one archive islet.</p><p class="mi-count" id="mi-count">${projects.length} projects charted</p></aside></div><p class="map-hint">Each region is a link. Tab through the map, or use the legend below.</p></section>
+<section class="map-section" id="map" aria-labelledby="map-h"><h2 id="map-h" class="vh">Island map</h2><div class="map-wrap">${mapSvg(rel)}<aside class="map-info" id="map-info" aria-live="polite"><p class="mi-eyebrow" id="mi-range">Hover or focus a region</p><p class="mi-title" id="mi-name">The island</p><p id="mi-climate">Ten regions, one capital, one archive islet.</p><p class="mi-count" id="mi-count">${projects.length} projects charted</p></aside></div><p class="map-hint">Regions open their chapters; small dots open individual case studies. Tab through the map, or use the legend below.</p></section>
 <section class="legend-section" id="legend" aria-labelledby="legend-h"><h2 id="legend-h">Legend</h2><p class="sec-intro">Ten Code Clinic regions, five challenges each, plus the capital for larger platforms and an islet for archived work.</p>${legend(rel, null)}</section>
 <section aria-labelledby="cap-h" class="rg-capital"><h2 id="cap-h">Moored in the capital</h2><p class="sec-intro">Multi-service platforms. <a class="tl" href="${rel}${world.capital.href}">Visit ${esc(world.capital.place)}</a> for all of them.</p><div class="cards">${flagships.map((p) => card(p, rel)).join('')}</div></section>`,
 }));

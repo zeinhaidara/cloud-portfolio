@@ -19,6 +19,7 @@ try {
     for (const path of pages) {
       await page.goto(base + path); await page.evaluate(() => document.fonts.ready);
       assert.equal(await page.locator('h1').count(), 1, path);
+      if (path === 'index.html') assert.equal(await page.locator('.project-pin').count(), projectCount);
       assert.equal(await page.locator('html').getAttribute('data-theme'), theme);
       assert.ok(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1), `Overflow: ${path} ${width} ${theme}`);
       // Render offscreen sections for full-page visual QA; normal browsing renders them on scroll.
