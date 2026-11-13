@@ -1,0 +1,305 @@
+{
+  "site": {
+    "title": "Zein · Cloud Engineering Portfolio",
+    "url": "https://zeinhaidara.github.io/cloud-portfolio/",
+    "github": "https://github.com/zeinhaidara",
+    "email": "zeinhaidara@gmail.com"
+  },
+  "ring": {
+    "radius": 1500,
+    "zoneRadius": 430,
+    "capitalRadius": 500,
+    "islandOrbit": 265
+  },
+  "zones": [
+    {
+      "id": "capital",
+      "n": 0,
+      "name": "Capital",
+      "short": "Capital",
+      "icon": "balloon",
+      "color": "#ff5d6c",
+      "mode": "day",
+      "climate": "Clear sky over the flagship islands",
+      "blurb": "The flagship platforms: systems that ran on real cloud accounts, plus the pipeline and this site.",
+      "sky": ["#5f97c9", "#c9dceb", "#8fb4d4"],
+      "ground": "meadow",
+      "fx": "none"
+    },
+    {
+      "id": "provisioning",
+      "n": 1,
+      "name": "Cloud Infrastructure & Provisioning",
+      "short": "Provisioning",
+      "range": [1, 5],
+      "icon": "palm",
+      "color": "#ff8a1f",
+      "mode": "day",
+      "climate": "Sunny tropics, warm light",
+      "blurb": "Networks, roles, hardened hosts and the storage that outlives them.",
+      "sky": ["#4f9fd6", "#ffe9cf", "#9fd6cf"],
+      "ground": "tropical",
+      "fx": "motes"
+    },
+    {
+      "id": "cicd",
+      "n": 2,
+      "name": "CI/CD & GitOps",
+      "short": "CI/CD & GitOps",
+      "range": [6, 10],
+      "icon": "windmill",
+      "color": "#2f9bff",
+      "mode": "day",
+      "climate": "Windy plains, streaking clouds",
+      "blurb": "Pipelines that build, scan, tag and reconcile, always moving.",
+      "sky": ["#6ea6d4", "#d6e4ee", "#a9c6de"],
+      "ground": "village",
+      "fx": "gust"
+    },
+    {
+      "id": "containers",
+      "n": 3,
+      "name": "Containers & Kubernetes",
+      "short": "Kubernetes",
+      "range": [11, 15],
+      "icon": "crate",
+      "color": "#7c5cff",
+      "mode": "night",
+      "climate": "Stormy sea, rain and lightning",
+      "blurb": "Charts, controllers and policies for workloads that must hold in rough water.",
+      "sky": ["#4a5263", "#7f8899", "#5d6677"],
+      "ground": "city",
+      "fx": "storm",
+      "light": { "mix": "#5d6677", "amount": 0.32, "mul": 0.82 },
+      "cloud": "#737c8e"
+    },
+    {
+      "id": "security",
+      "n": 4,
+      "name": "Security & Compliance",
+      "short": "Security",
+      "range": [16, 20],
+      "icon": "shield",
+      "color": "#12b981",
+      "mode": "night",
+      "climate": "Dark forest, heavy fog, fireflies",
+      "blurb": "Guard posts in the fog: MFA, key rotation, remediation and secret scanning.",
+      "sky": ["#04060c", "#1c2747", "#0d1426"],
+      "ground": "castle",
+      "fx": "fireflies",
+      "light": { "mix": "#1c2747", "amount": 0.42, "mul": 0.62 },
+      "cloud": "#1c2540"
+    },
+    {
+      "id": "observability",
+      "n": 5,
+      "name": "Monitoring & Observability",
+      "short": "Observability",
+      "range": [21, 25],
+      "icon": "lighthouse",
+      "color": "#f2b705",
+      "mode": "night",
+      "climate": "Rainy highlands, night-lit mist",
+      "blurb": "Lighthouses over the mist: metrics, logs, burn rates and alerts.",
+      "sky": ["#080c16", "#1f2a44", "#151b2b"],
+      "ground": "rainy",
+      "fx": "rain",
+      "light": { "mix": "#1f2a44", "amount": 0.4, "mul": 0.66 },
+      "cloud": "#2a3248"
+    },
+    {
+      "id": "automation",
+      "n": 6,
+      "name": "Automation & Scripting",
+      "short": "Automation",
+      "range": [26, 30],
+      "icon": "gear",
+      "color": "#3fbf6f",
+      "mode": "day",
+      "climate": "Calm green forest, steady motion",
+      "blurb": "A quiet workshop where scripts do the repetitive work.",
+      "sky": ["#7fa9cc", "#c9dceb", "#dfe8d6"],
+      "ground": "forest",
+      "fx": "leaves"
+    },
+    {
+      "id": "finops",
+      "n": 7,
+      "name": "Cost Optimization & FinOps",
+      "short": "FinOps",
+      "range": [31, 35],
+      "icon": "cactus",
+      "color": "#e0a100",
+      "mode": "day",
+      "climate": "Scorching desert, heat shimmer",
+      "blurb": "Gold in the sand. Not built yet.",
+      "sky": ["#f0a050", "#ffd08a", "#f3c27a"],
+      "ground": "desert",
+      "fx": "heat",
+      "light": { "mix": "#ffd08a", "amount": 0.14, "mul": 1 },
+      "cloud": "#fff0dc"
+    },
+    {
+      "id": "networking",
+      "n": 8,
+      "name": "Networking & Connectivity",
+      "short": "Networking",
+      "range": [36, 40],
+      "icon": "crystal",
+      "color": "#38b6ff",
+      "mode": "night",
+      "climate": "Icy archipelago, snowfall, aurora",
+      "blurb": "Bridges between frozen islands. Not built yet.",
+      "sky": ["#0e1422", "#2c3550", "#1d2538"],
+      "ground": "ice",
+      "fx": "snow",
+      "light": { "mix": "#2c3550", "amount": 0.36, "mul": 0.74 },
+      "cloud": "#3a4666"
+    },
+    {
+      "id": "reliability",
+      "n": 9,
+      "name": "Disaster Recovery & Reliability",
+      "short": "Reliability",
+      "range": [41, 45],
+      "icon": "volcano",
+      "color": "#e05a47",
+      "mode": "night",
+      "climate": "Volcanoes, embers, a calm lake",
+      "blurb": "Fire around still water. Not built yet.",
+      "sky": ["#1c0d0a", "#4a1f12", "#2a1410"],
+      "ground": "volcanic",
+      "fx": "ember",
+      "light": { "mix": "#4a1f12", "amount": 0.32, "mul": 0.68 },
+      "cloud": "#3a2018"
+    },
+    {
+      "id": "advanced",
+      "n": 10,
+      "name": "Advanced / Cross-Cutting",
+      "short": "Advanced",
+      "range": [46, 50],
+      "icon": "peak",
+      "color": "#1e6ad6",
+      "mode": "day",
+      "climate": "High summit above the clouds",
+      "blurb": "Thin, clear air at the top. Not built yet.",
+      "sky": ["#3f79b8", "#cfe0ee", "#f4f7fb"],
+      "ground": "snow",
+      "fx": "none",
+      "cloud": "#ffffff"
+    },
+    {
+      "id": "archive",
+      "n": 11,
+      "name": "Archive",
+      "short": "Archive",
+      "icon": "rock",
+      "color": "#8a93a6",
+      "mode": "day",
+      "climate": "Quiet overcast islet",
+      "blurb": "Older public work, kept for the record.",
+      "sky": ["#8fa3b8", "#c3ccd6", "#b3bfcb"],
+      "ground": "rocky",
+      "fx": "none",
+      "light": { "mix": "#c3ccd6", "amount": 0.2, "mul": 0.95 },
+      "cloud": "#e6ebf0"
+    }
+  ],
+  "placements": {
+    "healthcare-eks-secops": {
+      "zone": "capital",
+      "short": "Healthcare SecOps",
+      "color": "#12b981",
+      "building": "shield",
+      "ground": "castle",
+      "legacy": "healthcare",
+      "size": 1.2
+    },
+    "aws-retail-microservices-eks": {
+      "zone": "capital",
+      "short": "Orbital Expeditions",
+      "color": "#ff8a1f",
+      "building": "rocket",
+      "ground": "desert",
+      "legacy": "orbital",
+      "size": 1.2
+    },
+    "gcp-ai-log-analyzer": {
+      "zone": "capital",
+      "short": "AI Log Analyzer",
+      "color": "#f2b705",
+      "building": "observatory",
+      "ground": "snow",
+      "legacy": "gcp",
+      "size": 1.1
+    },
+    "aws-3-tier-github-actions": {
+      "zone": "capital",
+      "short": "Three-tier delivery",
+      "color": "#7c5cff",
+      "building": "tower",
+      "ground": "city",
+      "size": 1.05
+    },
+    "azure-aks-referral-platform": {
+      "zone": "capital",
+      "short": "Northbridge Health",
+      "color": "#1e6ad6",
+      "building": "bridge",
+      "ground": "tropical",
+      "size": 1.05
+    },
+    "github-actions-oidc-s3-pipeline": {
+      "zone": "capital",
+      "short": "GitHub → AWS pipeline",
+      "color": "#2f9bff",
+      "building": "gear",
+      "ground": "volcanic",
+      "size": 0.95
+    },
+    "cloud-portfolio": {
+      "zone": "capital",
+      "short": "This portfolio",
+      "color": "#ff5d6c",
+      "building": "signpost",
+      "ground": "village",
+      "size": 0.95
+    },
+    "zeinhaidara": {
+      "zone": "capital",
+      "short": "Say hi · profile",
+      "color": "#ff5d6c",
+      "building": "balloon",
+      "ground": "none",
+      "size": 1
+    }
+  },
+  "capitalLinks": [
+    "01-terraform-multi-az-vpc",
+    "02-ansible-linux-hardening"
+  ],
+  "redirects": {
+    "healthcare.html": "projects/healthcare-eks-secops.html",
+    "gcp.html": "projects/gcp-ai-log-analyzer.html",
+    "orbital.html": "projects/aws-retail-microservices-eks.html",
+    "classic.html": "projects.html",
+    "space.html": "index.html"
+  },
+  "overrides": {
+    "gcp-ai-log-analyzer": {
+      "outcome": "Dev environment live on Cloud Run. Team project; the split of work is credited in the case study below."
+    },
+    "cloud-portfolio": {
+      "summary": "Static GitHub Pages portfolio: a pannable world of project islands in climate zones, with a generated case study for every public repository.",
+      "stack": [
+        "HTML",
+        "CSS",
+        "JavaScript",
+        "Inline SVG",
+        "Node build script",
+        "GitHub Pages"
+      ]
+    }
+  }
+}
