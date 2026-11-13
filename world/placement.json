@@ -1,0 +1,848 @@
+{
+ "world": {
+  "x0": -2100,
+  "y0": -2060,
+  "w": 4200,
+  "h": 4040
+ },
+ "zones": [
+  {
+   "id": "capital",
+   "n": 0,
+   "name": "Capital",
+   "short": "Capital",
+   "x": 0,
+   "y": 0,
+   "r": 500,
+   "color": "#ff5d6c",
+   "mode": "day",
+   "fx": "none",
+   "sky": [
+    "#5f97c9",
+    "#c9dceb",
+    "#8fb4d4"
+   ],
+   "range": null
+  },
+  {
+   "id": "provisioning",
+   "n": 1,
+   "name": "Cloud Infrastructure & Provisioning",
+   "short": "Provisioning",
+   "x": 0,
+   "y": -1500,
+   "r": 430,
+   "color": "#ff8a1f",
+   "mode": "day",
+   "fx": "motes",
+   "sky": [
+    "#4f9fd6",
+    "#ffe9cf",
+    "#9fd6cf"
+   ],
+   "range": [
+    1,
+    5
+   ]
+  },
+  {
+   "id": "cicd",
+   "n": 2,
+   "name": "CI/CD & GitOps",
+   "short": "CI/CD & GitOps",
+   "x": 882,
+   "y": -1214,
+   "r": 430,
+   "color": "#2f9bff",
+   "mode": "day",
+   "fx": "gust",
+   "sky": [
+    "#6ea6d4",
+    "#d6e4ee",
+    "#a9c6de"
+   ],
+   "range": [
+    6,
+    10
+   ]
+  },
+  {
+   "id": "containers",
+   "n": 3,
+   "name": "Containers & Kubernetes",
+   "short": "Kubernetes",
+   "x": 1427,
+   "y": -464,
+   "r": 430,
+   "color": "#7c5cff",
+   "mode": "night",
+   "fx": "storm",
+   "sky": [
+    "#4a5263",
+    "#7f8899",
+    "#5d6677"
+   ],
+   "range": [
+    11,
+    15
+   ]
+  },
+  {
+   "id": "security",
+   "n": 4,
+   "name": "Security & Compliance",
+   "short": "Security",
+   "x": 1427,
+   "y": 464,
+   "r": 430,
+   "color": "#12b981",
+   "mode": "night",
+   "fx": "fireflies",
+   "sky": [
+    "#04060c",
+    "#1c2747",
+    "#0d1426"
+   ],
+   "range": [
+    16,
+    20
+   ]
+  },
+  {
+   "id": "observability",
+   "n": 5,
+   "name": "Monitoring & Observability",
+   "short": "Observability",
+   "x": 882,
+   "y": 1214,
+   "r": 430,
+   "color": "#f2b705",
+   "mode": "night",
+   "fx": "rain",
+   "sky": [
+    "#080c16",
+    "#1f2a44",
+    "#151b2b"
+   ],
+   "range": [
+    21,
+    25
+   ]
+  },
+  {
+   "id": "automation",
+   "n": 6,
+   "name": "Automation & Scripting",
+   "short": "Automation",
+   "x": 0,
+   "y": 1500,
+   "r": 430,
+   "color": "#3fbf6f",
+   "mode": "day",
+   "fx": "leaves",
+   "sky": [
+    "#7fa9cc",
+    "#c9dceb",
+    "#dfe8d6"
+   ],
+   "range": [
+    26,
+    30
+   ]
+  },
+  {
+   "id": "finops",
+   "n": 7,
+   "name": "Cost Optimization & FinOps",
+   "short": "FinOps",
+   "x": -882,
+   "y": 1214,
+   "r": 430,
+   "color": "#e0a100",
+   "mode": "day",
+   "fx": "heat",
+   "sky": [
+    "#f0a050",
+    "#ffd08a",
+    "#f3c27a"
+   ],
+   "range": [
+    31,
+    35
+   ]
+  },
+  {
+   "id": "networking",
+   "n": 8,
+   "name": "Networking & Connectivity",
+   "short": "Networking",
+   "x": -1427,
+   "y": 464,
+   "r": 430,
+   "color": "#38b6ff",
+   "mode": "night",
+   "fx": "snow",
+   "sky": [
+    "#0e1422",
+    "#2c3550",
+    "#1d2538"
+   ],
+   "range": [
+    36,
+    40
+   ]
+  },
+  {
+   "id": "reliability",
+   "n": 9,
+   "name": "Disaster Recovery & Reliability",
+   "short": "Reliability",
+   "x": -1427,
+   "y": -464,
+   "r": 430,
+   "color": "#e05a47",
+   "mode": "night",
+   "fx": "ember",
+   "sky": [
+    "#1c0d0a",
+    "#4a1f12",
+    "#2a1410"
+   ],
+   "range": [
+    41,
+    45
+   ]
+  },
+  {
+   "id": "advanced",
+   "n": 10,
+   "name": "Advanced / Cross-Cutting",
+   "short": "Advanced",
+   "x": -882,
+   "y": -1214,
+   "r": 430,
+   "color": "#1e6ad6",
+   "mode": "day",
+   "fx": "none",
+   "sky": [
+    "#3f79b8",
+    "#cfe0ee",
+    "#f4f7fb"
+   ],
+   "range": [
+    46,
+    50
+   ]
+  },
+  {
+   "id": "archive",
+   "n": 11,
+   "name": "Archive",
+   "short": "Archive",
+   "x": -1720,
+   "y": 1560,
+   "r": 250,
+   "color": "#8a93a6",
+   "mode": "day",
+   "fx": "none",
+   "sky": [
+    "#8fa3b8",
+    "#c3ccd6",
+    "#b3bfcb"
+   ],
+   "range": null
+  }
+ ],
+ "islands": [
+  {
+   "name": "01-terraform-multi-az-vpc",
+   "title": "Multi-AZ three-tier VPC module",
+   "short": "Multi-AZ three-tier VPC module",
+   "zone": "provisioning",
+   "x": 0,
+   "y": -1749,
+   "href": "projects/01-terraform-multi-az-vpc.html",
+   "cc": "01",
+   "v": "ci",
+   "stack": "Terraform AWS VPC tflint terraform test"
+  },
+  {
+   "name": "02-ansible-linux-hardening",
+   "title": "CIS-subset Linux hardening roles",
+   "short": "CIS-subset Linux hardening roles",
+   "zone": "provisioning",
+   "x": 252,
+   "y": -1577,
+   "href": "projects/02-ansible-linux-hardening.html",
+   "cc": "02",
+   "v": "ci",
+   "stack": "Ansible Molecule ansible-lint Ubuntu RHEL"
+  },
+  {
+   "name": "03-python-ebs-orphan-report",
+   "title": "Orphaned EBS volume report",
+   "short": "Orphaned EBS volume report",
+   "zone": "provisioning",
+   "x": 156,
+   "y": -1298,
+   "href": "projects/03-python-ebs-orphan-report.html",
+   "cc": "03",
+   "v": "ci",
+   "stack": "Python boto3 moto"
+  },
+  {
+   "name": "04-terraform-cross-account-ci-role",
+   "title": "Cross-account CI role module",
+   "short": "Cross-account CI role module",
+   "zone": "provisioning",
+   "x": -156,
+   "y": -1298,
+   "href": "projects/04-terraform-cross-account-ci-role.html",
+   "cc": "04",
+   "v": "ci",
+   "stack": "Terraform AWS IAM OIDC"
+  },
+  {
+   "name": "05-bash-ebs-snapshot-retention",
+   "title": "EBS snapshot retention script",
+   "short": "EBS snapshot retention script",
+   "zone": "provisioning",
+   "x": -252,
+   "y": -1577,
+   "href": "projects/05-bash-ebs-snapshot-retention.html",
+   "cc": "05",
+   "v": "ci",
+   "stack": "Bash AWS CLI shellcheck"
+  },
+  {
+   "name": "06-github-actions-image-pipeline",
+   "title": "Container image pipeline (build, scan, sign)",
+   "short": "Container image pipeline (build, scan, sign)",
+   "zone": "cicd",
+   "x": 882,
+   "y": -1463,
+   "href": "projects/06-github-actions-image-pipeline.html",
+   "cc": "06",
+   "v": "ci",
+   "stack": "GitHub Actions Docker Trivy cosign GHCR"
+  },
+  {
+   "name": "07-semver-tag-action",
+   "title": "Semantic-version tag action",
+   "short": "Semantic-version tag action",
+   "zone": "cicd",
+   "x": 1134,
+   "y": -1291,
+   "href": "projects/07-semver-tag-action.html",
+   "cc": "07",
+   "v": "ci",
+   "stack": "GitHub Actions Bash"
+  },
+  {
+   "name": "08-terraform-plan-policy-check",
+   "title": "Terraform plan policy check",
+   "short": "Terraform plan policy check",
+   "zone": "cicd",
+   "x": 1038,
+   "y": -1012,
+   "href": "projects/08-terraform-plan-policy-check.html",
+   "cc": "08",
+   "v": "ci",
+   "stack": "Python Terraform plan JSON"
+  },
+  {
+   "name": "09-argocd-applicationset-kustomize",
+   "title": "Argo CD ApplicationSet with Kustomize overlays",
+   "short": "Argo CD ApplicationSet with Kustomize overlays",
+   "zone": "cicd",
+   "x": 726,
+   "y": -1012,
+   "href": "projects/09-argocd-applicationset-kustomize.html",
+   "cc": "09",
+   "v": "ci",
+   "stack": "Argo CD Kustomize kubeconform"
+  },
+  {
+   "name": "10-terraform-drift-detection",
+   "title": "Scheduled Terraform drift detection",
+   "short": "Scheduled Terraform drift detection",
+   "zone": "cicd",
+   "x": 630,
+   "y": -1291,
+   "href": "projects/10-terraform-drift-detection.html",
+   "cc": "10",
+   "v": "ci",
+   "stack": "GitHub Actions Bash Terraform Slack"
+  },
+  {
+   "name": "11-helm-12factor-chart",
+   "title": "12-factor app Helm chart",
+   "short": "12-factor app Helm chart",
+   "zone": "containers",
+   "x": 1427,
+   "y": -713,
+   "href": "projects/11-helm-12factor-chart.html",
+   "cc": "11",
+   "v": "ci",
+   "stack": "Helm HPA PDB NetworkPolicy External Secrets"
+  },
+  {
+   "name": "12-k8s-configmap-secret-controller",
+   "title": "ConfigMap-to-Secret sync controller",
+   "short": "ConfigMap-to-Secret sync controller",
+   "zone": "containers",
+   "x": 1679,
+   "y": -541,
+   "href": "projects/12-k8s-configmap-secret-controller.html",
+   "cc": "12",
+   "v": "ci",
+   "stack": "Python Kubernetes API AWS Secrets Manager"
+  },
+  {
+   "name": "13-python-pod-security-audit",
+   "title": "Pod security audit CLI",
+   "short": "Pod security audit CLI",
+   "zone": "containers",
+   "x": 1583,
+   "y": -262,
+   "href": "projects/13-python-pod-security-audit.html",
+   "cc": "13",
+   "v": "ci",
+   "stack": "Python Kubernetes"
+  },
+  {
+   "name": "14-helm-observability-sidecar-library",
+   "title": "Observability sidecar Helm library chart",
+   "short": "Observability sidecar Helm library chart",
+   "zone": "containers",
+   "x": 1271,
+   "y": -262,
+   "href": "projects/14-helm-observability-sidecar-library.html",
+   "cc": "14",
+   "v": "ci",
+   "stack": "Helm library chart kubeconform"
+  },
+  {
+   "name": "15-python-networkpolicy-generator",
+   "title": "NetworkPolicy generator",
+   "short": "NetworkPolicy generator",
+   "zone": "containers",
+   "x": 1175,
+   "y": -541,
+   "href": "projects/15-python-networkpolicy-generator.html",
+   "cc": "15",
+   "v": "ci",
+   "stack": "Python Kubernetes NetworkPolicy"
+  },
+  {
+   "name": "16-lambda-iam-mfa-enforcement",
+   "title": "IAM MFA enforcement Lambda",
+   "short": "IAM MFA enforcement Lambda",
+   "zone": "security",
+   "x": 1427,
+   "y": 215,
+   "href": "projects/16-lambda-iam-mfa-enforcement.html",
+   "cc": "16",
+   "v": "ci",
+   "stack": "Python AWS Lambda IAM SNS"
+  },
+  {
+   "name": "17-ansible-ssh-key-rotation",
+   "title": "SSH key rotation role",
+   "short": "SSH key rotation role",
+   "zone": "security",
+   "x": 1679,
+   "y": 387,
+   "href": "projects/17-ansible-ssh-key-rotation.html",
+   "cc": "17",
+   "v": "ci",
+   "stack": "Ansible OpenSSH Python tests"
+  },
+  {
+   "name": "18-terraform-s3-public-remediation",
+   "title": "Public S3 bucket auto-remediation",
+   "short": "Public S3 bucket auto-remediation",
+   "zone": "security",
+   "x": 1583,
+   "y": 666,
+   "href": "projects/18-terraform-s3-public-remediation.html",
+   "cc": "18",
+   "v": "ci",
+   "stack": "Terraform AWS Config SSM remediation"
+  },
+  {
+   "name": "19-python-securityhub-jira-aggregator",
+   "title": "Security Hub to Jira aggregator",
+   "short": "Security Hub to Jira aggregator",
+   "zone": "security",
+   "x": 1271,
+   "y": 666,
+   "href": "projects/19-python-securityhub-jira-aggregator.html",
+   "cc": "19",
+   "v": "ci",
+   "stack": "Python AWS Security Hub Jira"
+  },
+  {
+   "name": "20-precommit-secret-scan",
+   "title": "Pre-commit secret scanner",
+   "short": "Pre-commit secret scanner",
+   "zone": "security",
+   "x": 1175,
+   "y": 387,
+   "href": "projects/20-precommit-secret-scan.html",
+   "cc": "20",
+   "v": "ci",
+   "stack": "Python pre-commit"
+  },
+  {
+   "name": "21-terraform-prometheus-grafana-stack",
+   "title": "Prometheus/Grafana/Alertmanager stack module",
+   "short": "Prometheus/Grafana/Alertmanager stack module",
+   "zone": "observability",
+   "x": 882,
+   "y": 965,
+   "href": "projects/21-terraform-prometheus-grafana-stack.html",
+   "cc": "21",
+   "v": "ci",
+   "stack": "Terraform Helm provider Prometheus Grafana promtool"
+  },
+  {
+   "name": "22-python-metric-anomaly-alerts",
+   "title": "CloudWatch metric anomaly alerts",
+   "short": "CloudWatch metric anomaly alerts",
+   "zone": "observability",
+   "x": 1134,
+   "y": 1137,
+   "href": "projects/22-python-metric-anomaly-alerts.html",
+   "cc": "22",
+   "v": "ci",
+   "stack": "Python CloudWatch Slack"
+  },
+  {
+   "name": "23-fluentbit-k8s-log-routing",
+   "title": "Fluent Bit Kubernetes log routing",
+   "short": "Fluent Bit Kubernetes log routing",
+   "zone": "observability",
+   "x": 1038,
+   "y": 1416,
+   "href": "projects/23-fluentbit-k8s-log-routing.html",
+   "cc": "23",
+   "v": "ci",
+   "stack": "Fluent Bit Kubernetes DaemonSet kubeconform"
+  },
+  {
+   "name": "24-python-slo-burnrate-metrics",
+   "title": "SLO burn-rate metrics service",
+   "short": "SLO burn-rate metrics service",
+   "zone": "observability",
+   "x": 726,
+   "y": 1416,
+   "href": "projects/24-python-slo-burnrate-metrics.html",
+   "cc": "24",
+   "v": "ci",
+   "stack": "Python prometheus-client Prometheus rules"
+  },
+  {
+   "name": "25-ansible-datadog-agent-rollout",
+   "title": "Datadog agent rollout role",
+   "short": "Datadog agent rollout role",
+   "zone": "observability",
+   "x": 630,
+   "y": 1137,
+   "href": "projects/25-ansible-datadog-agent-rollout.html",
+   "cc": "25",
+   "v": "ci",
+   "stack": "Ansible Datadog Linux Windows"
+  },
+  {
+   "name": "26-bash-asg-bluegreen-deploy",
+   "title": "ASG blue/green and canary deploy framework",
+   "short": "ASG blue/green and canary deploy framework",
+   "zone": "automation",
+   "x": 0,
+   "y": 1251,
+   "href": "projects/26-bash-asg-bluegreen-deploy.html",
+   "cc": "26",
+   "v": "ci",
+   "stack": "Bash AWS Auto Scaling ALB"
+  },
+  {
+   "name": "27-python-cloud-tagging-cli",
+   "title": "Cloud resource tagging CLI",
+   "short": "Cloud resource tagging CLI",
+   "zone": "automation",
+   "x": 252,
+   "y": 1423,
+   "href": "projects/27-python-cloud-tagging-cli.html",
+   "cc": "27",
+   "v": "ci",
+   "stack": "Python boto3"
+  },
+  {
+   "name": "28-lambda-unused-resource-cleanup",
+   "title": "Unused AWS resource cleanup Lambda",
+   "short": "Unused AWS resource cleanup Lambda",
+   "zone": "automation",
+   "x": 156,
+   "y": 1702,
+   "href": "projects/28-lambda-unused-resource-cleanup.html",
+   "cc": "28",
+   "v": "ci",
+   "stack": "Python AWS Lambda SNS SQS EventBridge"
+  },
+  {
+   "name": "29-azure-resource-group-module",
+   "title": "Azure resource group PowerShell module",
+   "short": "Azure resource group PowerShell module",
+   "zone": "automation",
+   "x": -156,
+   "y": 1702,
+   "href": "projects/29-azure-resource-group-module.html",
+   "cc": "29",
+   "v": "ci",
+   "stack": "PowerShell Az module Pester"
+  },
+  {
+   "name": "30-python-dynamic-ansible-inventory",
+   "title": "Dynamic Ansible inventory",
+   "short": "Dynamic Ansible inventory",
+   "zone": "automation",
+   "x": -252,
+   "y": 1423,
+   "href": "projects/30-python-dynamic-ansible-inventory.html",
+   "cc": "30",
+   "v": "ci",
+   "stack": "Python Ansible boto3"
+  },
+  {
+   "name": "aws-3-tier-github-actions",
+   "title": "AWS three-tier delivery on EC2 and ECS",
+   "short": "Three-tier delivery",
+   "zone": "capital",
+   "x": 0,
+   "y": 291,
+   "href": "projects/aws-3-tier-github-actions.html",
+   "cc": null,
+   "v": "cloud",
+   "stack": "AWS EC2 ASG ECS Fargate ALB RDS MySQL Terraform GitHub Actions FastAPI Checkov Trivy SonarQube"
+  },
+  {
+   "name": "aws-retail-microservices-eks",
+   "title": "Orbital Expeditions: event-driven microservices on EKS",
+   "short": "Orbital Expeditions",
+   "zone": "capital",
+   "x": 268,
+   "y": -146,
+   "href": "projects/aws-retail-microservices-eks.html",
+   "cc": null,
+   "v": "cloud",
+   "stack": "AWS EKS Fargate Terraform Helm GitHub Actions Python DynamoDB RDS MySQL Valkey EventBridge SQS SES Prometheus Grafana"
+  },
+  {
+   "name": "azure-aks-referral-platform",
+   "title": "Northbridge Health referral platform on Azure",
+   "short": "Northbridge Health",
+   "zone": "capital",
+   "x": -268,
+   "y": 146,
+   "href": "projects/azure-aks-referral-platform.html",
+   "cc": null,
+   "v": "review",
+   "stack": "Azure AKS Terraform Helm Azure Pipelines Key Vault ACR Private Endpoints Python"
+  },
+  {
+   "name": "cloud-portfolio",
+   "title": "Cloud portfolio site",
+   "short": "This portfolio",
+   "zone": "capital",
+   "x": 0,
+   "y": 10,
+   "href": "projects/cloud-portfolio.html",
+   "cc": null,
+   "v": "cloud",
+   "stack": "HTML CSS JavaScript Inline SVG Node build script GitHub Pages"
+  },
+  {
+   "name": "forest-run-unity-game",
+   "title": "Forest Run (Unity 3D game)",
+   "short": "Forest Run (Unity 3D game)",
+   "zone": "archive",
+   "x": -1720,
+   "y": 1580,
+   "href": "projects/forest-run-unity-game.html",
+   "cc": null,
+   "v": "none",
+   "stack": "Unity C#"
+  },
+  {
+   "name": "gcp-ai-log-analyzer",
+   "title": "AI Log Analyzer on GCP",
+   "short": "AI Log Analyzer",
+   "zone": "capital",
+   "x": 268,
+   "y": 146,
+   "href": "projects/gcp-ai-log-analyzer.html",
+   "cc": null,
+   "v": "cloud",
+   "stack": "GCP Cloud Run Vertex AI Gemini Google ADK Pub/Sub Firestore BigQuery Cloud Build Terraform Python"
+  },
+  {
+   "name": "github-actions-oidc-s3-pipeline",
+   "title": "GitHub Actions to AWS over OIDC",
+   "short": "GitHub → AWS pipeline",
+   "zone": "capital",
+   "x": -268,
+   "y": -146,
+   "href": "projects/github-actions-oidc-s3-pipeline.html",
+   "cc": null,
+   "v": "cloud",
+   "stack": "GitHub Actions AWS IAM OIDC S3 Docker Flask Trivy Gitleaks Bandit pip-audit"
+  },
+  {
+   "name": "healthcare-eks-secops",
+   "title": "Healthcare SecOps on EKS",
+   "short": "Healthcare SecOps",
+   "zone": "capital",
+   "x": 0,
+   "y": -291,
+   "href": "projects/healthcare-eks-secops.html",
+   "cc": null,
+   "v": "cloud",
+   "stack": "AWS EKS Fargate Terraform Argo CD Helm GitHub Actions FastAPI Trivy Checkov CodeQL ZAP External Secrets DynamoDB KMS"
+  },
+  {
+   "name": "zeinhaidara",
+   "title": "Profile README",
+   "short": "Say hi · profile",
+   "zone": "capital",
+   "x": 372,
+   "y": -292,
+   "href": "projects/zeinhaidara.html",
+   "cc": null,
+   "v": "none",
+   "stack": "Markdown"
+  }
+ ],
+ "uncharted": [
+  {
+   "n": 31,
+   "zone": "finops",
+   "x": -882,
+   "y": 965
+  },
+  {
+   "n": 32,
+   "zone": "finops",
+   "x": -630,
+   "y": 1137
+  },
+  {
+   "n": 33,
+   "zone": "finops",
+   "x": -726,
+   "y": 1416
+  },
+  {
+   "n": 34,
+   "zone": "finops",
+   "x": -1038,
+   "y": 1416
+  },
+  {
+   "n": 35,
+   "zone": "finops",
+   "x": -1134,
+   "y": 1137
+  },
+  {
+   "n": 36,
+   "zone": "networking",
+   "x": -1427,
+   "y": 215
+  },
+  {
+   "n": 37,
+   "zone": "networking",
+   "x": -1175,
+   "y": 387
+  },
+  {
+   "n": 38,
+   "zone": "networking",
+   "x": -1271,
+   "y": 666
+  },
+  {
+   "n": 39,
+   "zone": "networking",
+   "x": -1583,
+   "y": 666
+  },
+  {
+   "n": 40,
+   "zone": "networking",
+   "x": -1679,
+   "y": 387
+  },
+  {
+   "n": 41,
+   "zone": "reliability",
+   "x": -1427,
+   "y": -713
+  },
+  {
+   "n": 42,
+   "zone": "reliability",
+   "x": -1175,
+   "y": -541
+  },
+  {
+   "n": 43,
+   "zone": "reliability",
+   "x": -1271,
+   "y": -262
+  },
+  {
+   "n": 44,
+   "zone": "reliability",
+   "x": -1583,
+   "y": -262
+  },
+  {
+   "n": 45,
+   "zone": "reliability",
+   "x": -1679,
+   "y": -541
+  },
+  {
+   "n": 46,
+   "zone": "advanced",
+   "x": -882,
+   "y": -1463
+  },
+  {
+   "n": 47,
+   "zone": "advanced",
+   "x": -630,
+   "y": -1291
+  },
+  {
+   "n": 48,
+   "zone": "advanced",
+   "x": -726,
+   "y": -1012
+  },
+  {
+   "n": 49,
+   "zone": "advanced",
+   "x": -1038,
+   "y": -1012
+  },
+  {
+   "n": 50,
+   "zone": "advanced",
+   "x": -1134,
+   "y": -1291
+  }
+ ]
+}

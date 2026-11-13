@@ -1,0 +1,21 @@
+/* Design tokens taken from the original island world (see README, "Art style"). Shared by every page. */
+:root{
+  --ink:#1d2340;--muted-ink:#4f5a72;--ok:#12b981;
+  --sky-top:#5f97c9;--sky-horizon:#c9dceb;--sky-bottom:#8fb4d4;--sky-css:linear-gradient(#7fa9cc 0%,#c9dceb 48%,#e9e2d8 100%);
+  --night-top:#04060c;--night-horizon:#1c2747;--night-bottom:#0a1020;
+  --cloud:#f4f7fb;--ring:rgba(244,248,252,.4);--sun:#f6c453;--moon:#eef2ff;--lamp:#ffe2a8;--lamp-glow:#ffb347;
+  --orange:#ff8a1f;--green:#12b981;--yellow:#f2b705;--violet:#7c5cff;--blue:#2f9bff;--deep:#1e6ad6;--coral:#ff5d6c;
+  --glass-day:rgba(248,250,252,.9);--glass-night:rgba(19,26,36,.9);--line-day:rgba(29,35,64,.14);--line-night:#2a3340;
+  --ease:cubic-bezier(.65,0,.35,1);--out:cubic-bezier(.2,.8,.3,1);
+  --display:'Space Grotesk',system-ui,sans-serif;--body:'DM Sans',system-ui,sans-serif;
+}
+/* motion shared by island art on the map and in case-study heroes */
+.flame{animation:fl .25s infinite alternate;transform-origin:center top;transform-box:fill-box}@keyframes fl{to{transform:scaleY(1.35)}}
+.gear{animation:spin 6s linear infinite;transform-box:fill-box;transform-origin:center}.gear.slow{animation-duration:16s}@keyframes spin{to{transform:rotate(360deg)}}
+.pulse{animation:pl 2.2s ease-out infinite;transform-box:fill-box;transform-origin:center}@keyframes pl{from{opacity:.8;transform:scale(.6)}to{opacity:0;transform:scale(1.5)}}
+.hover{animation:hv 4s ease-in-out infinite}@keyframes hv{50%{translate:0 -4px}}
+.blink{animation:bl 1.2s steps(2) infinite}@keyframes bl{50%{opacity:0}}
+.ping{animation:pg 2.4s ease-out infinite}@keyframes pg{0%{opacity:0}30%{opacity:.9}100%{opacity:0}}
+.flap{animation:flap .45s ease-in-out infinite alternate;transform-box:fill-box;transform-origin:center bottom}@keyframes flap{to{transform:scaleY(.25)}}
+.vh{position:absolute!important;width:1px;height:1px;overflow:hidden;clip-path:inset(50%);white-space:nowrap}
+@media(prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition-duration:.01s!important;transition-delay:0s!important}}
