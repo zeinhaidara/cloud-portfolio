@@ -1,0 +1,3 @@
+User-agent: *
+Allow: /
+Sitemap: https://zeinhaidara.github.io/cloud-portfolio/sitemap.xml

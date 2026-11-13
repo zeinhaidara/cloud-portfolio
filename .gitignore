@@ -1,3 +1,5 @@
-
 # Local dev notes, never pushed
 .dev-instructions/
+memory/
+node_modules/
+.lighthouse/

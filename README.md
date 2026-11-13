@@ -2,7 +2,7 @@
 
 Cloud engineer focused on AWS, Azure, Google Cloud, Kubernetes, and infrastructure automation.
 
-**Portfolio:** https://zeinhaidara.github.io/cloud-portfolio/ · **Contact:** zeinhaidara@gmail.com · **GitHub:** [@zeinhaidara](https://github.com/zeinhaidara)
+**Portfolio:** https://zeinhaidara.github.io/cloud-portfolio/ · **All projects:** https://zeinhaidara.github.io/cloud-portfolio/projects.html · **Contact:** zeinhaidara@gmail.com · **GitHub:** [@zeinhaidara](https://github.com/zeinhaidara)
 
 Each project is built the way production platforms are: infrastructure as code, least-privilege access, automated delivery, and evidence captured from running systems.
 
@@ -13,32 +13,96 @@ Each project is built the way production platforms are: infrastructure as code, 
 - **Verified delivery.** Validation, tests, security scans, immutable images, and post-deploy smoke checks.
 - **Observability and load.** Prometheus, Grafana, and CloudWatch alarms, plus load tests that exercise autoscaling.
 
-## Projects
+## Flagship projects
 
-| Project | Focus | Links |
-|---|---|---|
-| **Healthcare SecOps** | Patient API on EKS Fargate behind CI scan gates, GitOps (Argo CD), approval-gated Terraform, OIDC-only access, IRSA, and detective controls. 43 logged security changes and 16 accepted risks, each with evidence. Synthetic data; no compliance claim. | [Case study](https://zeinhaidara.github.io/cloud-portfolio/healthcare.html) · [Source](https://github.com/zeinhaidara/healthcare-eks-secops) |
-| **AI Log Analyzer (GCP)** | Log investigations by an ADK agent on private Cloud Run using Gemini on Vertex AI, with BigQuery incident history, Pub/Sub, Firestore, Cloud Storage and private Google API egress. Team project with a colleague. | [Case study](https://zeinhaidara.github.io/cloud-portfolio/gcp.html) · [Source](https://github.com/zeinhaidara/gcp-ai-log-analyzer) · [Live app](https://log-analyzer-dev-imm5hb2vlq-uc.a.run.app/) |
-| **Orbital Expeditions** | Six event-driven microservices on EKS: DynamoDB reservations, RDS outbox, Valkey caching, EventBridge and SQS with a dead-letter queue, Prometheus and Grafana. | [Case study](https://zeinhaidara.github.io/cloud-portfolio/orbital.html) · [Source](https://github.com/zeinhaidara/aws-retail-microservices-eks) |
-| **AWS three-tier delivery** | One FastAPI/MySQL app on EC2 Auto Scaling and ECS Fargate behind an ALB, with a load-test workflow that records scaling. | [Source](https://github.com/zeinhaidara/aws-3-tier-github-actions) |
-| **GitHub to AWS pipeline** | Scanned changes promoted through dev, stage, and main to S3 over OIDC. | [Source](https://github.com/zeinhaidara/github-to-aws-pipeline) |
-| **Northbridge Health (Azure)** | Referral-platform blueprint: Terraform modules, AKS, private endpoints, workload identity, Key Vault. Resilience evidence in progress. | [Source](https://github.com/zeinhaidara/azure-endtoend-platform) |
+| Project | Focus | Validation | Links |
+|---|---|---|---|
+| **Healthcare SecOps** | Patient API on EKS Fargate behind CI scan gates, GitOps (Argo CD), approval-gated Terraform, OIDC-only access, IRSA, and detective controls. 43 logged security changes and a 17-entry exceptions register (one entry later closed). Synthetic data; no compliance claim. | Run on real cloud, torn down | [Case study](https://zeinhaidara.github.io/cloud-portfolio/projects/healthcare-eks-secops.html) · [Source](https://github.com/zeinhaidara/healthcare-eks-secops) |
+| **AI Log Analyzer (GCP)** | Log investigations by an ADK agent on private Cloud Run using Gemini on Vertex AI, with BigQuery incident history, Pub/Sub, Firestore, Cloud Storage and private Google API egress. Team project with a colleague. | Run on real cloud, dev live | [Case study](https://zeinhaidara.github.io/cloud-portfolio/projects/gcp-ai-log-analyzer.html) · [Source](https://github.com/zeinhaidara/gcp-ai-log-analyzer) · [Live app](https://log-analyzer-dev-imm5hb2vlq-uc.a.run.app/) |
+| **Orbital Expeditions** | Six event-driven microservices on EKS: DynamoDB reservations, RDS outbox, Valkey caching, EventBridge and SQS with a dead-letter queue, Prometheus and Grafana. | Run on real cloud, torn down | [Case study](https://zeinhaidara.github.io/cloud-portfolio/projects/aws-retail-microservices-eks.html) · [Source](https://github.com/zeinhaidara/aws-retail-microservices-eks) |
+| **AWS three-tier delivery** | One FastAPI/MySQL app on EC2 Auto Scaling and ECS Fargate behind an ALB, with a load-test workflow that records scaling. | Run on real cloud, torn down | [Case study](https://zeinhaidara.github.io/cloud-portfolio/projects/aws-3-tier-github-actions.html) · [Source](https://github.com/zeinhaidara/aws-3-tier-github-actions) |
+| **GitHub to AWS pipeline** | Scanned changes promoted through dev, stage, and main to S3 over OIDC. | Run on real cloud, torn down | [Case study](https://zeinhaidara.github.io/cloud-portfolio/projects/github-actions-oidc-s3-pipeline.html) · [Source](https://github.com/zeinhaidara/github-actions-oidc-s3-pipeline) |
+| **Northbridge Health (Azure)** | Referral-platform blueprint: Terraform modules, AKS, private endpoints, workload identity, Key Vault. | Source review only; no retained deployment evidence and `terraform validate` currently fails | [Case study](https://zeinhaidara.github.io/cloud-portfolio/projects/azure-aks-referral-platform.html) · [Source](https://github.com/zeinhaidara/azure-aks-referral-platform) |
 
-Demo environments are torn down after capture to control cost, so each case study keeps its screenshots and write-up. Orbital Expeditions is a fictional storefront used as a realistic workload.
+Thirty Code Clinic challenges (01–30) each have their own island and case study; all of them are validated in CI with mocks only and say so. Demo environments are torn down after capture to control cost, so each case study keeps its screenshots and write-up. Orbital Expeditions is a fictional storefront used as a realistic workload.
 
 ## About this site
 
-A static site on GitHub Pages with no build step. The homepage is a 3D world (Three.js) where each project is a floating island, viewable by day or by night.
+A static site on GitHub Pages: vanilla HTML, CSS and JavaScript, inline SVG, one small canvas for weather particles. No framework, no WebGL, no runtime dependencies. The pages are generated by one Node script and committed, because Pages serves the repository as it is.
 
-| File | Purpose |
+The homepage is one continuous world. A capital of flagship islands sits in the centre, ringed by ten climate zones, one per Code Clinic domain. Each zone has its own fixed air (sky, haze, particles), flora, creatures and landmark. There is no day/night switch and no weather control any more.
+
+| Zone | Challenges | Climate |
+|---|---|---|
+| Capital | flagships | Clear sky |
+| Cloud Infrastructure & Provisioning | 01–05 | Sunny tropics |
+| CI/CD & GitOps | 06–10 | Windy plains |
+| Containers & Kubernetes | 11–15 | Stormy sea |
+| Security & Compliance | 16–20 | Dark forest, fog, fireflies |
+| Monitoring & Observability | 21–25 | Rainy highlands at night |
+| Automation & Scripting | 26–30 | Calm green forest |
+| Cost Optimization & FinOps | 31–35 | Scorching desert (uncharted) |
+| Networking & Connectivity | 36–40 | Icy archipelago, aurora (uncharted) |
+| Disaster Recovery & Reliability | 41–45 | Volcanoes and a calm lake (uncharted) |
+| Advanced / Cross-Cutting | 46–50 | Summit above the clouds (uncharted) |
+| Archive | archived public repos | Overcast islet |
+
+Navigation: drag or use the arrow keys to pan, scroll or pinch to zoom, click a zone name or a legend pill to fly in. The minimap shows where you are, the search box jumps to any project, `Home` returns to the capital and `0` shows the whole world. Islands are ordinary links, reachable with Tab. Below 761 px, and without JavaScript, the same page is a vertical zone list. `prefers-reduced-motion` turns off particles, parallax and animation and keeps the scenery.
+
+## Add a project and rebuild
+
+Node 20 or later. Nothing to install.
+
+1. Add the repository to `data/projects.json` (or, when working next to the audit folder, update `../_audit/projects.json` and run `node scripts/build.mjs --sync`, which copies public repositories only and drops audit housekeeping notes).
+   Required fields: `name`, `title`, `summary`, `domain`, `stack`, `repo_url`, `outcome`, `status`, `validation_level`, `known_limitations`, `next_steps`, `visibility: "PUBLIC"`, `archived`. Optional: `demo_url`, `challenge_number`, `last_push`.
+2. Run `node scripts/build.mjs`.
+3. Run `node scripts/check-links.mjs` (add `--external` to request every repository and demo link).
+4. Commit the data and the generated files together. CI runs the same three commands and fails if the committed output is stale.
+
+What the build does with a new entry:
+
+- `challenge_number` 1–50 puts it on its slot in the matching zone; the uncharted island at that slot fills in.
+- `archived: true` puts it on the Archive islet.
+- Anything else is placed by its `domain` text (Kubernetes → Containers, security/IAM → Security, monitoring/logging → Observability, CI/CD → CI/CD & GitOps, FinOps → FinOps, network → Networking, backup/reliability → Reliability, automation/configuration → Automation, infrastructure/IaC → Provisioning), and falls back to the capital. To override, add the repository to `placements` in `data/world.json` with a `zone`, and optionally `short`, `color`, `building`, `ground`.
+- It gets an island, a case-study page from the shared template, a row in the all-projects table, a sitemap entry, and it becomes searchable.
+- The landmark on the island is picked from the name and stack (Terraform → stacked modules, Helm/Argo CD → ship's wheel, IAM/keys → vault, scanners → shield, metrics → beacon or observatory, images → containers, pipelines → gear, scripts → terminal).
+- A richer write-up (context, decisions, diagrams, evidence) goes in `content/<repo-name>.html` and is inserted into the template. Without that file the page shows only what `projects.json` states. Nothing is padded.
+
+`validation_level` is shown as written and grouped into four badges: **Run on real cloud**, **CI with mocks only**, **Source review only**, **Not run**.
+
+### Placement decisions
+
+| Repository | Where | Why |
+|---|---|---|
+| healthcare-eks-secops, aws-retail-microservices-eks, gcp-ai-log-analyzer, aws-3-tier-github-actions, azure-aks-referral-platform | Capital | Flagship platforms |
+| github-actions-oidc-s3-pipeline, cloud-portfolio | Capital | Named for the capital |
+| zeinhaidara (profile README) | Capital, as the "Say hi" balloon | Domain "Profile" matches no zone; the balloon was already the contact point |
+| 01-terraform-multi-az-vpc, 02-ansible-linux-hardening | Provisioning (01–05), also linked from the capital | Code Clinic flagships |
+| Code Clinic 03–30 | Zone of their challenge number | Five per zone |
+| forest-run-unity-game | Archive | Archived public repository |
+| Code Clinic 31–50 | Uncharted islands, no link | Not built yet |
+
+Private repositories are never rendered: the build reads only entries marked `PUBLIC`, and the link checker fails if a non-public name from the audit appears anywhere in the output.
+
+## Art style
+
+The look is the original island world, redrawn without WebGL: flat-shaded low-poly shapes, two or three flat tones per object, lit from the upper left, no outlines; seven-sided islands on inverted rock cones; cone trees, box houses, squashed-sphere clouds; thin white orbit rings and dotted routes; pill labels with a colour dot; Space Grotesk and DM Sans. Palette, climates and props come from the original scene and live in `tokens.css` and `scripts/lib/art.mjs`. New scenery must be built from the same primitives and palette.
+
+## Files
+
+| Path | Purpose |
 |---|---|
-| `index.html`, `app.css`, `app.js` | Homepage: project panel, day/night switch, flat fallback for devices without WebGL |
-| `world.js` | 3D island world for both day and night |
-| `healthcare.html`, `pipeline.js` | Healthcare SecOps case study and pipeline simulator |
-| `gcp.html`, `gcp-replay.js` | AI Log Analyzer case study and investigation replay |
-| `orbital.html` | Orbital Expeditions case study |
-| `style.css`, `theme.css`, `case.js` | Shared case-study styles, the day/night theme, and each page's 3D island hero |
-| `classic.html` | Plain project list for non-3D use |
-| `assets/`, `og-image.png` | Screenshots and social preview |
+| `data/projects.json` | Public project data (snapshot of the audit, public repositories only) |
+| `data/world.json` | Zones, skies, placements, redirects, text overrides |
+| `content/*.html` | Detailed case-study bodies for the six original projects |
+| `scripts/build.mjs` | Generator: world page, zone scenery, case studies, list, redirects, sitemap, 404 |
+| `scripts/lib/art.mjs` | Low-poly SVG scenery: islands, landmarks, props, creatures, zone scenes |
+| `scripts/check-links.mjs` | Link, fragment, asset and privacy checks |
+| `tokens.css` | Palette, type and motion tokens shared by all pages |
+| `world.css`, `world.js` | Map: camera, pan/zoom/pinch, lazy zone loading, particles, minimap, search |
+| `style.css`, `theme.css`, `site.js` | Case-study and list styles; table filters |
+| `pipeline.js`, `gcp-replay.js` | Healthcare pipeline simulator and GCP investigation replay |
+| `index.html`, `projects.html`, `projects/`, `world/`, `404.html`, `sitemap.xml`, `robots.txt` | Generated output |
+| `healthcare.html`, `gcp.html`, `orbital.html`, `classic.html`, `space.html` | Generated redirects from the old URLs (fragments are kept) |
 
-Local preview only: serve the folder with `python -m http.server` and open `http://localhost:8000`. The live site needs no setup.
+Local preview: `python -m http.server` in the repository root, then open `http://localhost:8000`.
