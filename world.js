@@ -27,7 +27,8 @@ function apply() {
   constrain();
   const k = cam.k;
   world.style.transform = `translate3d(${Math.round(vw / 2 - (cam.x - D.world.x0) * k)}px,${Math.round(vh / 2 - (cam.y - D.world.y0) * k)}px,0) scale(${k})`;
-  if (k !== lastK) { lastK = k; world.style.setProperty('--ik', clamp(1 / k, 0.75, 6)); world.style.setProperty('--lk', clamp(0.95 / k, 0.8, 1.7)); }
+  // label scale is an inherited variable: update it in coarse steps while zooming, exactly once at rest
+  if (k !== lastK && (!anim || Math.abs(k / lastK - 1) > 0.06)) { lastK = k; world.style.setProperty('--ik', clamp(1 / k, 0.75, 6)); world.style.setProperty('--lk', clamp(0.95 / k, 0.8, 1.7)); }
   const far = k < 0.5;
   world.classList.toggle('far', far);
   const hw = vw / 2 / k, hh = vh / 2 / k;
@@ -84,8 +85,10 @@ function touched() { body.classList.add('touched'); }
 /* ---------- lazy zone scenery ---------- */
 const far = (s) => /drift|fly|aurora|fog/.test(s.cls);
 const sprite = (s) => `<div class="sp ${s.cls}" style="left:${s.x}px;top:${s.y}px;width:${s.w}px;height:${s.h}px;--d:${s.dur || 8};--dl:${s.delay || 0}"><svg width="${s.w}" height="${s.h}" viewBox="0 0 ${s.w} ${s.h}" focusable="false">${s.svg}</svg></div>`;
-async function load(z) {
-  z.state = 1;
+// one zone at a time, so two neighbours arriving together do not block a frame for long
+let loading = Promise.resolve();
+function load(z) { z.state = 1; loading = loading.then(() => inject(z)).then(() => new Promise((r) => setTimeout(r, 60))); }
+async function inject(z) {
   try {
     const d = await (await fetch(`world/${z.id}.json`)).json();
     const scn = z.el.querySelector('.scn'), r = z.r;
