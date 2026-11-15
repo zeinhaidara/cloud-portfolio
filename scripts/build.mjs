@@ -114,6 +114,7 @@ ${css.map((c) => `<link rel="stylesheet" href="${base}${c}">`).join('')}${extra}
 const skyVars = (z) => `--s0:${z.sky[0]};--s1:${z.sky[1]};--s2:${z.sky[2]};--c:${z.color}`;
 const backdrop = `<div class="backdrop" aria-hidden="true"><span class="cl c1"></span><span class="cl c2"></span><span class="cl c3"></span></div>`;
 const footer = (base) => `<footer><a class="brand" href="${base}index.html">ZEIN / CLOUD</a><span>Cloud Portfolio · 2026</span><a href="${base}projects.html">All projects</a><a href="${SITE.github}">GitHub profile</a></footer>`;
+const skyControl = `<button class="mode" id="mode" type="button" aria-pressed="false" aria-label="Switch to night" hidden><i aria-hidden="true"><span class="sunI">☀️</span><span class="moonI">🌙</span></i></button>`;
 
 /* ---------- world page ---------- */
 function zoneCard(z) {
@@ -139,7 +140,7 @@ function indexPage() {
     + placement.uncharted.map((u) => `<span class="plabel ghost" id="g-${u.n}"><em>${u.n}</em><span class="t">Uncharted · coming soon</span></span>`).join('');
   const desc = 'Cloud engineering projects by Zein as one 3D world of floating islands: a capital of flagship platforms around the sun, ringed by ten climate zones, one per Code Clinic domain. AWS, Azure and Google Cloud.';
   const html = `<!doctype html>
-<html lang="en"><head>${head({ title: SITE.title, desc, path: '', css: ['tokens.css', 'world.css'] })}
+<html lang="en"><head>${head({ title: SITE.title, desc, path: '', css: ['tokens.css', 'world.css'], extra: '<script src="sky.js"></script>' })}
 </head>
 <body>
 <script>try{var c=document.createElement('canvas');if(!/[?&]view=list/.test(location.search)&&sessionStorage.getItem('zein-view')!=='list'&&window.WebGLRenderingContext&&(c.getContext('webgl2')||c.getContext('webgl')))document.body.className='gl'}catch(e){}</script>
@@ -147,7 +148,7 @@ function indexPage() {
 <div class="labels" id="labels">${labels}</div>
 <header class="top"><a class="brand" href="index.html">ZEIN<span> / CLOUD ENGINEERING</span></a>
  <form class="search" id="search" role="search" autocomplete="off"><label class="vh" for="q">Find a project</label><input id="q" type="search" placeholder="Find a project…" aria-controls="q-list" aria-expanded="false" role="combobox" aria-autocomplete="list"><ul id="q-list" role="listbox" hidden></ul></form>
- <nav aria-label="Main navigation"><a href="projects.html">All projects</a><button class="pill" type="button" id="b-view" aria-pressed="false" hidden>List view</button><a class="pill gh" href="${SITE.github}">GitHub</a><a class="pill" href="mailto:${SITE.email}">Contact</a></nav></header>
+ <nav aria-label="Main navigation"><a href="projects.html">All projects</a><button class="pill" type="button" id="b-view" aria-pressed="false" hidden>List view</button><a class="pill gh" href="${SITE.github}">GitHub</a><a class="pill" href="mailto:${SITE.email}">Contact</a>${skyControl}</nav></header>
 <main>
 <section class="intro"><div class="eyebrow">AWS · AZURE · GCP · INFRASTRUCTURE · APPLICATIONS</div>
  <h1>Ideas into systems.<br><span>Built in the cloud.</span></h1>
@@ -177,6 +178,7 @@ function heroScene(p) {
 }
 function casePage(p) {
   const z = p.zone, base = '../';
+  const hero = Boolean(W.placements[p.name]?.legacy);
   const file = `content/${p.name}.html`;
   let body = existsSync(resolve(root, file)) ? read(file).trim().replace(/(src|href)="assets\//g, `$1="${base}assets/`) : '';
   const subs = [...body.matchAll(/<div id="([^"]+)" class="sub"><div class="sub-label"><span>\d+<\/span> ([^<]+)<\/div>/g)].map((m) => [m[1], m[2].trim()]);
@@ -186,17 +188,17 @@ function casePage(p) {
   const demo = p.demo_url && !demoOwn ? `<a class="button" href="${esc(p.demo_url)}">${p.name === 'zeinhaidara' ? 'Open the GitHub profile' : p.name === 'cloud-portfolio' ? 'Open the live site' : 'Open the live app'}</a>` : '';
   const lims = p.known_limitations || [], steps = p.next_steps || [];
   const vText = p.validation_level.toLowerCase() === VAL[p.v][0].toLowerCase() ? '' : `<span class="vnote">${code(p.validation_level)}</span>`;
-  const scripts = [body.includes('id="sim"') ? `<script src="${base}pipeline.js" defer></script>` : '', body.includes('id="replay"') ? `<script src="${base}gcp-replay.js" defer></script>` : ''].join('');
+  const scripts = [hero ? `<script type="module" src="${base}case.js"></script>` : '', body.includes('id="sim"') ? `<script src="${base}pipeline.js" defer></script>` : '', body.includes('id="replay"') ? `<script src="${base}gcp-replay.js" defer></script>` : ''].join('');
   const title = `${p.title} · Zein Cloud Portfolio`;
   return `<!doctype html>
-<html lang="en" data-mode="${z.mode}" data-zone="${z.id}"><head>${head({ title, desc: p.summary, path: p.href, base, css: ['tokens.css', 'style.css', 'theme.css'] })}
+<html lang="en" data-mode="${z.mode}" data-zone="${z.id}"><head>${head({ title, desc: p.summary, path: p.href, base, css: ['tokens.css', 'style.css', 'theme.css'], extra: hero ? `<script src="${base}sky.js"></script>` : '' })}
 </head>
-<body style="${skyVars(z)}">${backdrop}<header><a class="brand" href="${base}index.html">ZEIN<span> / CLOUD ENGINEERING</span></a><nav aria-label="Main navigation"><a href="${base}index.html">World</a><a href="${base}projects.html">All projects</a>${subs.map(([id, t]) => `<a href="#${id}">${cap(t)}</a>`).join('')}<a class="pill-link" href="mailto:${SITE.email}">Contact</a><a class="nav-contact" href="${esc(p.repo_url)}">GitHub</a></nav></header>
+<body style="${skyVars(z)}">${backdrop}<header><a class="brand" href="${base}index.html">ZEIN<span> / CLOUD ENGINEERING</span></a><nav aria-label="Main navigation"><a href="${base}index.html">World</a><a href="${base}projects.html">All projects</a>${subs.map(([id, t]) => `<a href="#${id}">${cap(t)}</a>`).join('')}<a class="pill-link" href="mailto:${SITE.email}">Contact</a><a class="nav-contact" href="${esc(p.repo_url)}">GitHub</a>${hero ? skyControl : ''}</nav></header>
 <main id="home" style="--c:${p.color}">
 <nav class="crumbs" aria-label="Breadcrumb"><ol><li><a href="${base}index.html">World</a></li><li><a href="${base}index.html#${z.id}">${esc(z.short)}</a></li><li aria-current="page">${esc(p.short)}</li></ol></nav>
 <section id="work" class="project"><div class="section-label">CASE STUDY · ${p.cc ? `CODE CLINIC ${p.cc} · ` : ''}${esc(z.name.toUpperCase())}</div>
 <div class="project-heading"><h1 class="title${p.title.length > 26 ? ' long' : ''}">${esc(p.title)}<i class="dot" aria-hidden="true"></i></h1><div><span class="pill">${esc(p.domain.toUpperCase())}</span><p>${code(p.summary)}</p><div class="project-actions">${demo}<a class="text-link" href="${esc(p.repo_url)}">Source on GitHub</a><a class="text-link" href="${base}index.html#p-${p.name}">Show on map</a></div></div></div>
-<div class="isle">${heroScene(p)}<span class="tag">${esc(z.short.toUpperCase())}</span><span class="hint">${esc(z.climate)}</span></div>
+<div class="isle${hero ? ' hero' : ''}">${heroScene(p)}${hero ? `<canvas id="hero-canvas" data-id="${esc(p.name)}" data-color="${p.color}" data-building="${p.building}" data-climate="${p.ground}" data-size="${p.size}" data-phase="${p.phase}" aria-label="3D island for ${esc(p.title)}"></canvas>` : ''}<span class="tag">${esc(z.short.toUpperCase())}</span><span class="hint">${esc(z.climate)}</span></div>
 <dl class="facts"><div><dt>Validation</dt><dd>${badge(p)}${vText}</dd></div><div><dt>Outcome</dt><dd>${code(p.outcome)}</dd></div><div><dt>Status</dt><dd>${code(p.status)}</dd></div><div><dt>Stack</dt><dd class="tags">${p.stack.map((s) => `<span>${esc(s)}</span>`).join('')}</dd></div></dl>
 ${body}
 ${lims.length || steps.length ? `<div id="limitations" class="sub"><div class="sub-label">KNOWN LIMITATIONS</div><div class="honest">${lims.length ? `<h2>What this does not prove.</h2><ul>${lims.map((l) => `<li>${code(l)}</li>`).join('')}</ul>` : ''}${steps.length ? `<h2${lims.length ? ' class="gap"' : ''}>Next steps.</h2><ul>${steps.map((l) => `<li>${code(l)}</li>`).join('')}</ul>` : ''}</div></div>` : ''}

@@ -10,6 +10,19 @@ const RINGZ = D.zones.filter((z) => z.range).map((z) => z.id);
 const balloon = (D.islands.find((p) => p.building === 'balloon') || {}).name;
 const countable = D.islands.filter((p) => p.name !== balloon);
 let world = null, focused = null, activeCard = null, loading = null;
+const sky = window.zeinSky, toggle = $('mode');
+const repaintSky = sky.chip(toggle, applySky);
+const weatherChip = toggle.previousElementSibling;
+weatherChip.hidden = true;
+const celebration = $('toast').innerHTML;
+function applySky(s = sky.now()) {
+  document.documentElement.dataset.mode = s.mode;
+  toggle.setAttribute('aria-pressed', String(s.mode === 'night'));
+  toggle.setAttribute('aria-label', s.mode === 'night' ? 'Switch capital to day' : 'Switch capital to night');
+  if (world) world.setSky(s);
+}
+toggle.addEventListener('click', () => { sky.setMode(sky.now().mode === 'night' ? 'day' : 'night'); repaintSky(); applySky(); });
+applySky();
 const seen = new Set(read());
 function read() { try { return JSON.parse(sessionStorage.getItem('zein-seen') || '[]'); } catch { return []; } }
 function save() { try { sessionStorage.setItem('zein-seen', JSON.stringify([...seen])); } catch { /* storage blocked */ } }
@@ -25,6 +38,8 @@ function setView(gl) {
   b.textContent = gl ? 'List view' : '3D view';
   b.setAttribute('aria-pressed', String(!gl));
   store('zein-view', gl ? '3d' : 'list');
+  toggle.hidden = !gl;
+  weatherChip.hidden = !gl;
   if (world) world.pause(!gl);
   if (gl) start().then(() => { if (world) { world.pause(!body.classList.contains('gl')); world.redraw(); } });
 }
@@ -40,11 +55,12 @@ function start() {
         toast.hidden = false;
       } });
       world.pause(!body.classList.contains('gl'));
+      world.setSky(sky.now());
       window.__world = world; // for the browser console and the test scripts
       world.ready.then(() => body.classList.add('ready'));
       marks();
       route();
-    }).catch((err) => { console.warn('3D world unavailable, showing the list', err); body.classList.remove('gl'); $('b-view').hidden = true; });
+    }).catch((err) => { console.warn('3D world unavailable, showing the list', err); body.classList.remove('gl'); toggle.hidden = weatherChip.hidden = true; $('b-view').hidden = true; });
   }
   return loading;
 }
@@ -87,6 +103,7 @@ function closePanel(stay) {
 function celebrate() {
   if (world) world.celebrate(['#ff8a1f', '#12b981', '#f2b705', '#7c5cff', '#2f9bff', '#1e6ad6', '#ff5d6c', '#ffd34d']);
   const t = $('toast');
+  t.innerHTML = celebration;
   t.hidden = false; t.classList.remove('show'); void t.offsetWidth; t.classList.add('show');
   setTimeout(() => { t.hidden = true; }, 7000);
 }
@@ -113,6 +130,9 @@ function goZone(id, card = true) {
 function onState(s) {
   $('mm-here').setAttribute('transform', `translate(${s.x.toFixed(1)} ${s.z.toFixed(1)})`);
   body.classList.toggle('dark', s.lit > 0.45);
+  const inCapital = s.over < 0.6 && s.here === 'capital';
+  toggle.hidden = !inCapital;
+  weatherChip.hidden = !inCapital;
   const name = s.over > 0.6 ? 'Whole world' : s.here ? Z[s.here].short : 'Open sky';
   if ($('mm-where').textContent !== name) {
     $('mm-where').textContent = name;
@@ -185,7 +205,7 @@ for (const z of Object.values(Z)) { const b = Object.assign(document.createEleme
     const p = hits[i];
     if (!p) return;
     close(); q.value = '';
-    if (world && body.classList.contains('gl')) { focus(p.name); $('l-' + p.name).focus({ preventScroll: true }); } else location.hash = 'p-' + p.name;
+    if (world && body.classList.contains('gl')) { focus(p.name); $('p-close').focus({ preventScroll: true }); } else location.hash = 'p-' + p.name;
   }
   q.addEventListener('input', render);
   q.addEventListener('focus', render);

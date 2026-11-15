@@ -90,7 +90,7 @@ else console.log(`ok: ${checked} internal references across ${pages.length} page
   const { mkdtempSync, writeFileSync, rmSync } = await import('node:fs');
   const { tmpdir } = await import('node:os');
   const dir = mkdtempSync(resolve(tmpdir(), 'site-check-'));
-  const mods = ['world.js', 'app.js', ...readdirSync(resolve(root, 'zones')).map((f) => 'zones/' + f)];
+  const mods = ['world.js', 'app.js', 'hero-world.js', 'case.js', 'sky.js', ...readdirSync(resolve(root, 'zones')).map((f) => 'zones/' + f)];
   for (const m of mods) {
     const tmp = resolve(dir, m.replace(/\W/g, '_') + '.mjs');
     writeFileSync(tmp, readFileSync(resolve(root, m), 'utf8'));
