@@ -51,8 +51,8 @@ for (const p of projects) {
   if (!placement.islands.some((i) => i.name === p.name) && p.visibility === 'PUBLIC') errors.push(`${p.name} has no island`);
 }
 if (readdirSync(resolve(root, 'projects')).length !== projects.length) errors.push('projects/ holds pages that are not in data/projects.json');
-for (const z of placement.zones) { checked++; if (!existsSync(resolve(root, `world/${z.id}.json`))) errors.push(`missing world/${z.id}.json`); }
-for (const f of ['tokens.css', 'world.css', 'world.js', 'style.css', 'theme.css', 'site.js', 'og-image.png', 'sitemap.xml', 'robots.txt', '404.html']) { checked++; if (!existsSync(resolve(root, f))) errors.push(`missing ${f}`); }
+
+for (const f of ['tokens.css', 'world.css', 'world.js', 'app.js', 'vendor/three.module.min.js', 'zones/kit.js', ...new Set(placement.zones.map((z) => z.air.decor).filter(Boolean).map((d) => `zones/${d}.js`)), 'style.css', 'theme.css', 'site.js', 'og-image.png', 'sitemap.xml', 'robots.txt', '404.html']) { checked++; if (!existsSync(resolve(root, f))) errors.push(`missing ${f}`); }
 const audit = resolve(root, '../_audit/projects.json');
 if (existsSync(audit)) { // local only: the audit also lists private repositories; none of them may leak into the site
   const hidden = JSON.parse(readFileSync(audit, 'utf8')).filter((p) => p.visibility !== 'PUBLIC').map((p) => p.name);
@@ -83,3 +83,20 @@ if (process.argv.includes('--external')) {
 
 if (errors.length) { console.error(errors.join('\n')); console.error(`\n${errors.length} problem(s)`); process.exitCode = 1; }
 else console.log(`ok: ${checked} internal references across ${pages.length} pages, ${projects.length} case studies`);
+
+// the browser modules must parse as ES modules (node --check on a .js file does not guarantee that)
+{
+  const { spawnSync } = await import('node:child_process');
+  const { mkdtempSync, writeFileSync, rmSync } = await import('node:fs');
+  const { tmpdir } = await import('node:os');
+  const dir = mkdtempSync(resolve(tmpdir(), 'site-check-'));
+  const mods = ['world.js', 'app.js', 'hero-world.js', 'case.js', 'sky.js', ...readdirSync(resolve(root, 'zones')).map((f) => 'zones/' + f)];
+  for (const m of mods) {
+    const tmp = resolve(dir, m.replace(/\W/g, '_') + '.mjs');
+    writeFileSync(tmp, readFileSync(resolve(root, m), 'utf8'));
+    const r = spawnSync(process.execPath, ['--check', tmp], { encoding: 'utf8' });
+    if (r.status !== 0) { console.error(`${m}: does not parse as a module\n${r.stderr.split('\n').slice(0, 6).join('\n')}`); process.exitCode = 1; }
+  }
+  rmSync(dir, { recursive: true, force: true });
+  if (!process.exitCode) console.log(`modules: ${mods.length} parse`);
+}

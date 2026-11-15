@@ -19,3 +19,19 @@
 .flap{animation:flap .45s ease-in-out infinite alternate;transform-box:fill-box;transform-origin:center bottom}@keyframes flap{to{transform:scaleY(.25)}}
 .vh{position:absolute!important;width:1px;height:1px;overflow:hidden;clip-path:inset(50%);white-space:nowrap}
 @media(prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition-duration:.01s!important;transition-delay:0s!important}}
+
+/* Original day/night switch and weather chip. */
+.mode{position:relative;width:66px;height:34px;border-radius:20px;border:1.5px solid var(--line);background:var(--panel-solid);cursor:pointer;padding:0;flex:none}
+.mode i{position:absolute;top:3px;left:3px;width:26px;height:26px;border-radius:50%;background:#ffd34d;display:grid;font-style:normal;font-size:14px;transition:left .7s var(--ease),background .7s var(--ease)}
+.mode i span{grid-area:1/1;place-self:center;transition:opacity .4s,transform .7s var(--ease)}
+.mode .moonI{opacity:0;transform:rotate(-90deg)}
+:root[data-mode=night] .mode i{left:33px;background:#2b3350}
+:root[data-mode=night] .mode .sunI{opacity:0;transform:rotate(90deg)}:root[data-mode=night] .mode .moonI{opacity:1;transform:none}
+.mode:focus-visible{outline:2.5px solid var(--accent);outline-offset:3px}
+
+.wx-chip{display:inline-flex;align-items:center;gap:6px;height:34px;padding:0 13px;border:1.5px solid var(--line);border-radius:20px;background:var(--panel-solid,var(--panel));color:inherit;font:inherit;font-size:13px;font-weight:600;cursor:pointer;white-space:nowrap;flex:none;transition:border-color .3s,background-color var(--t) var(--ease)}
+.wx-chip:hover{border-color:var(--accent)}
+.wx-chip:focus-visible{outline:2.5px solid var(--accent);outline-offset:3px}
+.wx-chip span{font-size:15px;line-height:1}
+@media(max-width:480px){.wx-chip b{display:none}.wx-chip{padding:0 10px}}
+.mode[hidden],.wx-chip[hidden]{display:none}
