@@ -5,7 +5,7 @@ import { makeBird, makeFlock, flyFlock, sstep } from './kit.js';
 export default function build(api, z) {
   const { flat, baked, rockBase, palm, house, rockLump } = api;
   const root = new THREE.Group();
-  z.group.add(root);
+  (z.big || z.group).add(root); // the engine scales the large-feature group with distance
   const s = 2.6, R = 1.55 * s, H = 0.4 * s;
   const islet = baked(() => {
     const g = new THREE.Group();

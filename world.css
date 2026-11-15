@@ -104,6 +104,7 @@ b.check::after{content:"✓";font-weight:700}
 .actions{display:flex;flex-wrap:wrap;align-items:center;gap:18px}
 .cta{background:#1d2340;color:#fff;font-weight:700;font-size:14px;padding:12px 20px;border-radius:12px;transition:transform .2s}.cta:hover{transform:translateY(-2px)}
 .link{font-size:14px;font-weight:500;border-bottom:1.5px solid var(--c);padding-bottom:2px}
+button.link{background:none;border:0;border-bottom:1.5px solid var(--c);cursor:pointer;padding:0 0 2px;color:inherit}
 
 /* zone card as the left side panel */
 .gl .zones{position:fixed;left:24px;top:80px;z-index:8;width:min(360px,calc(100vw - 48px));max-width:none;margin:0;padding:0;display:block;pointer-events:none}
@@ -148,14 +149,9 @@ b.check::after{content:"✓";font-weight:700}
  .plabel{max-width:180px}
 }
 @media(max-height:620px) and (min-width:901px){.gl .intro h1{font-size:36px}.gl .intro{bottom:92px}.minimap{width:130px}}
-
-/* over a dark zone the chrome takes the original night surfaces */
-.gl.dark{--panel:var(--glass-night);--line:var(--line-night);--muted:#b4bdca;--chip:#1b2431;--accent:#ffad48;color:#eff2f6}
-.gl.dark .plabel,.gl.dark .zlabel{color:#eff2f6;background:rgba(19,26,36,.82);border-color:#2a3340}.gl.dark .plabel em{color:#b4bdca}
-.gl.dark .plabel.ghost{background:rgba(19,26,36,.55);color:#d5dbe6}
-.gl.dark .intro p{color:#d5dbe6}.gl.dark .cta{background:#eff2f6;color:#0c1017}
-.gl.dark .zcard{color:#1d2340;--muted:var(--muted-ink);--line:var(--line-day)}
-.gl.dark .search ul{color:#1d2340;--muted:var(--muted-ink)}
-.gl.dark #mm-where{color:#eff2f6}.gl.dark .panel .kind{color:color-mix(in srgb,var(--c) 60%,#fff)}
-.gl.dark :focus-visible{outline-color:#fff;box-shadow:0 0 0 6px rgba(12,16,23,.9)}
-.gl .top,.gl .dock a,.gl .ctl button,.gl .pill,.gl .search input{transition:color .6s,background-color .6s,border-color .6s}
+@media(max-width:600px){
+ .gl.overview .zlabel{gap:0;padding:10px}
+ .gl.overview .zlabel svg{width:20px;height:20px}
+ .gl.overview .zlabel:not(:focus-visible) b{position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%);white-space:nowrap}
+ .gl.overview .zlabel:focus-visible{gap:5px}
+}

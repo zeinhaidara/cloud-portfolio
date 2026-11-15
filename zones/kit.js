@@ -47,7 +47,7 @@ export function makeRibbon(length, height, color, { additive = true, segs = 28 }
   const n = geo.attributes.position.count, rgba = new Float32Array(n * 4), rowA = [0, 0.55, 1, 0];
   for (let i = 0; i < n; i++) { const row = Math.floor(i / (segs + 1)), u = (i % (segs + 1)) / segs; rgba.set([1, 1, 1, rowA[row] * Math.min(1, Math.sin(u * Math.PI) * 2.2)], i * 4); }
   geo.setAttribute('color', new THREE.BufferAttribute(rgba, 4));
-  const mat = new THREE.MeshBasicMaterial({ color, vertexColors: true, transparent: true, opacity: 0, depthWrite: false, side: THREE.DoubleSide, fog: false, blending: additive ? THREE.AdditiveBlending : THREE.NormalBlending });
+  const mat = new THREE.MeshBasicMaterial({ color, vertexColors: true, transparent: true, opacity: 0, depthWrite: false, side: THREE.DoubleSide, forceSinglePass: true, fog: false, blending: additive ? THREE.AdditiveBlending : THREE.NormalBlending });
   const mesh = new THREE.Mesh(geo, mat);
   mesh.frustumCulled = false;
   mesh.userData = { base: geo.attributes.position.array.slice(), ph: Math.random() * 6 };

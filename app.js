@@ -10,19 +10,7 @@ const RINGZ = D.zones.filter((z) => z.range).map((z) => z.id);
 const balloon = (D.islands.find((p) => p.building === 'balloon') || {}).name;
 const countable = D.islands.filter((p) => p.name !== balloon);
 let world = null, focused = null, activeCard = null, loading = null;
-const sky = window.zeinSky, toggle = $('mode');
-const repaintSky = sky.chip(toggle, applySky);
-const weatherChip = toggle.previousElementSibling;
-weatherChip.hidden = true;
 const celebration = $('toast').innerHTML;
-function applySky(s = sky.now()) {
-  document.documentElement.dataset.mode = s.mode;
-  toggle.setAttribute('aria-pressed', String(s.mode === 'night'));
-  toggle.setAttribute('aria-label', s.mode === 'night' ? 'Switch capital to day' : 'Switch capital to night');
-  if (world) world.setSky(s);
-}
-toggle.addEventListener('click', () => { sky.setMode(sky.now().mode === 'night' ? 'day' : 'night'); repaintSky(); applySky(); });
-applySky();
 const seen = new Set(read());
 function read() { try { return JSON.parse(sessionStorage.getItem('zein-seen') || '[]'); } catch { return []; } }
 function save() { try { sessionStorage.setItem('zein-seen', JSON.stringify([...seen])); } catch { /* storage blocked */ } }
@@ -38,8 +26,6 @@ function setView(gl) {
   b.textContent = gl ? 'List view' : '3D view';
   b.setAttribute('aria-pressed', String(!gl));
   store('zein-view', gl ? '3d' : 'list');
-  toggle.hidden = !gl;
-  weatherChip.hidden = !gl;
   if (world) world.pause(!gl);
   if (gl) start().then(() => { if (world) { world.pause(!body.classList.contains('gl')); world.redraw(); } });
 }
@@ -55,12 +41,11 @@ function start() {
         toast.hidden = false;
       } });
       world.pause(!body.classList.contains('gl'));
-      world.setSky(sky.now());
       window.__world = world; // for the browser console and the test scripts
       world.ready.then(() => body.classList.add('ready'));
       marks();
       route();
-    }).catch((err) => { console.warn('3D world unavailable, showing the list', err); body.classList.remove('gl'); toggle.hidden = weatherChip.hidden = true; $('b-view').hidden = true; });
+    }).catch((err) => { console.warn('3D world unavailable, showing the list', err); body.classList.remove('gl'); $('b-view').hidden = true; });
   }
   return loading;
 }
@@ -85,6 +70,9 @@ function focus(id) {
   $('p-main').href = contact ? 'mailto:' + D.contact.email : p.href;
   $('p-src').textContent = contact ? 'GitHub profile' : 'Source on GitHub';
   $('p-src').href = contact ? D.contact.github : p.repo;
+  $('p-back').textContent = '← ' + Z[p.zone].short;
+  $('p-back').setAttribute('aria-label', 'Back to ' + Z[p.zone].name);
+  $('p-close').setAttribute('aria-label', 'Close project and return to ' + Z[p.zone].short);
   panel.hidden = false;
   panel.classList.remove('pop'); void panel.offsetWidth; panel.classList.add('pop');
   body.classList.add('panel-open');
@@ -129,10 +117,7 @@ function goZone(id, card = true) {
 }
 function onState(s) {
   $('mm-here').setAttribute('transform', `translate(${s.x.toFixed(1)} ${s.z.toFixed(1)})`);
-  body.classList.toggle('dark', s.lit > 0.45);
-  const inCapital = s.over < 0.6 && s.here === 'capital';
-  toggle.hidden = !inCapital;
-  weatherChip.hidden = !inCapital;
+  body.classList.toggle('overview', s.over > 0.6);
   const name = s.over > 0.6 ? 'Whole world' : s.here ? Z[s.here].short : 'Open sky';
   if ($('mm-where').textContent !== name) {
     $('mm-where').textContent = name;
@@ -155,6 +140,7 @@ document.addEventListener('click', (e) => {
 });
 $('labels').addEventListener('focusin', (e) => { const l = e.target.closest('a.plabel'); if (l && l.matches(':focus-visible') && world && focused !== l.dataset.id) world.flyTo(l.dataset.id); });
 $('p-close').addEventListener('click', () => closePanel());
+$('p-back').addEventListener('click', () => { const z = focused && I[focused].zone; closePanel(true); if (z) goZone(z); });
 $('b-home').addEventListener('click', () => goZone('capital'));
 $('b-all').addEventListener('click', () => { if (!world) return; body.classList.add('touched'); if (focused) closePanel(true); showCard(null); world.goOverview(); history.replaceState(null, '', location.pathname + location.search); });
 $('b-in').addEventListener('click', () => world && world.zoomBy(0.72));

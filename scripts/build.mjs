@@ -140,7 +140,7 @@ function indexPage() {
     + placement.uncharted.map((u) => `<span class="plabel ghost" id="g-${u.n}"><em>${u.n}</em><span class="t">Uncharted · coming soon</span></span>`).join('');
   const desc = 'Cloud engineering projects by Zein as one 3D world of floating islands: a capital of flagship platforms around the sun, ringed by ten climate zones, one per Code Clinic domain. AWS, Azure and Google Cloud.';
   const html = `<!doctype html>
-<html lang="en"><head>${head({ title: SITE.title, desc, path: '', css: ['tokens.css', 'world.css'], extra: '<script src="sky.js"></script>' })}
+<html lang="en"><head>${head({ title: SITE.title, desc, path: '', css: ['tokens.css', 'world.css'] })}
 </head>
 <body>
 <script>try{var c=document.createElement('canvas');if(!/[?&]view=list/.test(location.search)&&sessionStorage.getItem('zein-view')!=='list'&&window.WebGLRenderingContext&&(c.getContext('webgl2')||c.getContext('webgl')))document.body.className='gl'}catch(e){}</script>
@@ -148,12 +148,12 @@ function indexPage() {
 <div class="labels" id="labels">${labels}</div>
 <header class="top"><a class="brand" href="index.html">ZEIN<span> / CLOUD ENGINEERING</span></a>
  <form class="search" id="search" role="search" autocomplete="off"><label class="vh" for="q">Find a project</label><input id="q" type="search" placeholder="Find a project…" aria-controls="q-list" aria-expanded="false" role="combobox" aria-autocomplete="list"><ul id="q-list" role="listbox" hidden></ul></form>
- <nav aria-label="Main navigation"><a href="projects.html">All projects</a><button class="pill" type="button" id="b-view" aria-pressed="false" hidden>List view</button><a class="pill gh" href="${SITE.github}">GitHub</a><a class="pill" href="mailto:${SITE.email}">Contact</a>${skyControl}</nav></header>
+ <nav aria-label="Main navigation"><a href="projects.html">All projects</a><button class="pill" type="button" id="b-view" aria-pressed="false" hidden>List view</button><a class="pill gh" href="${SITE.github}">GitHub</a><a class="pill" href="mailto:${SITE.email}">Contact</a></nav></header>
 <main>
 <section class="intro"><div class="eyebrow">AWS · AZURE · GCP · INFRASTRUCTURE · APPLICATIONS</div>
  <h1>Ideas into systems.<br><span>Built in the cloud.</span></h1>
  <p>Every island is a project I built. The flagships circle the sun; ten climate zones ring them, one per Code Clinic domain. <span class="d">Drag to look around, pick a zone below to fly there. The balloon says hi.</span><span class="m">Pick a zone below, or open <a href="projects.html">the full list</a>.</span></p></section>
-<aside class="panel" id="panel" hidden aria-live="polite"><button class="close" id="p-close" type="button" aria-label="Close project">✕</button><span class="kind" id="p-kind"></span><h2 id="p-title"></h2><p class="pv"><span class="st" id="p-val"></span></p><p id="p-blurb"></p><div class="tags" id="p-tags"></div><div class="actions"><a class="cta" id="p-main" href="#">Read the case study</a><a class="link" id="p-src" href="#">Source on GitHub</a></div></aside>
+<aside class="panel" id="panel" hidden aria-live="polite"><button class="close" id="p-close" type="button" aria-label="Close project">✕</button><span class="kind" id="p-kind"></span><h2 id="p-title"></h2><p class="pv"><span class="st" id="p-val"></span></p><p id="p-blurb"></p><div class="tags" id="p-tags"></div><div class="actions"><a class="cta" id="p-main" href="#">Read the case study</a><button class="link" id="p-back" type="button">Back to zone</button><a class="link" id="p-src" href="#">Source on GitHub</a></div></aside>
 <div class="zones" id="zones"><h2 class="vh">Zones and projects</h2>${zones.map(zoneCard).join('')}</div>
 <div class="hud" id="hud">
  <div class="ctl" role="group" aria-label="Camera controls"><button type="button" id="b-home" title="Capital (Home)"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 11l8-7 8 7v9h-5v-6H9v6H4z"/></svg><span>Capital</span></button><button type="button" id="b-all" title="Whole world (0)"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="8.5" fill="none"/><circle cx="12" cy="12" r="2.6"/></svg><span>World</span></button><button type="button" id="b-in" aria-label="Zoom in" title="Zoom in (+)">+</button><button type="button" id="b-out" aria-label="Zoom out" title="Zoom out (−)">−</button></div>
