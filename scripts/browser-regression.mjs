@@ -41,6 +41,7 @@ try {
   assert.equal(await page.locator('#mode').count(), 0);
   assert.equal(await page.locator('.wx-chip').count(), 0);
   assert.equal((await state()).lit, 0);
+  assert.equal(await page.locator('.zcard[data-mode="night"]').count(), 0, 'list fallbacks use the same daytime');
   // every zone outside the capital carries its own weather-and-terrain sphere once populated
   await page.waitForFunction(() => window.__world.state().spheres === 11);
   for (const zone of ['provisioning', 'finops', 'networking']) {
@@ -85,8 +86,33 @@ try {
   const flagships = await flagshipPositions();
   flagships.forEach((p, i) => assert.ok(Math.abs(Math.hypot(p.x, p.z) - (8 + 5.2 * i)) < 0.001, `${p.name} stays on its original orbit`));
   assert.equal(await page.evaluate(() => window.auditScene.children.some((m) => m.geometry?.type === 'SphereGeometry' && m.geometry.parameters.radius === 2.6 && m.position.length() === 0)), true, 'sun remains at the origin');
+  assert.equal(await page.evaluate(() => {
+    const key = (a, i) => [a.getX(i), a.getY(i), a.getZ(i)].map((v) => v.toFixed(3)).join(',');
+    return window.auditScene.children.filter((g) => g.children.some((c) => c.userData.id) && g.children[1]?.geometry?.attributes.color).every((g) => {
+      const rock = g.children[0].children.find((m) => m.geometry?.attributes.color && m.material.vertexColors);
+      const source = rock.geometry.attributes.color, far = g.children[1].geometry.attributes.color;
+      const colors = new Set(Array.from({ length: far.count }, (_, i) => key(far, i)));
+      return Array.from({ length: source.count }, (_, i) => key(source, i)).every((c) => colors.has(c));
+    });
+  }), true, 'distant capital copies retain their original rock colours');
+  const weather = await page.evaluate(() => {
+    const parts = window.auditScene.children.filter((o) => (o.isPoints || o.isLineSegments) && o.geometry.attributes.position.usage === 35048);
+    return { all: parts.length, visible: parts.filter((o) => o.visible).length };
+  });
+  assert.ok(weather.visible > 0 && weather.visible < weather.all, 'off-screen weather is culled while distant visible weather remains');
   await page.waitForTimeout(250);
   (await flagshipPositions()).forEach((p, i) => assert.notEqual(p.x, flagships[i].x, `${p.name} orbits`));
+  await page.locator('#b-all').click();
+  await page.waitForFunction(() => window.__world.state().over === 1);
+  assert.equal(await page.evaluate(() => {
+    const D = JSON.parse(document.getElementById('placement').textContent);
+    return D.zones.filter((z) => z.range && D.islands.filter((p) => p.zone === z.id).length > 1).every((z) => {
+      const group = window.auditScene.children.find((g) => g.isGroup && g.position.x === z.x && g.position.z === z.z);
+      const meshes = group.children[0].children.filter((m) => m.isMesh && m.material.vertexColors && !m.material.transparent);
+      const near = meshes.filter((m) => !m.visible), far = meshes.filter((m) => m.visible);
+      return near.length === 5 && far.length === 1 && far[0].geometry.attributes.position.count === near.reduce((n, m) => n + m.geometry.attributes.position.count, 0);
+    });
+  }), true, 'far batching preserves every opaque island triangle and keeps all zone silhouettes');
   await page.locator('.dock [data-fly="provisioning"]').click();
   await page.waitForFunction(() => { const w = window.__world.state().weights.provisioning; return w > 0.01 && w < 0.99; });
   await page.waitForFunction(() => window.__world.state().weights.provisioning > 0.99);
@@ -94,10 +120,19 @@ try {
   await page.waitForFunction(() => window.__world.state().weights.capital > 0.99);
   const before = await state();
   await page.waitForFunction((yaw) => window.__world.state().yaw !== yaw, before.yaw);
-  await page.mouse.move(700, 300);
-  await page.mouse.down(); await page.mouse.move(800, 340, { steps: 5 }); await page.mouse.up();
+  const backgroundPoint = () => page.evaluate(() => {
+    for (const y of [0.4, 0.5, 0.6]) for (const x of [0.3, 0.5, 0.65]) {
+      if (document.elementFromPoint(innerWidth * x, innerHeight * y)?.id === 'stage') return { x: innerWidth * x, y: innerHeight * y };
+    }
+    throw new Error('No canvas background available for camera interaction');
+  });
+  const drag = await backgroundPoint();
+  await page.mouse.move(drag.x, drag.y);
+  await page.mouse.down(); await page.mouse.move(drag.x + 100, drag.y + 40, { steps: 5 }); await page.mouse.up();
   assert.ok(Math.abs((await state()).yaw - before.yaw) > 0.2, 'drag changes camera orbit');
   const distance = (await state()).dist;
+  const wheel = await backgroundPoint();
+  await page.mouse.move(wheel.x, wheel.y);
   await page.mouse.wheel(0, -300);
   await page.waitForFunction((d) => window.__world.state().dist < d - 1, distance);
   await page.locator('#b-view').click();
@@ -113,6 +148,32 @@ try {
   const still = await state();
   await page.waitForTimeout(250);
   assert.equal((await state()).yaw, still.yaw, 'reduced motion stops camera auto-orbit');
+  const idle = await page.evaluate(async () => {
+    const raf = window.requestAnimationFrame;
+    let callbacks = 0;
+    window.requestAnimationFrame = function (fn) { callbacks++; return raf.call(this, fn); };
+    const frames = window.__world.state().frames;
+    try { await new Promise((r) => setTimeout(r, 300)); return { callbacks, frames: window.__world.state().frames - frames }; }
+    finally { window.requestAnimationFrame = raf; }
+  });
+  assert.deepEqual(idle, { callbacks: 0, frames: 0 }, 'idle reduced motion schedules no renderer callbacks');
+  const zoneIds = await page.locator('.dock [data-fly]').evaluateAll((links) => links.map((a) => a.dataset.fly));
+  const tour = async () => {
+    for (const zone of zoneIds) {
+      await page.locator(`.dock [data-fly="${zone}"]`).click();
+      await page.waitForFunction((z) => window.__world.state().here === z, zone);
+    }
+    await page.waitForTimeout(150);
+    const s = await state();
+    return { geometries: s.geometries, textures: s.textures };
+  };
+  const memory = await tour();
+  assert.deepEqual(await tour(), memory, 'revisiting zones allocates no additional GPU resources');
+  await page.locator('#q').fill('ansible');
+  await page.locator('#q').press('Enter');
+  assert.equal(await page.locator('#panel').isVisible(), true, 'non-capital islands are selectable');
+  assert.ok(await page.locator('#p-main').getAttribute('href'));
+  await page.locator('#p-back').click();
   console.log('ok: daylight, spheres, zones, minimap, search, back navigation, camera, list suspension, reduced motion');
 
   const race = await context.newPage();
@@ -146,7 +207,28 @@ try {
   phone.on('pageerror', (e) => errors.push(e.message));
   await phone.goto(base + '?wx=clear&time=noon');
   await ready(phone);
+  await phone.waitForFunction(() => window.__world.state().frames > 0);
   assert.equal(await phone.evaluate(() => document.documentElement.scrollWidth > innerWidth), false);
+  const touchSession = await mobile.newCDPSession(phone);
+  const touch = (type, points) => touchSession.send('Input.dispatchTouchEvent', { type, touchPoints: points.map(([id, x, y]) => ({ id, x, y })) });
+  const homeDistance = await phone.evaluate(() => window.__world.state().dist);
+  await touch('touchStart', [[1, 100, 400]]);
+  await touch('touchMove', [[1, 130, 400]]);
+  await touch('touchStart', [[1, 130, 400], [2, 230, 400]]);
+  await touch('touchMove', [[1, 135, 400], [2, 230, 400]]);
+  await phone.waitForFunction((d) => Math.abs(window.__world.state().dist - d) < 0.1, homeDistance * 100 / 95);
+  await touch('touchEnd', [[2, 230, 400]]);
+  const yaw = await phone.evaluate(() => window.__world.state().yaw);
+  await touch('touchMove', [[1, 155, 400]]);
+  await phone.waitForFunction((y) => Math.abs(window.__world.state().yaw - y) > 0.05, yaw);
+  await touch('touchEnd', []);
+  await phone.locator('#b-all').click();
+  await phone.waitForFunction(() => window.__world.state().over === 1);
+  assert.equal(await phone.locator('.zlabel.on').count(), 12, 'portrait overview retains every zone');
+  assert.equal(await phone.locator('.zlabel.on').evaluateAll((links) => links.every((a) => {
+    const r = a.getBoundingClientRect();
+    return r.left >= 0 && r.right <= innerWidth && r.top >= 0 && r.bottom <= innerHeight && a.textContent.trim();
+  })), true, 'portrait overview labels fit without hiding their accessible names');
   await phone.locator('#b-view').click();
   assert.equal(await phone.locator('#capital').isVisible(), true);
   const flat = await context.newPage();
