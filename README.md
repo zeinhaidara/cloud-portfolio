@@ -163,3 +163,11 @@ Local preview: `python -m http.server` in the repository root, then open `http:/
 See [PRESERVATION.md](PRESERVATION.md) for the comparison with `14b0408`. Run `node scripts/build.mjs --check` and `node scripts/check-links.mjs` for generated-output, links and module syntax.
 
 `node scripts/browser-regression.mjs` runs focused browser regressions with an existing Playwright installation. If it is outside this checkout, set `PLAYWRIGHT_MODULE` to its absolute module directory. Set `BROWSER_EXECUTABLE` to an existing Chromium/Chrome executable when the Playwright browser is unavailable. These are test-tool prerequisites; the site still needs nothing installed.
+
+## Workspace and file organization
+
+Use only the existing `cloud-portfolio` checkout. Before starting implementation, fetch/prune remote references, inspect local changes and worktrees, fast-forward `main` when safe, and remove only branches verified merged into it. Keep `main` plus the current work branch locally; preserve any unmerged work. Push changes or open PRs only when explicitly requested. The intentionally deleted local `AGENTS.md` stays unstaged; do not restore it during cleanup.
+
+Keep the public entry points and existing asset paths stable. `data/` and `content/` are generator inputs; `projects/`, `index.html` and `world/placement.json` are generated output. `zones/` holds biome modules, `vendor/` the pinned renderer, `assets/` original project evidence, and `scripts/` build and validation tools. Reorganizing the public files adds import and URL risk without removing duplicate implementations; the world and case-study renderers intentionally preserve their different behavior.
+
+Ignored local files have three purposes: `memory/screenshots/` contains current visual comparisons, `memory/world-preview/` contains raw profiling JSON, and `memory/.dev-instructions/` retains historical notes and unique migration code. `memory/README.md` is the current handoff. Disposable Lighthouse reports, old CI downloads, superseded screenshots and merged PR drafts can be removed after review. Keep the existing browser test tools in ignored `node_modules/`; they are not production dependencies.
