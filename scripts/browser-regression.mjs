@@ -64,6 +64,33 @@ try {
   await page.waitForFunction(() => window.__world.state().here === 'capital');
 
   await page.emulateMedia({ reducedMotion: 'no-preference' });
+  // Observe the real scene without adding production-only testing hooks.
+  await page.evaluate(async () => {
+    const { Scene } = await import('./vendor/three.module.min.js');
+    const update = Scene.prototype.updateMatrixWorld;
+    Scene.prototype.updateMatrixWorld = function (...args) {
+      window.auditScene = this;
+      return update.apply(this, args);
+    };
+  });
+  await page.waitForFunction(() => window.auditScene);
+  const flagshipPositions = () => page.evaluate(() => {
+    const names = ['aws-retail-microservices-eks', 'healthcare-eks-secops', 'gcp-ai-log-analyzer', 'aws-3-tier-github-actions', 'github-actions-oidc-s3-pipeline', 'azure-aks-referral-platform'];
+    return names.map((name) => {
+      const group = window.auditScene.children.find((g) => g.children.some((c) => c.userData.id === name));
+      return { name, x: group.position.x, z: group.position.z };
+    });
+  });
+  const flagships = await flagshipPositions();
+  flagships.forEach((p, i) => assert.ok(Math.abs(Math.hypot(p.x, p.z) - (8 + 5.2 * i)) < 0.001, `${p.name} stays on its original orbit`));
+  assert.equal(await page.evaluate(() => window.auditScene.children.some((m) => m.geometry?.type === 'SphereGeometry' && m.geometry.parameters.radius === 2.6 && m.position.length() === 0)), true, 'sun remains at the origin');
+  await page.waitForTimeout(250);
+  (await flagshipPositions()).forEach((p, i) => assert.notEqual(p.x, flagships[i].x, `${p.name} orbits`));
+  await page.locator('.dock [data-fly="provisioning"]').click();
+  await page.waitForFunction(() => { const w = window.__world.state().weights.provisioning; return w > 0.01 && w < 0.99; });
+  await page.waitForFunction(() => window.__world.state().weights.provisioning > 0.99);
+  await page.locator('#b-home').click();
+  await page.waitForFunction(() => window.__world.state().weights.capital > 0.99);
   const before = await state();
   await page.waitForFunction((yaw) => window.__world.state().yaw !== yaw, before.yaw);
   await page.mouse.move(700, 300);

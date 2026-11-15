@@ -17,11 +17,9 @@ export function createWorld({ canvas, data, labels: labelEls, onPick = () => {},
   const camera = new THREE.PerspectiveCamera(50, 1, 0.5, 5000);
   const col = (c) => new THREE.Color(c);
   const rand = (a, b) => a + Math.random() * (b - a);
-  const solo = null; // the original engine could render one island alone; the world never does
   const RING = data.ring;
 
   /* ---------- palette (the original day values) ---------- */
-  const P = { ring: col('#f4f8fc'), ringOp: 0.4, orb: col('#f6c453'), halo: col('#f0a64a'), core: col('#ffeccf'), sea: col('#e6eef6') };
   const CP = {
     top: [col('#5f97c9'), col('#04060c')], horizon: [col('#c9dceb'), col('#1c2747')], bottom: [col('#8fb4d4'), col('#0a1020')],
     fog: [col('#bfd3e4'), col('#0d1426')],
@@ -72,7 +70,7 @@ export function createWorld({ canvas, data, labels: labelEls, onPick = () => {},
   const hemi = new THREE.HemisphereLight(col('#e2edf6'), col('#7f9f72'), 1.25);
   const dir = new THREE.DirectionalLight(col('#ffe9cf'), 1.15);
   dir.position.set(30, 60, 25);
-  const core = new THREE.PointLight(P.core.clone(), 3.2, 0, 0.5);
+  const core = new THREE.PointLight(CP.core[0].clone(), 3.2, 0, 0.5);
   scene.add(hemi, dir, core);
 
   /* ---------- stars: only where a zone's air asks for them ---------- */
@@ -116,9 +114,9 @@ export function createWorld({ canvas, data, labels: labelEls, onPick = () => {},
     return new THREE.CanvasTexture(c);
   };
   const dotTex = glowTex();
-  const orb = new THREE.Mesh(new THREE.SphereGeometry(2.6, 40, 40), new THREE.MeshBasicMaterial({ color: P.orb.clone(), fog: false }));
+  const orb = new THREE.Mesh(new THREE.SphereGeometry(2.6, 40, 40), new THREE.MeshBasicMaterial({ color: CP.orb[0].clone(), fog: false }));
   scene.add(orb);
-  const halo = new THREE.Sprite(new THREE.SpriteMaterial({ map: glowTex(), color: P.halo.clone(), blending: THREE.AdditiveBlending, depthWrite: false, fog: false }));
+  const halo = new THREE.Sprite(new THREE.SpriteMaterial({ map: glowTex(), color: CP.halo[0].clone(), blending: THREE.AdditiveBlending, depthWrite: false, fog: false }));
   halo.scale.set(18, 18, 1);
   scene.add(halo);
 
@@ -148,7 +146,7 @@ export function createWorld({ canvas, data, labels: labelEls, onPick = () => {},
   cloudMesh.instanceMatrix.setUsage(THREE.DynamicDrawUsage);
   cloudMesh.frustumCulled = false;
   scene.add(cloudMesh);
-  const seaMat = new THREE.MeshStandardMaterial({ color: P.sea.clone(), emissive: 0xffffff, emissiveIntensity: 0.1, roughness: 1, flatShading: true, transparent: true, opacity: 0.6 });
+  const seaMat = new THREE.MeshStandardMaterial({ color: CP.sea[0].clone(), emissive: 0xffffff, emissiveIntensity: 0.1, roughness: 1, flatShading: true, transparent: true, opacity: 0.6 });
   const SEA = mobile ? 150 : 260, sea = new THREE.InstancedMesh(puff, seaMat, SEA);
   const m4 = new THREE.Matrix4(), q4 = new THREE.Quaternion(), v4 = new THREE.Vector3(), s4 = new THREE.Vector3();
   for (let i = 0; i < SEA; i++) {
@@ -615,7 +613,7 @@ export function createWorld({ canvas, data, labels: labelEls, onPick = () => {},
 
   /* ---------- decorative islets around the edge ---------- */
   const islets = [];
-  const ISLET_CLIMATES = solo ? ['forest', 'ice', 'village', 'rainy', 'rocky'] : ['forest', 'rocky', 'ice', 'village', 'rainy', 'tropical', 'forest', 'village', 'rocky'];
+  const ISLET_CLIMATES = ['forest', 'rocky', 'ice', 'village', 'rainy', 'tropical', 'forest', 'village', 'rocky'];
   ISLET_CLIMATES.forEach((climate, i) => {
     const s = rand(0.6, 1.05), R = 1.55 * s, H = 0.4 * s, anim = [];
     const g = new THREE.Group();
@@ -625,7 +623,7 @@ export function createWorld({ canvas, data, labels: labelEls, onPick = () => {},
     decorate(climate, s, R, top, anim, '#e05a47');
     if (i % 2 === 0 && climate !== 'rainy') { const l = lantern(s, false); l.position.set(R * 0.5, 0, -R * 0.3); top.add(l); }
     g.add(top);
-    g.userData = { r: solo ? rand(16, 30) : rand(43, 60), a: (i / ISLET_CLIMATES.length) * Math.PI * 2 + rand(0, 0.5), y: rand(-6, 5), v: rand(0.006, 0.014), bob: rand(0, 6), anim };
+    g.userData = { r: rand(43, 60), a: (i / ISLET_CLIMATES.length) * Math.PI * 2 + rand(0, 0.5), y: rand(-6, 5), v: rand(0.006, 0.014), bob: rand(0, 6), anim };
     scene.add(g);
     islets.push(g);
   });
@@ -641,16 +639,16 @@ export function createWorld({ canvas, data, labels: labelEls, onPick = () => {},
   });
   bow.position.set(88, -30, 18);
   bow.rotation.y = -Math.PI / 2 + 0.25;
-  if (!solo) scene.add(bow);
+  scene.add(bow);
   const planes = [];
   const paper = new THREE.MeshStandardMaterial({ color: 0xffffff, roughness: 0.9, flatShading: true, side: THREE.DoubleSide });
-  for (let i = 0; i < (solo ? 1 : 3); i++) {
+  for (let i = 0; i < 3; i++) {
     const g = new THREE.Group();
     const geo = new THREE.BufferGeometry();
     geo.setAttribute('position', new THREE.Float32BufferAttribute([0, 0, 0.7, -0.45, 0.05, -0.4, 0, -0.08, -0.4, 0, 0, 0.7, 0.45, 0.05, -0.4, 0, -0.08, -0.4], 3));
     geo.computeVertexNormals();
     g.add(new THREE.Mesh(geo, paper));
-    g.userData = { r: solo ? 9 : rand(18, 34), y: solo ? 4 : rand(4, 10), a: rand(0, 6.28), v: rand(0.12, 0.2) * (i % 2 ? -1 : 1), ph: rand(0, 6) };
+    g.userData = { r: rand(18, 34), y: rand(4, 10), a: rand(0, 6.28), v: rand(0.12, 0.2) * (i % 2 ? -1 : 1), ph: rand(0, 6) };
     scene.add(g);
     planes.push(g);
   }
@@ -806,7 +804,7 @@ export function createWorld({ canvas, data, labels: labelEls, onPick = () => {},
   const hitMat = new THREE.MeshBasicMaterial({ visible: false });
   data.islands.filter((p) => p.orbit != null).sort((a, b) => a.orbit - b.orbit).forEach((p) => {
     const idx = p.orbit, orbit = ORBIT(idx), s = 1.5 * p.size, colHex = col(p.color).getHex();
-    const ring = new THREE.Mesh(new THREE.RingGeometry(orbit - 0.05, orbit + 0.05, 200), new THREE.MeshBasicMaterial({ color: P.ring.clone(), side: THREE.DoubleSide, transparent: true, opacity: P.ringOp, fog: false }));
+    const ring = new THREE.Mesh(new THREE.RingGeometry(orbit - 0.05, orbit + 0.05, 200), new THREE.MeshBasicMaterial({ color: CP.ring[0].clone(), side: THREE.DoubleSide, transparent: true, opacity: CP.ringOp[0], fog: false }));
     ring.rotation.x = Math.PI / 2;
     ring.position.y = -1.2;
     scene.add(ring);
@@ -914,7 +912,7 @@ export function createWorld({ canvas, data, labels: labelEls, onPick = () => {},
     const slots = zc.range ? 5 : mine.length, orbitR = slots > 1 ? (zc.range ? RING.islandOrbit : 6) : 0;
     z.orbitR = orbitR;
     if (orbitR) {
-      const ring = new THREE.Mesh(new THREE.RingGeometry(orbitR - 0.05, orbitR + 0.05, 120), new THREE.MeshBasicMaterial({ color: P.ring.clone(), side: THREE.DoubleSide, transparent: true, opacity: P.ringOp, fog: false }));
+      const ring = new THREE.Mesh(new THREE.RingGeometry(orbitR - 0.05, orbitR + 0.05, 120), new THREE.MeshBasicMaterial({ color: CP.ring[0].clone(), side: THREE.DoubleSide, transparent: true, opacity: CP.ringOp[0], fog: false }));
       ring.rotation.x = Math.PI / 2;
       ring.position.y = -1.2;
       z.group.add(ring);
@@ -1150,22 +1148,22 @@ export function createWorld({ canvas, data, labels: labelEls, onPick = () => {},
     hemi.color.copy(acc.hemiSky); hemi.groundColor.copy(acc.hemiGround); hemi.intensity = num.hemiI;
     dir.color.copy(acc.sun); dir.intensity = num.sunI;
     cloudMat.color.copy(acc.cloud); cloudMat.opacity = 0.95 - 0.5 * num.lit;
-    seaMat.color.copy(acc.cloud).lerp(P.sea, 0.3); seaMat.opacity = 0.6 - 0.4 * over;
+    seaMat.color.copy(acc.cloud).lerp(CP.sea[0], 0.3); seaMat.opacity = 0.6 - 0.4 * over;
     starMat.opacity = Math.min(1, num.stars) * 0.9;
     lit = num.lit;
     const cap = zones.capital.w, night = zones.capital.c.night || 0;
     const w = WX[capitalSky.wx];
-    orb.material.color.copy(P.orb).lerp(zones.capital.c.orb || P.orb, cap);
+    orb.material.color.copy(CP.orb[0]).lerp(zones.capital.c.orb || CP.orb[0], cap);
     orb.material.transparent = true; orb.material.opacity = 1 - cap * (1 - sstep(0.3, 0.8, zones.capital.c.sunK ?? 1));
-    halo.material.color.copy(P.halo).lerp(zones.capital.c.halo || P.halo, cap);
-    core.color.copy(P.core).lerp(skyColor.copy(CP.core[0]).lerp(CP.core[1], night), cap); core.intensity = 3.2 - 2 * night * cap;
+    halo.material.color.copy(CP.halo[0]).lerp(zones.capital.c.halo || CP.halo[0], cap);
+    core.color.copy(CP.core[0]).lerp(skyColor.copy(CP.core[0]).lerp(CP.core[1], night), cap); core.intensity = 3.2 - 2 * night * cap;
     ffMat.opacity = night * cap * 0.9 * (w && ['rain', 'snow'].includes(w.fall) ? 0 : 1);
     cloudMat.opacity -= 0.15 * night * cap;
     cloudMat.emissiveIntensity = 0.2 * (1 - night * cap);
-    seaMat.color.lerp(zones.capital.c.sea || P.sea, cap);
+    seaMat.color.lerp(zones.capital.c.sea || CP.sea[0], cap);
     seaMat.opacity -= 0.15 * night * cap;
     seaMat.emissiveIntensity = 0.1 * (1 - night * cap);
-    for (const r of rings) r.material.color.copy(P.ring).lerp(CP.ring[1], night * cap);
+    for (const r of rings) r.material.color.copy(CP.ring[0]).lerp(CP.ring[1], night * cap);
     for (const mat of bowMats) mat.opacity = 0.24 * (1 - lit) * (1 - cap * (w ? 1 - w.bow : 0));
     if (flash > 0.01) { skyColor.set('#dfe6ff'); skyU.top.value.lerp(skyColor, flash * cap * 0.5); skyU.horizon.value.lerp(skyColor, flash * cap * 0.35); hemi.intensity += flash * cap * 1.6; }
     for (const g of glows) g.mat.emissiveIntensity = (g.min || 0) + (g.max - (g.min || 0)) * lit;
@@ -1275,7 +1273,7 @@ export function createWorld({ canvas, data, labels: labelEls, onPick = () => {},
         ffPos[i * 3 + 2] = ffBase[i * 3 + 2] + Math.cos(t * 0.6 + ph) * 0.8;
       }
       ffGeo.attributes.position.needsUpdate = true;
-      ffMat.size = (solo ? 0.09 : 0.26) + Math.sin(t * 3) * (solo ? 0.02 : 0.06);
+      ffMat.size = 0.26 + Math.sin(t * 3) * 0.06;
     }
     const mt = meteor.userData;
     if (capNight > 0.8 && !reduced) {

@@ -18,6 +18,8 @@ Reference: `14b0408`. Reviewed engine base: `4e74c4c`. Existing engine history i
 
 The restored hero renderer deliberately retains the original implementation instead of adding solo-scene branches to the zone engine. Its only renderer changes are the local r160 import and freezing animation time under reduced motion. `case.js` retains intersection-based suspension and also handles document visibility.
 
+The world engine reuses the original day/night palette instead of maintaining a duplicate daylight palette. Constant-false solo-scene branches were removed from this engine only; the case-study renderer retains its actual solo behavior. Shared-model extraction across renderers and broader CSS cleanup are deferred because they would increase preservation risk without fixing behavior.
+
 No screenshot assets, original project simulators, content attribution, or project evidence are replaced. Generated pages remain produced by `scripts/build.mjs`.
 
 Validation commands and browser-tool prerequisites are documented in the README. Browser checks use Chromium; physical-device performance, other browser engines and live external applications require separate verification. Procedural scenery is random, so side-by-side visual inspection is not a pixel-equality test.
