@@ -31,3 +31,54 @@ Continued from `e095912` and `e77a1e3` without replacing the sphere architecture
 Regression checks cover all twelve navigation destinations, non-capital selection, colour retention, particle culling, zero idle render callbacks, repeated-tour GPU resource stability, and actual multi-touch input. The headless desktop overview measured 251 to 227 draw calls with the same 116105 triangles. Idle reduced-motion callback count over 600 ms fell from 37 to zero. The 4x CPU-throttled mobile baseline measured 9.5 FPS; the final sample measured 11.7 FPS with the portrait overview fitted to all zones. These short samples use different overview framing and remain below smooth interactive performance; they are not a physical-device benchmark. Pixel ratio dropped from 1.5 to 1.25 under load and returned to 1.5 after the throttle was removed. No distant sphere or terrain silhouette was removed.
 
 Portrait overview framing now fits the horizontal field of view, without changing the original capital framing or tilt. Existing zone labels use their icons in this compact overview to keep terrain visible; their names remain available to assistive technology, keyboard focus and the unchanged bottom chips. Explicit navigation also clears the initial intro camera offset.
+
+## Measured refinement continuation
+
+Baseline: `8c57e08`, including the previously completed single-pass orbit rings. Final engine: `76265c5`. Continued the existing material-sharing, static-transform, batching and terrain refinements rather than replacing the engine. No CSS, models, case-study renderers, particle densities or adaptive-resolution thresholds were replaced.
+
+Plain flat colours now share materials; animated materials remain separate. Unlit transparent ribbons, beams and the rainbow use a single two-sided pass. Distant capital models detach their unused near hierarchy, including a baked contact balloon; orbital roots still move. Static zone transforms avoid repeated local matrix composition, distant uncharted islands batch together, and large terrain flora bake with their landform. Decorative islets retain their orbits and visible details; only offscreen internal animation updates are suspended.
+
+Retained the unfinished vertex-height shading, lighter inner haze, clearer fog in four existing zones, and separate smooth scaling for terrain landmarks versus island rings. This makes distant landforms easier to distinguish without enlarging neighbouring weather formations into one another. The existing tropical, desert and ice centrepieces use that same terrain group.
+
+Corrected four integration problems: ghost batching had filtered out its own transparent geometry; an overview cutoff hid scenery abruptly; removing lamp lights lost local-weather illumination; and a reduced-motion return from distant LOD could leave the shield facing the previous camera. Ghost batches retain geometry, visible scenery stays present, zero-intensity lamps skip rendering but remain available, and model animation uses the current camera after LOD reattachment.
+
+### Reproduction and measurements
+
+Run `node scripts/profile-world.mjs --baseline 8c57e08 --output memory/refine-before-mobile4.json`, then omit `--baseline` for the working tree. Add `--desktop` for desktop, or `--cpu 1 --ratio 1.5` for unthrottled mobile. `--screens memory/refine-after` captures the comparison views; combine with `--baseline` for the reference. Use the existing browser-tool environment variables documented in the README. No site dependencies are added.
+
+Chrome headless on Intel UHD Graphics through ANGLE/D3D11; desktop 1440x900/DPR 1, mobile 375x812/device DPR 2. Fixed yaw -1.58, overview distances 420/1057.653637, seed 8675309. Each condition uses two six-second captures after five seconds of warm-up and another second at the requested CPU throttle. Renderer resolution is fixed for comparison; adaptive behavior is tested separately. Full baseline files are served directly from Git without changing branches or creating another checkout.
+
+Pairs below are capture 1 / capture 2, in milliseconds unless stated otherwise.
+
+| Metric | Baseline | Final |
+| --- | --- | --- |
+| Desktop FPS | 59.88 / 59.88 | 60.05 / 60.05 |
+| Mobile FPS, normal CPU | 59.71 / 59.55 | 60.05 / 60.05 |
+| Mobile FPS, 4x CPU | 14.56 / 10.14 | 14.15 / 11.95 |
+| Desktop frame p50; p95 | 16.7 / 16.6; 16.8 / 16.8 | 16.7 / 16.6; 16.8 / 16.9 |
+| Mobile normal frame p50; p95 | 16.7 / 16.6; 16.8 / 16.8 | 16.7 / 16.6; 16.9 / 16.8 |
+| Mobile 4x frame p50; p95 | 66.6 / 99.9; 83.4 / 149.8 | 66.6 / 66.6; 100 / 116.6 |
+| Mobile 4x frame p99 | 99.9 / 149.9 | 133.3 / 971.7 |
+| Desktop JavaScript/frame, CDP | 7.93 / 7.67 | 5.51 / 5.67 |
+| Mobile normal JavaScript/frame, CDP | 6.35 / 6.56 | 4.71 / 4.56 |
+| Mobile 4x JavaScript/frame, CDP | 50.82 / 73.49 | 45.85 / 43.54 |
+| Mobile 4x render-call p50; p95 | 47 / 65.5; 61.8 / 105.6 | 39.6 / 35.7; 66 / 64.5 |
+| Mobile 4x non-render callback p50 | 3.1 / 3.8 | 3.7 / 3.5 |
+| Draw calls, desktop / mobile | 210 / 206 | 158 / 154 |
+| Submitted triangles, desktop / mobile | 110905 / 94505 | 106213 / 89813 |
+| Fixed renderer DPR, desktop / mobile normal / mobile 4x | 1 / 1.5 / 1.25 | 1 / 1.5 / 1.25 |
+| GPU elapsed p50; p95, mobile 4x | 8.48; 19.27 | 6.63; 13.26 |
+| Uploaded geometries, desktop / mobile | 391 / 387 | 373 / 373 |
+| Textures | 2 | 2 |
+| Browser-reported initial transfer, bytes | 894170 | 897166 |
+| Reduced-motion idle callbacks | Not remeasured | 0 |
+
+CPU profiles concentrate in Three.js rendering, program setup, matrix traversal and GL uniform/buffer submission, not weather updates or raycasting. GPU elapsed time is substantially below CPU render-call time under throttling. The measurable gain is lower render/JavaScript cost and fewer submissions; submitted triangle savings include avoided transparent passes, not deleted terrain. The throttled FPS ranges overlap, so these samples do not establish a reliable FPS gain. The final second capture includes a roughly one-second interval outside the measured animation callback; its scheduling cause is unresolved. Sustained throttled performance remains poor and must not be described as smooth mobile performance.
+
+Initial scene construction and shader warm-up still produce long tasks (about 0.5 seconds in final captures). Git-backed reference serving changes loading latency, so startup wall-clock timing is not a deployment speed comparison. Transfer values come from local browser resource timing, not compressed production hosting. Seeded procedural scenes are comparable views rather than pixel-identical scenery, because sharing Three.js materials also changes UUID-related random-number consumption.
+
+### Validation and remaining limits
+
+Production generation and generated-output verification passed: 50 outputs, 39 case studies, 12 zones, 20 uncharted slots. Link checks passed: 875 internal references, 45 external links, nine browser modules and the existing privacy checks. Browser regressions passed for all twelve destinations, original sun/orbits, LOD colour and geometry retention, weather culling, atmosphere blending, search/minimap/panels, drag/zoom/pinch, startup failures, list suspension, zero reduced-motion idle callbacks, stable GPU counts across repeated tours, three original heroes, project simulators, and no-JavaScript/no-WebGL fallbacks. Added a shield-orientation regression and an adaptive downshift/recovery test using controlled frame timestamps; the latter verifies controller behavior rather than real-device recovery speed.
+
+Reviewed 13 before/after views per revision: capital, desktop and portrait world overviews, tropical/desert/ice, containers/security/reliability, island close-up and three heroes. Terrain silhouettes, localized colours, cloud formations, original UI and near models remain present. Captures and raw profiling JSON remain local under ignored `memory/refine-*` paths. Physical phones, Safari/Firefox, long-session heap retention and the scheduling outlier remain unverified. No distant sphere was removed to meet a frame-rate target.

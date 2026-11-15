@@ -76,6 +76,7 @@ try {
     };
   });
   await page.waitForFunction(() => window.auditScene);
+  await page.evaluate(() => { window.auditScene.onAfterRender = (_renderer, _scene, camera) => { window.auditCamera = camera; }; });
   const flagshipPositions = () => page.evaluate(() => {
     const names = ['aws-retail-microservices-eks', 'healthcare-eks-secops', 'gcp-ai-log-analyzer', 'aws-3-tier-github-actions', 'github-actions-oidc-s3-pipeline', 'azure-aks-referral-platform'];
     return names.map((name) => {
@@ -88,9 +89,12 @@ try {
   assert.equal(await page.evaluate(() => window.auditScene.children.some((m) => m.geometry?.type === 'SphereGeometry' && m.geometry.parameters.radius === 2.6 && m.position.length() === 0)), true, 'sun remains at the origin');
   assert.equal(await page.evaluate(() => {
     const key = (a, i) => [a.getX(i), a.getY(i), a.getZ(i)].map((v) => v.toFixed(3)).join(',');
-    return window.auditScene.children.filter((g) => g.children.some((c) => c.userData.id) && g.children[1]?.geometry?.attributes.color).every((g) => {
-      const rock = g.children[0].children.find((m) => m.geometry?.attributes.color && m.material.vertexColors);
-      const source = rock.geometry.attributes.color, far = g.children[1].geometry.attributes.color;
+    const flagships = window.auditScene.children.filter((g) => g.children.some((c) => c.userData.id) && g.children.some((c) => c.isGroup));
+    return flagships.length === 8 && flagships.every((g) => {
+      const near = g.children.find((c) => c.isGroup);
+      const rock = near.children.find((m) => m.geometry?.attributes.color && m.material.vertexColors);
+      if (!rock) return true; // the contact balloon has no rock base
+      const source = rock.geometry.attributes.color, far = g.children.find((c) => c.geometry?.attributes.color).geometry.attributes.color;
       const colors = new Set(Array.from({ length: far.count }, (_, i) => key(far, i)));
       return Array.from({ length: source.count }, (_, i) => key(source, i)).every((c) => colors.has(c));
     });
@@ -113,6 +117,11 @@ try {
       return near.length === 5 && far.length === 1 && far[0].geometry.attributes.position.count === near.reduce((n, m) => n + m.geometry.attributes.position.count, 0);
     });
   }), true, 'far batching preserves every opaque island triangle and keeps all zone silhouettes');
+  assert.equal(await page.evaluate(() => {
+    const ghosts = [];
+    window.auditScene.traverse((m) => { if (m.isMesh && m.visible && m.material.vertexColors && m.material.opacity === 0.42) ghosts.push(m); });
+    return ghosts.length > 0 && ghosts.every((m) => m.geometry.attributes.position.count > 0);
+  }), true, 'distant uncharted batches retain their ghost-island geometry');
   await page.locator('.dock [data-fly="provisioning"]').click();
   await page.waitForFunction(() => { const w = window.__world.state().weights.provisioning; return w > 0.01 && w < 0.99; });
   await page.waitForFunction(() => window.__world.state().weights.provisioning > 0.99);
@@ -174,6 +183,20 @@ try {
   assert.equal(await page.locator('#panel').isVisible(), true, 'non-capital islands are selectable');
   assert.ok(await page.locator('#p-main').getAttribute('href'));
   await page.locator('#p-back').click();
+  await page.locator('#b-all').click();
+  await page.locator('#q').fill('healthcare');
+  await page.locator('#q').press('Enter');
+  await page.waitForFunction(() => window.__world.state().dist < 20);
+  assert.equal(await page.evaluate(async () => {
+    const { Vector3 } = await import('./vendor/three.module.min.js');
+    const group = window.auditScene.children.find((g) => g.children.some((c) => c.userData.id === 'healthcare-eks-secops'));
+    let badge;
+    group.traverse((m) => { if (m.geometry?.type === 'ExtrudeGeometry') badge = m.parent; });
+    const toward = window.auditCamera.position.clone().sub(badge.getWorldPosition(new Vector3()));
+    toward.y = 0;
+    return badge.getWorldDirection(new Vector3()).dot(toward.normalize()) > 0.999 && badge.children.some((m) => m.geometry?.type === 'TubeGeometry');
+  }), true, 'the shield check faces the current camera immediately after reduced-motion LOD return');
+  await page.locator('#p-back').click();
   console.log('ok: daylight, spheres, zones, minimap, search, back navigation, camera, list suspension, reduced motion');
 
   const race = await context.newPage();
@@ -203,9 +226,11 @@ try {
   console.log('ok: startup/list race and visible biome-loading failure');
 
   const mobile = await browser.newContext({ viewport: { width: 375, height: 812 }, isMobile: true, hasTouch: true, reducedMotion: 'reduce' });
+  await mobile.route('https://fonts.googleapis.com/**', (r) => r.abort());
+  console.log('running: mobile gestures and fallbacks');
   const phone = await mobile.newPage();
   phone.on('pageerror', (e) => errors.push(e.message));
-  await phone.goto(base + '?wx=clear&time=noon');
+  await phone.goto(base + '?wx=clear&time=noon', { waitUntil: 'domcontentloaded' });
   await ready(phone);
   await phone.waitForFunction(() => window.__world.state().frames > 0);
   assert.equal(await phone.evaluate(() => document.documentElement.scrollWidth > innerWidth), false);
@@ -231,6 +256,28 @@ try {
   })), true, 'portrait overview labels fit without hiding their accessible names');
   await phone.locator('#b-view').click();
   assert.equal(await phone.locator('#capital').isVisible(), true);
+  // Exercise the real adaptive controller with controlled frame timestamps, independent of host load.
+  const adaptive = await browser.newContext({ viewport: { width: 375, height: 812 }, deviceScaleFactor: 2, isMobile: true });
+  await adaptive.route('https://fonts.googleapis.com/**', (r) => r.abort());
+  const recovery = await adaptive.newPage();
+  await recovery.addInitScript(() => {
+    const raf = window.requestAnimationFrame;
+    let clock;
+    window.testFrameInterval = 100;
+    window.requestAnimationFrame = (fn) => raf((now) => {
+      if (fn.name !== 'frame') return fn(now);
+      clock = clock == null ? now : clock + window.testFrameInterval;
+      fn(clock);
+    });
+  });
+  await recovery.goto(base, { waitUntil: 'domcontentloaded' });
+  await recovery.waitForFunction(() => window.__world?.state().pixelRatio <= 1.25);
+  const lowered = await recovery.evaluate(() => window.__world.state().pixelRatio);
+  await recovery.evaluate(() => { window.testFrameInterval = 1000 / 60; });
+  await recovery.waitForFunction((ratio) => window.__world.state().pixelRatio > ratio, lowered, { timeout: 90000 });
+  assert.ok(await recovery.evaluate(() => window.__world.state().pixelRatio <= 1.5), 'recovery respects the mobile resolution cap');
+  await adaptive.close();
+  console.log('ok: adaptive resolution lowers under sustained pressure and recovers with headroom (controlled timestamps)');
   const flat = await context.newPage();
   await flat.addInitScript(() => {
     const get = HTMLCanvasElement.prototype.getContext;
@@ -239,10 +286,12 @@ try {
   await flat.goto(base);
   assert.equal(await flat.locator('#capital').isVisible(), true);
   const nojs = await browser.newContext({ javaScriptEnabled: false, viewport: { width: 375, height: 812 } });
+  await nojs.route('https://fonts.googleapis.com/**', (r) => r.abort());
   const plain = await nojs.newPage();
   await plain.goto(base);
   assert.equal(await plain.locator('.zcard').count(), 12);
   for (const slug of ['healthcare-eks-secops', 'gcp-ai-log-analyzer', 'aws-retail-microservices-eks']) {
+    console.log(`running: hero ${slug}`);
     await page.goto(base + `projects/${slug}.html?wx=clear&time=noon#day`);
     await page.locator('.hero.on').waitFor();
     assert.equal(await page.locator('#hero-canvas').isVisible(), true);
