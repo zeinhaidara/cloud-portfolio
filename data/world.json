@@ -239,7 +239,7 @@
    ],
    "icon": "crate",
    "color": "#7c5cff",
-   "mode": "night",
+   "mode": "day",
    "climate": "Stormy sea, rain and lightning",
    "blurb": "Charts, controllers and policies for workloads that must hold in rough water.",
    "sky": [
@@ -369,7 +369,7 @@
    ],
    "icon": "shield",
    "color": "#12b981",
-   "mode": "night",
+   "mode": "day",
    "climate": "Dark forest, heavy fog, fireflies",
    "blurb": "Guard posts in the fog: MFA, key rotation, remediation and secret scanning.",
    "sky": [
@@ -484,7 +484,7 @@
    ],
    "icon": "lighthouse",
    "color": "#f2b705",
-   "mode": "night",
+   "mode": "day",
    "climate": "Rainy highlands, night-lit mist",
    "blurb": "Lighthouses over the mist: metrics, logs, burn rates and alerts.",
    "sky": [
@@ -764,7 +764,7 @@
    ],
    "icon": "crystal",
    "color": "#38b6ff",
-   "mode": "night",
+   "mode": "day",
    "climate": "Icy archipelago, snowfall, aurora",
    "blurb": "Bridges between frozen islands. Not built yet.",
    "sky": [
@@ -836,7 +836,7 @@
    ],
    "icon": "volcano",
    "color": "#e05a47",
-   "mode": "night",
+   "mode": "day",
    "climate": "Volcanoes, embers, a calm lake",
    "blurb": "Fire around still water. Not built yet.",
    "sky": [
