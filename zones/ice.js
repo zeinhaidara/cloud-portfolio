@@ -1,6 +1,5 @@
-// Networking: icy archipelago. An iceberg with penguins, frozen bridges between the island slots, aurora overhead.
+// Networking: icy archipelago. An iceberg with penguins, frozen bridges between the island slots.
 import * as THREE from '../vendor/three.module.min.js';
-import { makeRibbon, waveRibbon, sstep } from './kit.js';
 
 export default function build(api, z) {
   const { flat, baked, rockBase, pine, col } = api;
@@ -61,18 +60,11 @@ export default function build(api, z) {
   });
   z.spin.add(bridges);
 
-  // aurora: three additive ribbons high above the zone
-  // curtains stand around the rim of the zone; only the ones beyond the islands (seen from the camera) are lit
-  const ribbons = [0, 1, 2, 3, 4, 5].map((i) => { const a = (i / 6) * Math.PI * 2 + 0.4, r = makeRibbon(z.r * 1.25, 13 + (i % 3) * 3, col(i % 2 ? '#9a8cff' : '#7cf5c0')); r.position.set(Math.cos(a) * z.r * 1.2, 12 + (i % 2) * 4, Math.sin(a) * z.r * 1.2); r.rotation.y = -a + Math.PI / 2; z.group.add(r); return r; });
-  const wp = new THREE.Vector3();
 
   return {
     update(t, dt, w, appear, camera) {
       root.scale.setScalar(Math.max(0.001, appear));
       bridges.scale.setScalar(Math.max(0.001, appear));
-      const k = sstep(0.3, 0.85, w) * appear; // the aurora belongs to the dark sky: it is gone before a neighbour's daylight takes over
-      const dc = camera.position.distanceTo(z.center);
-      for (const r of ribbons) { const far = sstep(-0.2, 0.5, (camera.position.distanceTo(r.getWorldPosition(wp)) - dc) / z.r); r.visible = k * far > 0.01; if (r.visible) { r.material.opacity = 0.5 * k * far; waveRibbon(r, t, 3.5, 0.11, 0.35); } }
       const near = w > 0.05;
       for (const p of penguins) { p.visible = near; if (near) { p.rotation.z = Math.sin(t * 4 + p.userData.ph) * 0.12; p.position.y = p.userData.y + Math.abs(Math.sin(t * 4 + p.userData.ph)) * 0.05; } }
     },

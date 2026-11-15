@@ -41,7 +41,6 @@
      1.15
     ],
     "cloud": "#f4f7fb",
-    "stars": 0,
     "lit": 0,
     "particles": null,
     "built": true,
@@ -87,12 +86,11 @@
      1.35
     ],
     "cloud": "#f4f7fb",
-    "stars": 0,
     "lit": 0,
     "particles": {
      "type": "motes",
      "count": 220,
-     "color": "#fff3c4",
+     "color": "#f7ffb0",
      "size": 0.34
     },
     "built": true,
@@ -105,7 +103,11 @@
      "parrot"
     ],
     "decor": "tropical",
-    "spin": 0.02
+    "spin": 0.02,
+    "sphere": {
+     "haze": "#c9f0c0",
+     "strength": 0.5
+    }
    },
    "range": [
     1,
@@ -142,11 +144,10 @@
      1.15
     ],
     "cloud": "#f4f7fb",
-    "stars": 0,
     "lit": 0,
     "particles": {
-     "type": "dust",
-     "count": 90,
+     "type": "gust",
+     "count": 110,
      "color": "#f4f8fc",
      "size": 0.3
     },
@@ -157,7 +158,61 @@
     ],
     "creatures": [],
     "decor": null,
-    "spin": 0.03
+    "spin": 0.03,
+    "sphere": {
+     "haze": "#eef5fb",
+     "strength": 0.32,
+     "canopy": [
+      "cap",
+      "#ffffff",
+      7
+     ],
+     "terrain": {
+      "scale": 4,
+      "ground": "village",
+      "flora": [
+       [
+        "tree",
+        7,
+        2.6
+       ]
+      ],
+      "shapes": [
+       [
+        "box",
+        "#fff5e6",
+        -0.2,
+        -0.2,
+        0.9,
+        3.2
+       ],
+       [
+        "cone",
+        "#e05a47",
+        -0.2,
+        -0.2,
+        0.9,
+        0.9
+       ],
+       [
+        "box",
+        "#fff5e6",
+        0.42,
+        0.25,
+        0.7,
+        2.4
+       ],
+       [
+        "cone",
+        "#3f7be0",
+        0.42,
+        0.25,
+        0.7,
+        0.8
+       ]
+      ]
+     }
+    }
    },
    "range": [
     6,
@@ -194,12 +249,11 @@
      0.5
     ],
     "cloud": "#737c8e",
-    "stars": 0,
     "lit": 0.5,
     "particles": {
-     "type": "dust",
-     "count": 90,
-     "color": "#c9d6ee",
+     "type": "rain",
+     "count": 1100,
+     "color": "#5f7896",
      "size": 0.3
     },
     "built": false,
@@ -209,7 +263,77 @@
     ],
     "creatures": [],
     "decor": null,
-    "spin": 0.02
+    "spin": 0.02,
+    "sphere": {
+     "haze": "#5d6677",
+     "strength": 0.62,
+     "canopy": [
+      "cap",
+      "#59627a",
+      14
+     ],
+     "terrain": {
+      "scale": 4.2,
+      "ground": "city",
+      "flora": [
+       [
+        "rockGrey",
+        5,
+        3
+       ]
+      ],
+      "shapes": [
+       [
+        "disc",
+        "#3a4a66",
+        0,
+        0,
+        9.5,
+        0.12
+       ],
+       [
+        "box",
+        "#ff8a1f",
+        -0.3,
+        -0.1,
+        2.2,
+        1
+       ],
+       [
+        "box",
+        "#2f9bff",
+        0.25,
+        -0.2,
+        2.2,
+        1
+       ],
+       [
+        "box",
+        "#12b981",
+        -0.28,
+        -0.12,
+        2.2,
+        2.9
+       ],
+       [
+        "box",
+        "#f2b705",
+        0.1,
+        0.35,
+        2.2,
+        1
+       ],
+       [
+        "box",
+        "#7c5cff",
+        0.24,
+        -0.18,
+        2.2,
+        2.9
+       ]
+      ]
+     }
+    }
    },
    "range": [
     11,
@@ -226,33 +350,32 @@
    "z": 46.35,
    "r": 34,
    "sky": [
-    "#04060c",
-    "#1c2747",
-    "#0d1426"
+    "#7f8f8a",
+    "#b9c4bd",
+    "#93a59a"
    ],
    "air": {
     "fog": [
-     "#1c2230",
-     22,
-     120
+     "#aebbb2",
+     18,
+     100
     ],
     "hemi": [
-     "#7d8fc4",
-     "#1a1f33",
-     0.6
+     "#cfd9d2",
+     "#4f6b55",
+     0.95
     ],
     "sun": [
-     "#9fb6ff",
-     0.45
+     "#e6efe4",
+     0.5
     ],
-    "cloud": "#1c2540",
-    "stars": 0.6,
-    "lit": 1,
+    "cloud": "#dfe6e0",
+    "lit": 0.5,
     "particles": {
-     "type": "dust",
-     "count": 90,
+     "type": "motes",
+     "count": 120,
      "color": "#e4ff8a",
-     "size": 0.3
+     "size": 0.32
     },
     "built": false,
     "flora": [
@@ -262,7 +385,61 @@
     ],
     "creatures": [],
     "decor": null,
-    "spin": 0.015
+    "spin": 0.015,
+    "sphere": {
+     "haze": "#8fa39a",
+     "strength": 0.6,
+     "canopy": [
+      "cap",
+      "#c7d1c9",
+      9
+     ],
+     "terrain": {
+      "scale": 4.2,
+      "ground": "castle",
+      "flora": [
+       [
+        "pine",
+        16,
+        3
+       ]
+      ],
+      "shapes": [
+       [
+        "box",
+        "#c3c8d2",
+        -0.1,
+        -0.1,
+        1.5,
+        3.4
+       ],
+       [
+        "cone",
+        "#12b981",
+        -0.1,
+        -0.1,
+        1.3,
+        1.6
+       ],
+       [
+        "box",
+        "#c3c8d2",
+        0.3,
+        0.15,
+        1.1,
+        2.4
+       ],
+       [
+        "cone",
+        "#12b981",
+        0.3,
+        0.15,
+        1,
+        1.2
+       ]
+      ]
+     }
+    }
    },
    "range": [
     16,
@@ -279,32 +456,31 @@
    "z": 121.35,
    "r": 34,
    "sky": [
-    "#080c16",
-    "#1f2a44",
-    "#151b2b"
+    "#6f7f91",
+    "#a7b3c0",
+    "#8796a8"
    ],
    "air": {
     "fog": [
-     "#1f2a44",
-     30,
-     150
+     "#a7b3c0",
+     40,
+     170
     ],
     "hemi": [
-     "#8fa3cc",
-     "#1f2a44",
-     0.65
+     "#cdd6e0",
+     "#6f7f8c",
+     0.95
     ],
     "sun": [
-     "#a9c3ea",
-     0.45
+     "#dfe6f0",
+     0.55
     ],
-    "cloud": "#2a3248",
-    "stars": 0.3,
-    "lit": 1,
+    "cloud": "#a3adbb",
+    "lit": 0.35,
     "particles": {
-     "type": "dust",
-     "count": 90,
-     "color": "#a9c3ea",
+     "type": "rain",
+     "count": 900,
+     "color": "#5f7896",
      "size": 0.3
     },
     "built": false,
@@ -314,7 +490,66 @@
     ],
     "creatures": [],
     "decor": null,
-    "spin": 0.02
+    "spin": 0.02,
+    "sphere": {
+     "haze": "#8796a8",
+     "strength": 0.55,
+     "canopy": [
+      "cap",
+      "#8a94a6",
+      12
+     ],
+     "terrain": {
+      "scale": 4.2,
+      "ground": "rainy",
+      "flora": [
+       [
+        "pine",
+        6,
+        2.6
+       ],
+       [
+        "rockGrey",
+        4,
+        3
+       ]
+      ],
+      "shapes": [
+       [
+        "cone",
+        "#7b7f8c",
+        -0.25,
+        -0.2,
+        3.2,
+        5.2
+       ],
+       [
+        "cone",
+        "#8a8e97",
+        0.2,
+        -0.35,
+        2.4,
+        3.6
+       ],
+       [
+        "box",
+        "#fff5e6",
+        0.35,
+        0.3,
+        0.8,
+        4
+       ],
+       [
+        "cone",
+        "#e05a47",
+        0.35,
+        0.3,
+        0.8,
+        1
+       ]
+      ]
+     }
+    }
    },
    "range": [
     21,
@@ -351,12 +586,11 @@
      1.1
     ],
     "cloud": "#f4f7fb",
-    "stars": 0,
     "lit": 0,
     "particles": {
-     "type": "dust",
-     "count": 90,
-     "color": "#bfe6b0",
+     "type": "motes",
+     "count": 140,
+     "color": "#e6f7a8",
      "size": 0.3
     },
     "built": false,
@@ -367,7 +601,45 @@
     ],
     "creatures": [],
     "decor": null,
-    "spin": 0.012
+    "spin": 0.012,
+    "sphere": {
+     "haze": "#bfe6b0",
+     "strength": 0.45,
+     "terrain": {
+      "scale": 4.2,
+      "ground": "forest",
+      "flora": [
+       [
+        "pine",
+        12,
+        3
+       ],
+       [
+        "tree",
+        6,
+        2.6
+       ]
+      ],
+      "shapes": [
+       [
+        "box",
+        "#fff5e6",
+        0,
+        0.1,
+        1.6,
+        1.3
+       ],
+       [
+        "cone",
+        "#8b5a2b",
+        0,
+        0.1,
+        1.5,
+        1.1
+       ]
+      ]
+     }
+    }
    },
    "range": [
     26,
@@ -404,7 +676,6 @@
      1.55
     ],
     "cloud": "#fff0dc",
-    "stars": 0,
     "lit": 0,
     "particles": {
      "type": "heat",
@@ -423,7 +694,11 @@
      "vulture"
     ],
     "decor": "desert",
-    "spin": 0.012
+    "spin": 0.012,
+    "sphere": {
+     "haze": "#ffc46b",
+     "strength": 0.6
+    }
    },
    "range": [
     31,
@@ -440,32 +715,31 @@
    "z": 46.35,
    "r": 34,
    "sky": [
-    "#0e1422",
-    "#2c3550",
-    "#1d2538"
+    "#9fb8d2",
+    "#e3e9ef",
+    "#cfdcee"
    ],
    "air": {
     "fog": [
-     "#232c44",
-     40,
-     180
+     "#dfe8f1",
+     38,
+     170
     ],
     "hemi": [
-     "#b9cdf2",
-     "#3a4666",
-     1.1
+     "#eef4fb",
+     "#b9c8dc",
+     1.15
     ],
     "sun": [
-     "#b9c8ff",
-     0.85
+     "#f1f5ff",
+     0.8
     ],
-    "cloud": "#3a4666",
-    "stars": 1,
-    "lit": 0.8,
+    "cloud": "#ffffff",
+    "lit": 0.25,
     "particles": {
      "type": "snow",
      "count": 700,
-     "color": "#e8f0ff",
+     "color": "#ffffff",
      "size": 0.36
     },
     "built": true,
@@ -478,7 +752,16 @@
      "penguin"
     ],
     "decor": "ice",
-    "spin": 0.014
+    "spin": 0.014,
+    "sphere": {
+     "haze": "#e3eeff",
+     "strength": 0.62,
+     "canopy": [
+      "cap",
+      "#f4f8ff",
+      7
+     ]
+    }
    },
    "range": [
     36,
@@ -495,33 +778,32 @@
    "z": -46.35,
    "r": 34,
    "sky": [
-    "#1c0d0a",
-    "#4a1f12",
-    "#2a1410"
+    "#8a5a4a",
+    "#d9a37a",
+    "#a8705a"
    ],
    "air": {
     "fog": [
-     "#4a1f12",
+     "#b98566",
      40,
      170
     ],
     "hemi": [
-     "#c98a6a",
-     "#2a1410",
-     0.7
+     "#e6c2a6",
+     "#5a3a2e",
+     1
     ],
     "sun": [
-     "#ff8a3d",
-     0.7
+     "#ffb27a",
+     0.9
     ],
-    "cloud": "#3a2018",
-    "stars": 0.3,
-    "lit": 0.7,
+    "cloud": "#6b5a55",
+    "lit": 0.5,
     "particles": {
-     "type": "dust",
-     "count": 90,
+     "type": "ember",
+     "count": 260,
      "color": "#ff8a3d",
-     "size": 0.3
+     "size": 0.34
     },
     "built": false,
     "flora": [
@@ -530,7 +812,61 @@
     ],
     "creatures": [],
     "decor": null,
-    "spin": 0.015
+    "spin": 0.015,
+    "sphere": {
+     "haze": "#b0603f",
+     "strength": 0.55,
+     "canopy": [
+      "column",
+      "#5b5560",
+      8
+     ],
+     "terrain": {
+      "scale": 4.4,
+      "ground": "volcanic",
+      "flora": [
+       [
+        "rockLava",
+        6,
+        3
+       ]
+      ],
+      "shapes": [
+       [
+        "cone",
+        "#3a2e2e",
+        -0.15,
+        -0.1,
+        4.2,
+        5.6
+       ],
+       [
+        "cone",
+        "#ff6a00",
+        -0.15,
+        -0.1,
+        1.1,
+        5.9
+       ],
+       [
+        "cone",
+        "#4b3c3c",
+        0.4,
+        -0.3,
+        2.2,
+        2.6
+       ],
+       [
+        "disc",
+        "#38b6ff",
+        0.3,
+        0.35,
+        2.6,
+        0.1
+       ]
+      ]
+     }
+    }
    },
    "range": [
     41,
@@ -567,7 +903,6 @@
      1.25
     ],
     "cloud": "#ffffff",
-    "stars": 0,
     "lit": 0,
     "particles": {
      "type": "dust",
@@ -582,7 +917,69 @@
     ],
     "creatures": [],
     "decor": null,
-    "spin": 0.01
+    "spin": 0.01,
+    "sphere": {
+     "haze": "#f1f6ff",
+     "strength": 0.4,
+     "canopy": [
+      "ring",
+      "#ffffff",
+      12
+     ],
+     "terrain": {
+      "scale": 4,
+      "ground": "snow",
+      "flora": [
+       [
+        "pineSnow",
+        4,
+        2.4
+       ]
+      ],
+      "shapes": [
+       [
+        "cone",
+        "#8a9bb6",
+        -0.1,
+        -0.1,
+        3.6,
+        8.5
+       ],
+       [
+        "cone",
+        "#ffffff",
+        -0.1,
+        -0.1,
+        1.5,
+        9.6
+       ],
+       [
+        "cone",
+        "#8a9bb6",
+        0.38,
+        0.1,
+        2.4,
+        5
+       ],
+       [
+        "cone",
+        "#ffffff",
+        0.38,
+        0.1,
+        1,
+        5.6
+       ],
+       [
+        "cone",
+        "#6b7b96",
+        -0.42,
+        0.25,
+        2,
+        3.6
+       ]
+      ]
+     }
+    }
    },
    "range": [
     46,
@@ -619,7 +1016,6 @@
      0.8
     ],
     "cloud": "#e6ebf0",
-    "stars": 0,
     "lit": 0,
     "particles": null,
     "built": false,
@@ -629,7 +1025,11 @@
     ],
     "creatures": [],
     "decor": null,
-    "spin": 0.01
+    "spin": 0.01,
+    "sphere": {
+     "haze": "#c3ccd6",
+     "strength": 0.3
+    }
    },
    "range": null
   }
