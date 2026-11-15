@@ -5,7 +5,7 @@ import * as THREE from './vendor/three.module.min.js';
 // frame each zone gets a weight from the distance between the camera's focus point and the zone centre, and sky, fog,
 // lights, cloud tint, stars, particles and zone decor are blended by those weights, so flying between zones never cuts.
 // Island, prop and building models are the original low-poly ones.
-export function createWorld({ canvas, data, labels: labelEls, onPick = () => {}, onInteract = () => {}, onState = () => {} }) {
+export function createWorld({ canvas, data, labels: labelEls, onPick = () => {}, onInteract = () => {}, onState = () => {}, onError = () => {} }) {
   performance.mark('world:start');
   const reducedQ = window.matchMedia('(prefers-reduced-motion: reduce)');
   let reduced = reducedQ.matches;
@@ -912,7 +912,11 @@ export function createWorld({ canvas, data, labels: labelEls, onPick = () => {},
   function loadDecor(z) {
     if (z.decorState !== 0 || !z.group) return;
     z.decorState = 1;
-    import(`./zones/${z.cfg.air.decor}.js`).then((m) => { z.decor = m.default(api, z); z.decorState = 2; dirty = true; }).catch(() => { z.decorState = 3; });
+    import(`./zones/${z.cfg.air.decor}.js`).then((m) => { z.decor = m.default(api, z); z.decorState = 2; dirty = true; }).catch((error) => {
+      z.decorState = 3;
+      console.error(`Could not load scenery for ${z.cfg.name}`, error);
+      onError(z.cfg.name);
+    });
   }
   const idle = window.requestIdleCallback || ((f) => setTimeout(f, 1200));
   idle(() => { idleDone = true; }); // decor modules load after first paint; a zone the camera reaches earlier loads at once
@@ -1100,9 +1104,12 @@ export function createWorld({ canvas, data, labels: labelEls, onPick = () => {},
 
   /* ---------- loop ---------- */
   let firstFrame = false, lastT = performance.now(), fpsN = 0, fpsT = 0, fps = 60, slow = 0, stateT = 0;
+  let paused = false, pausedAt = 0, frameId = 0;
+  function schedule() { if (!paused && !document.hidden) frameId = requestAnimationFrame(frame); }
   function frame(now) {
-    requestAnimationFrame(frame);
-    if (document.hidden) { lastT = now; return; } // nothing is drawn while the tab is hidden
+    frameId = 0;
+    if (paused || document.hidden) { lastT = now; return; }
+    schedule();
     const real = Math.min((now - lastT) / 1000, 0.05);
     lastT = now;
     fpsN++; fpsT += real;
@@ -1203,7 +1210,7 @@ export function createWorld({ canvas, data, labels: labelEls, onPick = () => {},
   function state() {
     let here = null, best = 0;
     for (const z of zoneList) if (z.raw > best) { best = z.raw; here = z.id; }
-    return { x: rig.target.x, z: rig.target.z, dist: rig.dist, yaw: rig.yaw, over, here: best > 0.25 ? here : null, weights: Object.fromEntries(zoneList.map((z) => [z.id, +z.w.toFixed(3)])), lit, fps, calls: renderer.info.render.calls, triangles: renderer.info.render.triangles, pixelRatio };
+    return { x: rig.target.x, z: rig.target.z, dist: rig.dist, yaw: rig.yaw, over, here: best > 0.25 ? here : null, weights: Object.fromEntries(zoneList.map((z) => [z.id, +z.w.toFixed(3)])), lit, fps, calls: renderer.info.render.calls, triangles: renderer.info.render.triangles, pixelRatio, paused, frames: renderer.info.render.frame };
   }
   performance.mark('world:built');
   // Compile every shader variant off the main thread before the first frame (parallel compile where the browser
@@ -1212,13 +1219,21 @@ export function createWorld({ canvas, data, labels: labelEls, onPick = () => {},
   warm.add(new THREE.Mesh(UNIT.box, bakedMat), new THREE.Mesh(UNIT.box, ghostMat), new THREE.InstancedMesh(UNIT.box, MAT.trunk, 1), new THREE.Points(starGeo, new THREE.PointsMaterial({ map: dotTex, transparent: true, depthWrite: false })));
   warm.scale.setScalar(0.0001);
   scene.add(warm);
-  const ready = renderer.compileAsync(scene, camera).catch(() => {}).then(() => { scene.remove(warm); lastT = performance.now(); requestAnimationFrame(frame); });
+  let compiled = false;
+  const ready = renderer.compileAsync(scene, camera).catch(() => {}).then(() => { scene.remove(warm); compiled = true; lastT = performance.now(); schedule(); });
   reducedQ.addEventListener('change', () => { reduced = reducedQ.matches; dirty = true; });
-  document.addEventListener('visibilitychange', () => { lastT = performance.now(); dirty = true; });
+  document.addEventListener('visibilitychange', () => { lastT = performance.now(); dirty = true; if (compiled && !frameId) schedule(); });
 
   return {
     ready,
     state,
+    pause(value) {
+      if (paused === !!value) return;
+      paused = !!value;
+      const now = performance.now();
+      if (paused) { pausedAt = now; cancelAnimationFrame(frameId); frameId = 0; }
+      else { if (flight) flight.t0 += now - pausedAt; lastT = now; dirty = true; if (compiled) schedule(); }
+    },
     /** glide to an island and follow it; null returns to the current zone */
     flyTo(id) {
       if (id) populate(zones[zoneOfIsland[id]]);

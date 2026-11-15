@@ -25,7 +25,8 @@ function setView(gl) {
   b.textContent = gl ? 'List view' : '3D view';
   b.setAttribute('aria-pressed', String(!gl));
   store('zein-view', gl ? '3d' : 'list');
-  if (gl) start().then(() => world && world.redraw());
+  if (world) world.pause(!gl);
+  if (gl) start().then(() => { if (world) { world.pause(!body.classList.contains('gl')); world.redraw(); } });
 }
 
 /* ---------- 3D world ---------- */
@@ -33,7 +34,12 @@ function start() {
   if (!loading) {
     const labels = { islands: Object.fromEntries(D.islands.map((p) => [p.name, $('l-' + p.name)])), zones: Object.fromEntries(D.zones.map((z) => [z.id, $('zl-' + z.id)])), ghosts: Object.fromEntries(D.uncharted.map((u) => [u.n, $('g-' + u.n)])) };
     loading = import('./world.js').then((m) => {
-      world = m.createWorld({ canvas: $('stage'), data: D, labels, onPick: focus, onInteract: () => body.classList.add('touched'), onState });
+      world = m.createWorld({ canvas: $('stage'), data: D, labels, onPick: focus, onInteract: () => body.classList.add('touched'), onState, onError(name) {
+        const toast = $('toast');
+        toast.textContent = `${name} scenery could not load. You can still explore its projects.`;
+        toast.hidden = false;
+      } });
+      world.pause(!body.classList.contains('gl'));
       window.__world = world; // for the browser console and the test scripts
       world.ready.then(() => body.classList.add('ready'));
       marks();
