@@ -752,7 +752,7 @@ export function createWorld({ canvas, data, labels: labelEls, onPick = () => {},
   const hitMat = new THREE.MeshBasicMaterial({ visible: false });
   data.islands.filter((p) => p.orbit != null).sort((a, b) => a.orbit - b.orbit).forEach((p) => {
     const idx = p.orbit, orbit = ORBIT(idx), s = 1.5 * p.size, colHex = col(p.color).getHex();
-    const ring = new THREE.Mesh(new THREE.RingGeometry(orbit - 0.05, orbit + 0.05, 200), new THREE.MeshBasicMaterial({ color: CP.ring.clone(), side: THREE.DoubleSide, transparent: true, opacity: CP.ringOp, fog: false }));
+    const ring = new THREE.Mesh(new THREE.RingGeometry(orbit - 0.05, orbit + 0.05, 200), new THREE.MeshBasicMaterial({ color: CP.ring.clone(), side: THREE.DoubleSide, transparent: true, forceSinglePass: true, opacity: CP.ringOp, fog: false }));
     ring.rotation.x = Math.PI / 2;
     ring.position.y = -1.2;
     scene.add(ring);
@@ -936,7 +936,7 @@ export function createWorld({ canvas, data, labels: labelEls, onPick = () => {},
     const slots = zc.range ? 5 : mine.length, orbitR = slots > 1 ? (zc.range ? RING.islandOrbit : 6) : 0;
     z.orbitR = orbitR;
     if (orbitR) {
-      const ring = new THREE.Mesh(new THREE.RingGeometry(orbitR - 0.05, orbitR + 0.05, 120), new THREE.MeshBasicMaterial({ color: CP.ring.clone(), side: THREE.DoubleSide, transparent: true, opacity: CP.ringOp, fog: false }));
+      const ring = new THREE.Mesh(new THREE.RingGeometry(orbitR - 0.05, orbitR + 0.05, 120), new THREE.MeshBasicMaterial({ color: CP.ring.clone(), side: THREE.DoubleSide, transparent: true, forceSinglePass: true, opacity: CP.ringOp, fog: false }));
       ring.rotation.x = Math.PI / 2;
       ring.position.y = -1.2;
       z.group.add(ring);
