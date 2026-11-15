@@ -37,16 +37,16 @@ try {
   await page.goto(base + '?wx=clear&time=noon', { waitUntil: 'domcontentloaded' });
   await ready(page);
   console.log('running: capital ready');
-  assert.equal((await state()).sky.mode, 'day');
-  await page.locator('#mode').click();
-  await page.waitForFunction(() => window.__world.state().lit > 0.99);
-  assert.equal(await page.locator('#mode').getAttribute('aria-pressed'), 'true');
-  await page.locator('.wx-chip').click();
-  assert.notEqual((await state()).sky.wx, 'clear');
+  // one daylight: the world page has no time-of-day or weather control, and the capital stays bright
+  assert.equal(await page.locator('#mode').count(), 0);
+  assert.equal(await page.locator('.wx-chip').count(), 0);
+  assert.equal((await state()).lit, 0);
+  // every zone outside the capital carries its own weather-and-terrain sphere once populated
+  await page.waitForFunction(() => window.__world.state().spheres === 11);
   for (const zone of ['provisioning', 'finops', 'networking']) {
     await page.locator(`.dock [data-fly="${zone}"]`).click();
     await page.waitForFunction((z) => window.__world.state().weights[z] === 1, zone);
-    assert.equal(await page.locator('#mode').isVisible(), false);
+    assert.ok((await state()).lit < 0.6, 'zones stay in daylight');
   }
   await page.locator('#minimap [data-fly="provisioning"]').click();
   await page.waitForFunction(() => window.__world.state().here === 'provisioning');
@@ -56,8 +56,9 @@ try {
   await page.locator('#q').press('Enter');
   assert.equal(await page.locator('#panel').isVisible(), true);
   assert.match(await page.locator('#p-main').getAttribute('href'), /healthcare-eks-secops/);
-  await page.keyboard.press('Escape');
-  assert.equal(await page.locator('#panel').isVisible(), false);
+  await page.locator('#p-back').click();
+  assert.equal(await page.locator('#panel').isVisible(), false, 'back button returns from the island to its zone');
+  await page.waitForFunction(() => window.__world.state().here === 'capital');
   await page.keyboard.press('0');
   await page.waitForFunction(() => window.__world.state().over === 1);
   await page.keyboard.press('Home');
@@ -112,7 +113,7 @@ try {
   const still = await state();
   await page.waitForTimeout(250);
   assert.equal((await state()).yaw, still.yaw, 'reduced motion stops camera auto-orbit');
-  console.log('ok: capital controls, zones, minimap, search, camera, list suspension, reduced motion');
+  console.log('ok: daylight, spheres, zones, minimap, search, back navigation, camera, list suspension, reduced motion');
 
   const race = await context.newPage();
   let release, requested;
@@ -155,13 +156,10 @@ try {
   });
   await flat.goto(base);
   assert.equal(await flat.locator('#capital').isVisible(), true);
-  assert.equal(await flat.locator('#mode').isVisible(), false);
-  assert.equal(await flat.locator('.wx-chip').isVisible(), false);
   const nojs = await browser.newContext({ javaScriptEnabled: false, viewport: { width: 375, height: 812 } });
   const plain = await nojs.newPage();
   await plain.goto(base);
   assert.equal(await plain.locator('.zcard').count(), 12);
-  assert.equal(await plain.locator('#mode').isVisible(), false);
   for (const slug of ['healthcare-eks-secops', 'gcp-ai-log-analyzer', 'aws-retail-microservices-eks']) {
     await page.goto(base + `projects/${slug}.html?wx=clear&time=noon#day`);
     await page.locator('.hero.on').waitFor();
