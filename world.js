@@ -97,7 +97,13 @@ export function createWorld({ canvas, data, labels: labelEls, onPick = () => {},
   scene.add(sea);
 
   /* ---------- shared building blocks ---------- */
-  const flat = (color, extra) => new THREE.MeshStandardMaterial(Object.assign({ color, roughness: 0.8, flatShading: true }, extra));
+  const flatCache = new Map(); // plain colours share one material; anything with extra options (and so possibly animated) stays its own
+  const flat = (color, extra) => {
+    if (extra) return new THREE.MeshStandardMaterial(Object.assign({ color, roughness: 0.8, flatShading: true }, extra));
+    const key = String(color);
+    if (!flatCache.has(key)) flatCache.set(key, new THREE.MeshStandardMaterial({ color, roughness: 0.8, flatShading: true }));
+    return flatCache.get(key);
+  };
   const glowMat = (color, glowColor, max) => {
     const m = flat(color, { emissive: col(glowColor), emissiveIntensity: 0 });
     glows.push({ mat: m, max });
@@ -500,7 +506,7 @@ export function createWorld({ canvas, data, labels: labelEls, onPick = () => {},
       scope.position.set(Math.sin(tilt) * len * 0.35, 0.42 * s, 0);
       const bh = 6 * s, beamGeo = new THREE.ConeGeometry(1.3 * s, bh, 24, 1, true);
       beamGeo.translate(0, -bh / 2, 0); // apex at the telescope tip
-      const beam = new THREE.Mesh(beamGeo, new THREE.MeshBasicMaterial({ color: 0xffd76a, transparent: true, opacity: 0, side: THREE.DoubleSide, depthWrite: false, blending: THREE.AdditiveBlending }));
+      const beam = new THREE.Mesh(beamGeo, new THREE.MeshBasicMaterial({ color: 0xffd76a, transparent: true, opacity: 0, side: THREE.DoubleSide, forceSinglePass: true, depthWrite: false, blending: THREE.AdditiveBlending }));
       beam.rotation.z = Math.PI - tilt;
       beam.position.set(Math.sin(tilt) * len * 0.85, 0.42 * s + Math.cos(tilt) * len * 0.5, 0);
       beams.push(beam.material);
@@ -572,7 +578,7 @@ export function createWorld({ canvas, data, labels: labelEls, onPick = () => {},
   const bowMats = [];
   const bow = new THREE.Group();
   ['#e88a8a', '#e9b77a', '#e6d98a', '#9fd39a', '#8fb8e0', '#ab9ad8'].forEach((c, i) => {
-    const m = new THREE.MeshBasicMaterial({ color: col(c), transparent: true, opacity: 0, depthWrite: false, fog: false, side: THREE.DoubleSide });
+    const m = new THREE.MeshBasicMaterial({ color: col(c), transparent: true, opacity: 0, depthWrite: false, fog: false, side: THREE.DoubleSide, forceSinglePass: true });
     bowMats.push(m);
     bow.add(new THREE.Mesh(new THREE.TorusGeometry(70 - i * 1.6, 0.8, 6, 64, Math.PI), m));
   });
@@ -717,11 +723,11 @@ export function createWorld({ canvas, data, labels: labelEls, onPick = () => {},
   /* ---------- bake a static model into one mesh with vertex colours (one draw call per island) ---------- */
   const bakedMat = new THREE.MeshStandardMaterial({ vertexColors: true, roughness: 0.8, flatShading: true });
   const ghostMat = new THREE.MeshStandardMaterial({ vertexColors: true, roughness: 0.8, flatShading: true, transparent: true, opacity: 0.42, depthWrite: false, emissive: 0xffffff, emissiveIntensity: 0.22 });
-  function bake(group, material = bakedMat) {
+  function bake(group, material = bakedMat, shade = true) {
     group.updateMatrixWorld(true);
     const P3 = [], C3 = [];
     group.traverse((o) => {
-      if (!o.isMesh || (o.material.transparent && o.material.opacity < 0.5) || o.material.visible === false) return;
+      if (!o.isMesh || (o.material.transparent && o.material.opacity < 0.5 && o.material !== material) || o.material.visible === false) return;
       const g = o.geometry.index ? o.geometry.toNonIndexed() : o.geometry.clone();
       g.applyMatrix4(o.matrixWorld);
       const a = g.attributes.position.array, c = o.material.color, colors = o.material.vertexColors && g.attributes.color;
@@ -732,6 +738,12 @@ export function createWorld({ canvas, data, labels: labelEls, onPick = () => {},
       }
       g.dispose();
     });
+    if (shade && P3.length) {
+      let lo = Infinity, hi = -Infinity;
+      for (let i = 1; i < P3.length; i += 3) { if (P3[i] < lo) lo = P3[i]; if (P3[i] > hi) hi = P3[i]; }
+      const span = hi - lo || 1;
+      for (let i = 0; i < P3.length; i += 3) { const k = 0.8 + 0.2 * Math.sqrt((P3[i + 1] - lo) / span); C3[i] *= k; C3[i + 1] *= k; C3[i + 2] *= k; }
+    }
     const geo = new THREE.BufferGeometry();
     geo.setAttribute('position', new THREE.Float32BufferAttribute(P3, 3));
     geo.setAttribute('color', new THREE.Float32BufferAttribute(C3, 3));
@@ -775,10 +787,10 @@ export function createWorld({ canvas, data, labels: labelEls, onPick = () => {},
       if (!live) still.add(c);
     }
     if (still.children.length) top.add(bake(still));
-    const farCopy = bake(island); // same silhouette and colours in one draw call
+    const farCopy = bake(island, bakedMat, false); // same silhouette and colours in one draw call
     farCopy.visible = false;
     g.add(island, farCopy);
-    capitalLod.push({ near: island, far: farCopy });
+    capitalLod.push({ g, near: island, far: farCopy });
     const hit = new THREE.Mesh(new THREE.SphereGeometry(s * 2.2, 12, 12), hitMat);
     hit.position.y = 0.4 * s;
     hit.userData.id = p.name;
@@ -822,10 +834,16 @@ export function createWorld({ canvas, data, labels: labelEls, onPick = () => {},
     g.add(hit);
     scene.add(g);
     anim.push((t) => { balloon.rotation.z = Math.sin(t * 0.7) * 0.05; balloon.rotation.y = t * 0.15; burner.scale.setScalar(1 + Math.abs(Math.sin(t * 9)) * 0.25); });
+    const farBalloon = bake(balloon, bakedMat, false);
+    farBalloon.visible = false;
+    g.add(farBalloon);
+    capitalLod.push({ g, near: balloon, far: farBalloon });
     bodies[hi.name] = { id: hi.name, zone: 'capital', g, island: balloon, hit, anim, s, lift: 5.2 * s * 0.75, focus: 16, hover: 0, angle: 2.9,
       place(t, dt) { this.angle -= dt * 0.035; this.g.position.set(Math.cos(this.angle) * 29, 12 + Math.sin(t * 0.5) * 0.7, Math.sin(this.angle) * 29); },
       pos(v) { return v.copy(this.g.position); } };
   }
+
+  for (const l of lamps) l.light.visible = false; // daylight needs no lamp lights; retain them for darker local weather
 
   /* ---------- zones: data in, scene out ---------- */
   const PARTICLE = { // velocity model per particle type: [vy base, vy spread, vx drift, wobble, opacity, lines?]
@@ -863,13 +881,14 @@ export function createWorld({ canvas, data, labels: labelEls, onPick = () => {},
        haze    two soft camera-facing glows in the zone's haze colour (not fogged, so they keep their colour far away)
        canopy  a low-poly cloud formation: 'cap' over the zone, 'column' of smoke, 'ring' of cloud below a summit
        terrain one large baked landform with a few big props, for zones without their own decor module */
+  const WHITE = new THREE.Color(1, 1, 1);
   function buildSphere(z) {
     const S = z.cfg.air.sphere;
     if (!S) return;
     z.sphere = { haze: [], canopy: null, base: S.strength || 0.5 };
     if (S.haze) {
       [[z.r * 3.1, 3, 0.55], [z.r * 1.9, 9, 0.9]].forEach(([size, y, k]) => {
-        const mat = new THREE.SpriteMaterial({ map: dotTex, color: col(S.haze), transparent: true, opacity: 0, depthWrite: false, fog: false });
+        const mat = new THREE.SpriteMaterial({ map: dotTex, color: col(S.haze).lerp(WHITE, k > 0.8 ? 0.4 : 0), transparent: true, opacity: 0, depthWrite: false, fog: false });
         const sp = new THREE.Sprite(mat);
         sp.scale.set(size, size * 0.72, 1);
         sp.position.y = y;
@@ -908,18 +927,17 @@ export function createWorld({ canvas, data, labels: labelEls, onPick = () => {},
           m.rotation.y = x * 3;
           g.add(m);
         }
+        (T.flora || []).forEach(([kind, count, size]) => {
+          for (let i = 0; i < count; i++) {
+            const a = i * 2.4 + kind.length, d = R * (0.3 + 0.5 * ((i * 0.37 + kind.length * 0.13) % 1));
+            mxA.compose(vA.set(Math.cos(a) * d, H / 2, Math.sin(a) * d), qA.setFromAxisAngle(UP, a * 2), vB.set(size, size, size));
+            for (const p of FLORA[kind] || []) { const m = new THREE.Mesh(UNIT[p.geo], MAT[p.mat]); m.applyMatrix4(mxB.multiplyMatrices(mxA, p.m)); g.add(m); }
+          }
+        });
         return g;
       });
       land.position.y = -0.8;
-      z.group.add(land);
-      const big = instancer(z.group);
-      (T.flora || []).forEach(([kind, count, size]) => {
-        for (let i = 0; i < count; i++) {
-          const a = i * 2.4 + kind.length, d = R * (0.3 + 0.5 * ((i * 0.37 + kind.length * 0.13) % 1));
-          big.add(kind, mxA.compose(vA.set(Math.cos(a) * d, H / 2 - 0.8, Math.sin(a) * d), qA.setFromAxisAngle(UP, a * 2), vB.set(size, size, size)));
-        }
-      });
-      big.flush();
+      z.big.add(land);
     }
   }
   function populate(z) {
@@ -929,6 +947,8 @@ export function createWorld({ canvas, data, labels: labelEls, onPick = () => {},
     z.group.position.copy(z.center);
     z.spin = new THREE.Group();
     z.group.add(z.spin);
+    z.big = new THREE.Group();
+    z.group.add(z.big);
     z.solid = [];
     scene.add(z.group);
     const mine = data.islands.filter((p) => p.zone === zc.id && p.orbit == null && p.building !== 'balloon');
@@ -966,7 +986,7 @@ export function createWorld({ canvas, data, labels: labelEls, onPick = () => {},
     });
     if (z.solid.length > 1) {
       // Same geometry, colours and orbiting transform; one opaque draw call in the existing far tier.
-      z.farSolid = bake(new THREE.Group().add(...z.solid.map((mesh) => mesh.clone())));
+      z.farSolid = bake(new THREE.Group().add(...z.solid.map((mesh) => mesh.clone())), bakedMat, false);
       z.farSolid.visible = false;
       z.spin.add(z.farSolid);
     }
@@ -978,11 +998,19 @@ export function createWorld({ canvas, data, labels: labelEls, onPick = () => {},
       z.spin.add(mesh);
       return { n: u.n, mesh };
     });
+    if (z.ghosts.length > 1) {
+      z.farGhost = bake(new THREE.Group().add(...z.ghosts.map((g) => g.mesh.clone())), ghostMat, false);
+      z.farGhost.visible = false;
+      z.farGhost.renderOrder = 2;
+      z.spin.add(z.farGhost);
+    }
     z.flora = inst.flush(); // small island props: hidden in the far tier
     makeParticles(z, A.particles);
     buildSphere(z);
     for (const p of mine) { addLabel(labelEls.islands[p.name], 'island', bodies[p.name]); hitList.push(bodies[p.name].hit); bodyList.push(bodies[p.name]); }
     for (const g of z.ghosts) addLabel(labelEls.ghosts[g.n], 'ghost', { zone: z.id, mesh: g.mesh });
+    // everything placed so far keeps its local transform: no per-frame matrix recomposition (the zone, its spin and its large-feature group still move)
+    z.group.traverse((o) => { if (o !== z.group && o !== z.spin && o !== z.big) { o.updateMatrix(); o.matrixAutoUpdate = false; } });
     invalidate();
   }
   const pending = zoneList.filter((z) => z.id !== 'capital');
@@ -1144,11 +1172,11 @@ export function createWorld({ canvas, data, labels: labelEls, onPick = () => {},
     lit = num.lit;
     for (const mat of bowMats) mat.opacity = 0.24 * (1 - lit);
     for (const g of glows) g.mat.emissiveIntensity = (g.min || 0) + (g.max - (g.min || 0)) * lit;
-    for (const l of lamps) l.light.intensity = l.max * lit;
+    for (const l of lamps) { l.light.visible = lit > 0.001; l.light.intensity = l.max * lit; }
     for (const b of beams) b.opacity = 0.1 * lit;
   }
 
-  const view = new THREE.Frustum(), viewMatrix = new THREE.Matrix4();
+  const view = new THREE.Frustum(), viewMatrix = new THREE.Matrix4(), isletBounds = new THREE.Sphere(new THREE.Vector3(), 8);
   function stepParticles(z, dt, camDist) {
     const fade = 1 - sstep(360, 420, camDist), p = z.parts;
     const on = !reduced && fade > 0.001 && view.intersectsSphere(p.bounds);
@@ -1181,7 +1209,7 @@ export function createWorld({ canvas, data, labels: labelEls, onPick = () => {},
   function placeLabels() {
     for (const l of L) {
       let show, y = 0;
-      if (l.kind === 'zone') { show = l.ref.w < 0.45 && (over > 0.2 || l.ref.id !== 'capital'); tmp.copy(l.ref.center); y = l.ref.id === 'capital' ? 9 : 11; }
+      if (l.kind === 'zone') { show = l.ref.w < 0.45 && (over > 0.2 || l.ref.id !== 'capital'); tmp.copy(l.ref.center); y = l.ref.id === 'capital' ? 9 : 11 + over * 26; } // above the enlarged landform, so the label never hides its biome
       else if (l.kind === 'ghost') { show = zones[l.ref.zone].w > 0.35; if (show) l.ref.mesh.getWorldPosition(tmp); y = 2.6; }
       else { const zw = zones[l.ref.zone].w; show = goal.follow === l.ref.id || (l.ref.zone === 'capital' ? zw > 0.12 && over < 0.5 : zw > 0.35); if (show) l.ref.pos(tmp); y = l.ref.lift; }
       if (show) { tmp.y += y; tmp.project(camera); if (tmp.z > 1 || Math.abs(tmp.x) > 1.15 || Math.abs(tmp.y) > 1.15) show = false; }
@@ -1213,9 +1241,8 @@ export function createWorld({ canvas, data, labels: labelEls, onPick = () => {},
     for (const b of bodyList) {
       if (b.place) b.place(t, dt);
       const target = hovered === b.id ? 1 : 0;
-      if (b.hover !== target) { b.hover += (target - b.hover) * (reduced ? 1 : Math.min(1, real * 10)); if (Math.abs(b.hover - target) < 0.002) b.hover = target; b.island.scale.setScalar(1 + 0.07 * b.hover); }
+      if (b.hover !== target) { b.hover += (target - b.hover) * (reduced ? 1 : Math.min(1, real * 10)); if (Math.abs(b.hover - target) < 0.002) b.hover = target; b.island.scale.setScalar(1 + 0.07 * b.hover); if (!b.island.matrixAutoUpdate) b.island.updateMatrix(); }
       if (b.place) b.g.position.y += 0.5 * b.hover;
-      for (const fn of b.anim) fn(t, dt, camera);
     }
     for (const pk of packets) { pk.userData.a += dt * pk.userData.v; const a = pk.userData.a; pk.position.set(Math.cos(a) * pk.userData.orbit, -0.6 + Math.sin(t * 2 + a) * 0.15, Math.sin(a) * pk.userData.orbit); pk.rotation.set(t, t * 0.7, 0); }
     for (const c of clouds) {
@@ -1230,7 +1257,7 @@ export function createWorld({ canvas, data, labels: labelEls, onPick = () => {},
     }
     cloudMesh.instanceMatrix.needsUpdate = true;
     sea.rotation.y += dt * 0.003;
-    for (const g of islets) { const u = g.userData; u.a += dt * u.v; g.position.set(Math.cos(u.a) * u.r, u.y + Math.sin(t * 0.6 + u.bob) * 0.4, Math.sin(u.a) * u.r); g.rotation.y = u.a * 2; u.anim.forEach((fn) => fn(t, dt)); }
+    for (const g of islets) { const u = g.userData; u.a += dt * u.v; g.position.set(Math.cos(u.a) * u.r, u.y + Math.sin(t * 0.6 + u.bob) * 0.4, Math.sin(u.a) * u.r); g.rotation.y = u.a * 2; }
     const dayK = 1 - sstep(0.2, 0.8, lit); // birds and planes stay out of the heavy weather
     for (const f of flocks) {
       const u = f.userData;
@@ -1282,22 +1309,31 @@ export function createWorld({ canvas, data, labels: labelEls, onPick = () => {},
     camera.updateMatrixWorld();
     dome.position.copy(camera.position);
     view.setFromProjectionMatrix(viewMatrix.multiplyMatrices(camera.projectionMatrix, camera.matrixWorldInverse));
+    for (const g of islets) {
+      isletBounds.center.copy(g.position);
+      g.visible = view.intersectsSphere(isletBounds);
+      if (g.visible) for (const fn of g.userData.anim) fn(t, dt);
+    }
 
     blend();
     // far tier for the capital: beyond 150 units its islands are drawn as their one-mesh copies and the birds rest (back under 120)
     const capDist = camera.position.length();
-    if (capitalFar ? capDist < 120 : capDist > 150) { capitalFar = !capitalFar; for (const l of capitalLod) { l.near.visible = !capitalFar; l.far.visible = capitalFar; } }
+    if (capitalFar ? capDist < 120 : capDist > 150) { capitalFar = !capitalFar; for (const l of capitalLod) { if (capitalFar) l.g.remove(l.near); else l.g.add(l.near); l.far.visible = capitalFar; } for (const pk of packets) pk.visible = !capitalFar; }
+    // Use this frame's camera after reattaching near models, including a single reduced-motion redraw.
+    for (const b of bodyList) if (!(capitalFar && b.place)) for (const fn of b.anim) fn(t, dt, camera);
     if (pending.length) { populate(pending.shift()); invalidate(); }
     for (const z of zoneList) {
       if (!z.group) continue;
       z.spin.rotation.y += dt * (z.cfg.air.spin || 0);
       const camDist = camera.position.distanceTo(z.center), outside = 1 - sstep(0.1, 0.75, z.w);
-      z.group.scale.setScalar(1 + 0.25 * outside + over * 1.25); // from far away a zone is drawn a little larger so its silhouette stays readable
+      z.group.scale.setScalar(1 + 0.25 * outside + over * 0.3); // from far away a zone is drawn a little larger, never into its neighbours
+      z.big.scale.setScalar(1 + 0.3 * outside + over * 1.1); // its landform and centrepiece grow more: the silhouette is what reads from the capital
       // far tier: hide the small island props beyond 170 units, bring them back under 145 (hysteresis, no flicker)
       if (z.far ? camDist < 145 : camDist > 170) {
         z.far = !z.far;
         for (const m of z.flora) m.visible = !z.far;
         if (z.farSolid) { z.farSolid.visible = z.far; for (const m of z.solid) m.visible = !z.far; }
+        if (z.farGhost) { z.farGhost.visible = z.far; for (const g of z.ghosts) g.mesh.visible = !z.far; }
       }
       if (z.ring) z.ring.material.opacity = 0.4 + 0.5 * z.w;
       if (z.sphere) {

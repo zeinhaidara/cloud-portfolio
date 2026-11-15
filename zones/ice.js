@@ -4,7 +4,7 @@ import * as THREE from '../vendor/three.module.min.js';
 export default function build(api, z) {
   const { flat, baked, rockBase, pine } = api;
   const root = new THREE.Group();
-  z.group.add(root);
+  (z.big || z.group).add(root); // the engine scales the large-feature group with distance
   const s = 2.5, R = 1.55 * s, H = 0.4 * s;
   const iceA = flat('#d6f1ff'), iceB = flat('#9cc7ea');
   const berg = baked(() => {
