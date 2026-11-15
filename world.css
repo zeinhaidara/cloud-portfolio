@@ -149,3 +149,9 @@ button.link{background:none;border:0;border-bottom:1.5px solid var(--c);cursor:p
  .plabel{max-width:180px}
 }
 @media(max-height:620px) and (min-width:901px){.gl .intro h1{font-size:36px}.gl .intro{bottom:92px}.minimap{width:130px}}
+@media(max-width:600px){
+ .gl.overview .zlabel{gap:0;padding:10px}
+ .gl.overview .zlabel svg{width:20px;height:20px}
+ .gl.overview .zlabel:not(:focus-visible) b{position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%);white-space:nowrap}
+ .gl.overview .zlabel:focus-visible{gap:5px}
+}

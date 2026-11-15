@@ -2,7 +2,7 @@
 import * as THREE from '../vendor/three.module.min.js';
 
 export default function build(api, z) {
-  const { flat, baked, rockBase, pine, col } = api;
+  const { flat, baked, rockBase, pine } = api;
   const root = new THREE.Group();
   z.group.add(root);
   const s = 2.5, R = 1.55 * s, H = 0.4 * s;
@@ -62,7 +62,7 @@ export default function build(api, z) {
 
 
   return {
-    update(t, dt, w, appear, camera) {
+    update(t, dt, w, appear) {
       root.scale.setScalar(Math.max(0.001, appear));
       bridges.scale.setScalar(Math.max(0.001, appear));
       const near = w > 0.05;

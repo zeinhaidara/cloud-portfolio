@@ -117,6 +117,7 @@ function goZone(id, card = true) {
 }
 function onState(s) {
   $('mm-here').setAttribute('transform', `translate(${s.x.toFixed(1)} ${s.z.toFixed(1)})`);
+  body.classList.toggle('overview', s.over > 0.6);
   const name = s.over > 0.6 ? 'Whole world' : s.here ? Z[s.here].short : 'Open sky';
   if ($('mm-where').textContent !== name) {
     $('mm-where').textContent = name;

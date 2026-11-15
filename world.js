@@ -3,7 +3,7 @@ import * as THREE from './vendor/three.module.min.js';
 // One continuous 3D world. The sun sits in the middle with the capital islands on their original orbits; ten climate
 // zones form a ring around it. A zone is data (data/world.json): sky, fog, light, particles, flora, creatures. Every
 // frame each zone gets a weight from the distance between the camera's focus point and the zone centre, and sky, fog,
-// lights, cloud tint, stars, particles and zone decor are blended by those weights, so flying between zones never cuts.
+// lights, cloud tint, particles and zone decor are blended by those weights, so flying between zones never cuts.
 // Island, prop and building models are the original low-poly ones.
 export function createWorld({ canvas, data, labels: labelEls, onPick = () => {}, onInteract = () => {}, onState = () => {}, onError = () => {} }) {
   performance.mark('world:start');
@@ -20,16 +20,7 @@ export function createWorld({ canvas, data, labels: labelEls, onPick = () => {},
   const RING = data.ring;
 
   /* ---------- palette (the original day values) ---------- */
-  const CP = {
-    top: [col('#5f97c9'), col('#04060c')], horizon: [col('#c9dceb'), col('#1c2747')], bottom: [col('#8fb4d4'), col('#0a1020')],
-    fog: [col('#bfd3e4'), col('#0d1426')],
-    hemiSky: [col('#e2edf6'), col('#7d8fc4')], hemiGround: [col('#7f9f72'), col('#1a1f33')], hemi: [1.25, 0.55],
-    dirColor: [col('#ffe9cf'), col('#9fb6ff')], dir: [1.15, 0.45],
-    orb: [col('#f6c453'), col('#eef2ff')], halo: [col('#f0a64a'), col('#8fa8ff')], core: [col('#ffeccf'), col('#b9c8ff')], coreI: [3.2, 1.2],
-    cloud: [col('#f4f7fb'), col('#1c2540')], cloudEm: [0.2, 0], cloudOp: [0.95, 0.3],
-    sea: [col('#e6eef6'), col('#0e1528')], seaEm: [0.1, 0], seaOp: [0.6, 0.45],
-    ring: [col('#f4f8fc'), col('#7f95d6')], ringOp: [0.4, 0.35],
-  };
+  const CP = { orb: col('#f6c453'), halo: col('#f0a64a'), core: col('#ffeccf'), sea: col('#e6eef6'), ring: col('#f4f8fc'), ringOp: 0.4 };
   const glows = []; // materials that light up where the air is dark: { mat, max, min }
   const lamps = []; // point lights that switch on with them: { light, max }
   const beams = []; // translucent light beams
@@ -49,7 +40,7 @@ export function createWorld({ canvas, data, labels: labelEls, onPick = () => {},
   const hemi = new THREE.HemisphereLight(col('#e2edf6'), col('#7f9f72'), 1.25);
   const dir = new THREE.DirectionalLight(col('#ffe9cf'), 1.15);
   dir.position.set(30, 60, 25);
-  const core = new THREE.PointLight(CP.core[0].clone(), 3.2, 0, 0.5);
+  const core = new THREE.PointLight(CP.core.clone(), 3.2, 0, 0.5);
   scene.add(hemi, dir, core);
 
   /* ---------- the sun ---------- */
@@ -62,9 +53,9 @@ export function createWorld({ canvas, data, labels: labelEls, onPick = () => {},
     return new THREE.CanvasTexture(c);
   };
   const dotTex = glowTex();
-  const orb = new THREE.Mesh(new THREE.SphereGeometry(2.6, 40, 40), new THREE.MeshBasicMaterial({ color: CP.orb[0].clone(), fog: false }));
+  const orb = new THREE.Mesh(new THREE.SphereGeometry(2.6, 40, 40), new THREE.MeshBasicMaterial({ color: CP.orb.clone(), fog: false }));
   scene.add(orb);
-  const halo = new THREE.Sprite(new THREE.SpriteMaterial({ map: glowTex(), color: CP.halo[0].clone(), blending: THREE.AdditiveBlending, depthWrite: false, fog: false }));
+  const halo = new THREE.Sprite(new THREE.SpriteMaterial({ map: glowTex(), color: CP.halo.clone(), blending: THREE.AdditiveBlending, depthWrite: false, fog: false }));
   halo.scale.set(18, 18, 1);
   scene.add(halo);
 
@@ -94,7 +85,7 @@ export function createWorld({ canvas, data, labels: labelEls, onPick = () => {},
   cloudMesh.instanceMatrix.setUsage(THREE.DynamicDrawUsage);
   cloudMesh.frustumCulled = false;
   scene.add(cloudMesh);
-  const seaMat = new THREE.MeshStandardMaterial({ color: CP.sea[0].clone(), emissive: 0xffffff, emissiveIntensity: 0.1, roughness: 1, flatShading: true, transparent: true, opacity: 0.6 });
+  const seaMat = new THREE.MeshStandardMaterial({ color: CP.sea.clone(), emissive: 0xffffff, emissiveIntensity: 0.1, roughness: 1, flatShading: true, transparent: true, opacity: 0.6 });
   const SEA = mobile ? 150 : 260, sea = new THREE.InstancedMesh(puff, seaMat, SEA);
   const m4 = new THREE.Matrix4(), q4 = new THREE.Quaternion(), v4 = new THREE.Vector3(), s4 = new THREE.Vector3();
   for (let i = 0; i < SEA; i++) {
@@ -733,8 +724,12 @@ export function createWorld({ canvas, data, labels: labelEls, onPick = () => {},
       if (!o.isMesh || (o.material.transparent && o.material.opacity < 0.5) || o.material.visible === false) return;
       const g = o.geometry.index ? o.geometry.toNonIndexed() : o.geometry.clone();
       g.applyMatrix4(o.matrixWorld);
-      const a = g.attributes.position.array, c = o.material.color;
-      for (let i = 0; i < a.length; i += 3) { P3.push(a[i], a[i + 1], a[i + 2]); C3.push(c.r, c.g, c.b); }
+      const a = g.attributes.position.array, c = o.material.color, colors = o.material.vertexColors && g.attributes.color;
+      for (let i = 0; i < a.length; i += 3) {
+        P3.push(a[i], a[i + 1], a[i + 2]);
+        const v = i / 3;
+        C3.push(c.r * (colors ? colors.getX(v) : 1), c.g * (colors ? colors.getY(v) : 1), c.b * (colors ? colors.getZ(v) : 1));
+      }
       g.dispose();
     });
     const geo = new THREE.BufferGeometry();
@@ -757,7 +752,7 @@ export function createWorld({ canvas, data, labels: labelEls, onPick = () => {},
   const hitMat = new THREE.MeshBasicMaterial({ visible: false });
   data.islands.filter((p) => p.orbit != null).sort((a, b) => a.orbit - b.orbit).forEach((p) => {
     const idx = p.orbit, orbit = ORBIT(idx), s = 1.5 * p.size, colHex = col(p.color).getHex();
-    const ring = new THREE.Mesh(new THREE.RingGeometry(orbit - 0.05, orbit + 0.05, 200), new THREE.MeshBasicMaterial({ color: CP.ring[0].clone(), side: THREE.DoubleSide, transparent: true, opacity: CP.ringOp[0], fog: false }));
+    const ring = new THREE.Mesh(new THREE.RingGeometry(orbit - 0.05, orbit + 0.05, 200), new THREE.MeshBasicMaterial({ color: CP.ring.clone(), side: THREE.DoubleSide, transparent: true, opacity: CP.ringOp, fog: false }));
     ring.rotation.x = Math.PI / 2;
     ring.position.y = -1.2;
     scene.add(ring);
@@ -859,7 +854,8 @@ export function createWorld({ canvas, data, labels: labelEls, onPick = () => {},
       obj.frustumCulled = false;
       obj.visible = false;
       scene.add(obj);
-      z.parts = { n, arr, off, seed, geo, mat, obj, lines, k: PARTICLE[config.type], size: config.size || 0.3 };
+      const bounds = new THREE.Sphere(new THREE.Vector3(z.center.x, 5, z.center.z), Math.hypot(z.r * 1.15 + 8, 16));
+      z.parts = { n, arr, off, seed, geo, mat, obj, lines, bounds, k: PARTICLE[config.type], size: config.size || 0.3 };
     }
   }
   /* The weather-and-terrain sphere of a zone: what makes it readable from the capital. All of it is data
@@ -867,7 +863,6 @@ export function createWorld({ canvas, data, labels: labelEls, onPick = () => {},
        haze    two soft camera-facing glows in the zone's haze colour (not fogged, so they keep their colour far away)
        canopy  a low-poly cloud formation: 'cap' over the zone, 'column' of smoke, 'ring' of cloud below a summit
        terrain one large baked landform with a few big props, for zones without their own decor module */
-  const hazeMats = [];
   function buildSphere(z) {
     const S = z.cfg.air.sphere;
     if (!S) return;
@@ -934,13 +929,14 @@ export function createWorld({ canvas, data, labels: labelEls, onPick = () => {},
     z.group.position.copy(z.center);
     z.spin = new THREE.Group();
     z.group.add(z.spin);
+    z.solid = [];
     scene.add(z.group);
     const mine = data.islands.filter((p) => p.zone === zc.id && p.orbit == null && p.building !== 'balloon');
     const ghosts = data.uncharted.filter((u) => u.zone === zc.id);
     const slots = zc.range ? 5 : mine.length, orbitR = slots > 1 ? (zc.range ? RING.islandOrbit : 6) : 0;
     z.orbitR = orbitR;
     if (orbitR) {
-      const ring = new THREE.Mesh(new THREE.RingGeometry(orbitR - 0.05, orbitR + 0.05, 120), new THREE.MeshBasicMaterial({ color: CP.ring[0].clone(), side: THREE.DoubleSide, transparent: true, opacity: CP.ringOp[0], fog: false }));
+      const ring = new THREE.Mesh(new THREE.RingGeometry(orbitR - 0.05, orbitR + 0.05, 120), new THREE.MeshBasicMaterial({ color: CP.ring.clone(), side: THREE.DoubleSide, transparent: true, opacity: CP.ringOp, fog: false }));
       ring.rotation.x = Math.PI / 2;
       ring.position.y = -1.2;
       z.group.add(ring);
@@ -955,6 +951,7 @@ export function createWorld({ canvas, data, labels: labelEls, onPick = () => {},
       mesh.position.copy(at0);
       mesh.rotation.y = rot;
       z.spin.add(mesh);
+      z.solid.push(mesh);
       (A.flora || []).forEach((kind, f, all) => {
         const a = 0.6 + (f / all.length) * Math.PI * 2 + i, d = R * (kind === 'pond' ? 0.45 : 0.74), sc = s * (0.85 + ((i * 7 + f * 3) % 5) * 0.07);
         mxA.compose(at0, qA.setFromAxisAngle(UP, rot), vB.set(1, 1, 1));
@@ -967,6 +964,12 @@ export function createWorld({ canvas, data, labels: labelEls, onPick = () => {},
       z.spin.add(hit);
       bodies[p.name] = { id: p.name, zone: zc.id, g: mesh, island: mesh, hit, anim: [], s, lift: s * 2.6 + 0.6, focus: 9 + s * 3.2, hover: 0, pos(v) { return mesh.getWorldPosition(v); } };
     });
+    if (z.solid.length > 1) {
+      // Same geometry, colours and orbiting transform; one opaque draw call in the existing far tier.
+      z.farSolid = bake(new THREE.Group().add(...z.solid.map((mesh) => mesh.clone())));
+      z.farSolid.visible = false;
+      z.spin.add(z.farSolid);
+    }
     z.ghosts = ghosts.map((u) => {
       const at0 = slotPos(u.slot);
       const mesh = baked(() => { const g = new THREE.Group(); g.add(rockBase(s * 0.85, R * 0.85, H * 0.85, 'rocky')); const f = new THREE.Mesh(new THREE.CylinderGeometry(0.02 * s, 0.02 * s, 0.9 * s, 4), flat('#ffffff')); f.position.y = 0.6 * s; g.add(f, bx(0.34 * s, 0.2 * s, 0.02 * s, '#ffffff', 0.18 * s, 0.94 * s, 0)); return g; }, ghostMat);
@@ -980,7 +983,7 @@ export function createWorld({ canvas, data, labels: labelEls, onPick = () => {},
     buildSphere(z);
     for (const p of mine) { addLabel(labelEls.islands[p.name], 'island', bodies[p.name]); hitList.push(bodies[p.name].hit); bodyList.push(bodies[p.name]); }
     for (const g of z.ghosts) addLabel(labelEls.ghosts[g.n], 'ghost', { zone: z.id, mesh: g.mesh });
-    dirty = true;
+    invalidate();
   }
   const pending = zoneList.filter((z) => z.id !== 'capital');
   const zoneOfIsland = Object.fromEntries(data.islands.map((p) => [p.name, p.zone]));
@@ -991,14 +994,14 @@ export function createWorld({ canvas, data, labels: labelEls, onPick = () => {},
   function loadDecor(z) {
     if (z.decorState !== 0 || !z.group) return;
     z.decorState = 1;
-    import(`./zones/${z.cfg.air.decor}.js`).then((m) => { z.decor = m.default(api, z); z.decorState = 2; dirty = true; }).catch((error) => {
+    import(`./zones/${z.cfg.air.decor}.js`).then((m) => { z.decor = m.default(api, z); z.decorState = 2; invalidate(); }).catch((error) => {
       z.decorState = 3;
       console.error(`Could not load scenery for ${z.cfg.name}`, error);
       onError(z.cfg.name);
     });
   }
   const idle = window.requestIdleCallback || ((f) => setTimeout(f, 1200));
-  idle(() => { idleDone = true; }); // decor modules load after first paint; a zone the camera reaches earlier loads at once
+  idle(() => { idleDone = true; invalidate(); }); // decor modules load after first paint; a zone the camera reaches earlier loads at once
 
   /* ---------- fireworks for the full tour ---------- */
   const bursts = [];
@@ -1017,7 +1020,7 @@ export function createWorld({ canvas, data, labels: labelEls, onPick = () => {},
   let HOME = 62, ZONE = 54, OVER = 420, W = 1, H = 1;
   const rig = { yaw: -1.58, pitch: 0.95, dist: 170, target: new THREE.Vector3(), off: 0, offY: 0, px: 0, py: 0 };
   const goal = { dist: HOME, follow: null, zone: 'capital', point: null, pitch: 0.6, over: false };
-  let flight = null, dirty = true, panelOpen = false, t = 0;
+  let flight = null, dirty = true, panelOpen = false, t = 0, compiled = false;
   const tmp = new THREE.Vector3(), dest = new THREE.Vector3();
   function resize() {
     W = canvas.clientWidth || window.innerWidth; H = canvas.clientHeight || window.innerHeight;
@@ -1026,9 +1029,14 @@ export function createWorld({ canvas, data, labels: labelEls, onPick = () => {},
     camera.aspect = W / H;
     camera.fov = tall ? 64 : 50; // phones: wider lens and a step back so every island fits
     HOME = tall ? 74 : 62; ZONE = tall ? 66 : 54; OVER = tall ? 620 : 420;
+    if (tall) {
+      const halfFov = Math.atan(Math.tan(camera.fov * Math.PI / 360) * camera.aspect);
+      const extent = Math.max(RING.radius + RING.zoneRadius * 2.5, RING.archive.radius + RING.archive.zoneRadius * 2.5);
+      OVER = Math.max(OVER, extent * 1.15 / Math.sin(halfFov));
+    }
     if (!goal.follow) goal.dist = goal.over ? OVER : goal.zone === 'capital' ? HOME : ZONE;
     camera.updateProjectionMatrix();
-    dirty = true;
+    invalidate();
   }
   window.addEventListener('resize', resize);
   if (window.ResizeObserver) new ResizeObserver(resize).observe(canvas);
@@ -1044,7 +1052,7 @@ export function createWorld({ canvas, data, labels: labelEls, onPick = () => {},
     const d = dest.distanceTo(rig.target);
     flight = reduced ? null : { t0: performance.now(), ms: 700 + Math.min(1500, d * 7), from: rig.target.clone(), fromDist: rig.dist, bump: Math.min(0.9, d / 260) };
     if (reduced) { rig.target.copy(dest); rig.dist = goal.dist; rig.pitch = goal.pitch; }
-    dirty = true;
+    invalidate();
   }
 
   /* ---------- input: drag to orbit, wheel or pinch to zoom, hover, click ---------- */
@@ -1052,7 +1060,7 @@ export function createWorld({ canvas, data, labels: labelEls, onPick = () => {},
   let down = null, moved = 0, hovered = null, touched = false, pinch = 0;
   const mouse = { x: 0, y: 0 };
   const interact = () => { if (!touched) { touched = true; onInteract(); } };
-  const zoomTo = (d) => { goal.dist = Math.min(OVER * 1.15, Math.max(8, d)); goal.over = goal.dist > 230; flight = null; dirty = true; };
+  const zoomTo = (d) => { goal.dist = Math.min(OVER * 1.15, Math.max(8, d)); goal.over = goal.dist > 230; flight = null; invalidate(); };
   canvas.addEventListener('pointerdown', (e) => {
     pts.set(e.pointerId, { x: e.clientX, y: e.clientY });
     if (pts.size === 1) { down = { x: e.clientX, y: e.clientY }; moved = 0; }
@@ -1064,8 +1072,8 @@ export function createWorld({ canvas, data, labels: labelEls, onPick = () => {},
     const rc = canvas.getBoundingClientRect();
     if (e.pointerType === 'mouse') { mouse.x = ((e.clientX - rc.left) / W) * 2 - 1; mouse.y = ((e.clientY - rc.top) / H) * 2 - 1; }
     const p = pts.get(e.pointerId);
+    if (p) { p.x = e.clientX; p.y = e.clientY; }
     if (p && pts.size === 2) {
-      p.x = e.clientX; p.y = e.clientY;
       const [a, b] = [...pts.values()], d = Math.hypot(a.x - b.x, a.y - b.y);
       if (pinch > 0 && d > 0) { interact(); zoomTo(goal.dist * (pinch / d)); pinch = d; }
       return;
@@ -1077,18 +1085,18 @@ export function createWorld({ canvas, data, labels: labelEls, onPick = () => {},
       rig.yaw -= dx * 0.005;
       rig.pitch = Math.min(1.35, Math.max(0.1, rig.pitch + dy * 0.005));
       down = { x: e.clientX, y: e.clientY };
-      dirty = true;
+      invalidate();
     } else {
       const h = pick(e);
-      if (h !== hovered) { hovered = h; dirty = true; }
+      if (h !== hovered) { hovered = h; invalidate(); }
       canvas.classList.toggle('hover', !!hovered || !!pickCloud(e));
     }
   });
-  canvas.addEventListener('pointerleave', () => { hovered = null; mouse.x = mouse.y = 0; dirty = true; });
+  canvas.addEventListener('pointerleave', () => { hovered = null; mouse.x = mouse.y = 0; invalidate(); });
   const release = (e) => {
     pts.delete(e.pointerId);
     if (pts.size < 2) pinch = 0;
-    if (pts.size) return;
+    if (pts.size) { const p = pts.values().next().value; down = { x: p.x, y: p.y }; moved = 99; return; }
     canvas.classList.remove('drag');
     if (down && moved < 6 && e.type === 'pointerup') {
       const id = pick(e);
@@ -1132,7 +1140,7 @@ export function createWorld({ canvas, data, labels: labelEls, onPick = () => {},
     hemi.color.copy(acc.hemiSky); hemi.groundColor.copy(acc.hemiGround); hemi.intensity = num.hemiI;
     dir.color.copy(acc.sun); dir.intensity = num.sunI;
     cloudMat.color.copy(acc.cloud); cloudMat.opacity = 0.95 - 0.5 * num.lit;
-    seaMat.color.copy(acc.cloud).lerp(CP.sea[0], 0.3); seaMat.opacity = 0.6 - 0.4 * over;
+    seaMat.color.copy(acc.cloud).lerp(CP.sea, 0.3); seaMat.opacity = 0.6 - 0.4 * over;
     lit = num.lit;
     for (const mat of bowMats) mat.opacity = 0.24 * (1 - lit);
     for (const g of glows) g.mat.emissiveIntensity = (g.min || 0) + (g.max - (g.min || 0)) * lit;
@@ -1140,12 +1148,14 @@ export function createWorld({ canvas, data, labels: labelEls, onPick = () => {},
     for (const b of beams) b.opacity = 0.1 * lit;
   }
 
+  const view = new THREE.Frustum(), viewMatrix = new THREE.Matrix4();
   function stepParticles(z, dt, camDist) {
-    const p = z.parts, on = !reduced && camDist < 420;
+    const fade = 1 - sstep(360, 420, camDist), p = z.parts;
+    const on = !reduced && fade > 0.001 && view.intersectsSphere(p.bounds);
     p.obj.visible = on;
     if (!on) return;
     const [vy0, vy1, vx0, wob, op] = p.k, B = z.r * 1.15, Bh = 15, cx = z.center.x, cz = z.center.z, cy = 5;
-    const n = z.w > 0.4 ? p.n : z.w > 0.02 ? Math.ceil(p.n * 0.5) : Math.ceil(p.n * 0.14); // near, approaching, far
+    const detail = sstep(0, 0.5, z.w), n = Math.ceil(p.n * (0.14 + 0.86 * detail));
     for (let i = 0; i < n; i++) {
       const s = p.seed[i], j = i * 3;
       const vx = vx0 + (wob ? Math.sin(t * 1.3 + s * 20) * wob : 0), vy = vy0 + s * vy1, vz = wob ? Math.cos(t * 1.1 + s * 17) * wob * 0.7 : 0;
@@ -1159,8 +1169,8 @@ export function createWorld({ canvas, data, labels: labelEls, onPick = () => {},
     }
     p.geo.setDrawRange(0, n * (p.lines ? 2 : 1));
     p.geo.attributes.position.needsUpdate = true;
-    if (!p.lines) p.mat.size = Math.min(4.5, Math.max(0.2, camDist * 0.016)) * (p.size / 0.3) * (z.w > 0.02 ? 1 : 1.5); // flakes keep their on-screen size; the far tier is fewer and larger
-    p.mat.opacity = op * Math.max(0.6, Math.min(1, z.w * 1.6));
+    if (!p.lines) p.mat.size = Math.min(4.5, Math.max(0.2, camDist * 0.016)) * (p.size / 0.3) * (1.5 - 0.5 * sstep(0, 0.1, z.w));
+    p.mat.opacity = op * (0.6 + 0.4 * sstep(0, 0.625, z.w)) * fade;
   }
 
   /* ---------- labels: real links in the page, positioned over their islands ---------- */
@@ -1186,14 +1196,14 @@ export function createWorld({ canvas, data, labels: labelEls, onPick = () => {},
   let paused = false, pausedAt = 0, frameId = 0, good = 0, hold = 0;
   const maxRatio = pixelRatio;
   function setRatio(r) { pixelRatio = r; renderer.setPixelRatio(r); resize(); slow = good = 0; hold = 6; }
-  function schedule() { if (!paused && !document.hidden) frameId = requestAnimationFrame(frame); }
+  function schedule() { if (!frameId && !paused && !document.hidden) frameId = requestAnimationFrame(frame); }
+  function invalidate() { dirty = true; if (compiled) schedule(); }
   function frame(now) {
     frameId = 0;
     if (paused || document.hidden) { lastT = now; return; }
-    schedule();
-    const real = Math.min((now - lastT) / 1000, 0.05);
+    const elapsed = (now - lastT) / 1000, real = Math.min(elapsed, 0.05);
     lastT = now;
-    fpsN++; fpsT += real;
+    fpsN++; fpsT += elapsed;
     if (fpsT >= 1) { fps = Math.round(fpsN / fpsT); fpsN = fpsT = 0; hold = Math.max(0, hold - 1); if (reduced || hold) slow = good = 0; else if (fps < 40 && pixelRatio > 0.8) { good = 0; if (++slow >= 3) setRatio(Math.max(0.8, pixelRatio - (pixelRatio > 1 ? 0.25 : 0.1))); } else if (fps >= 57 && pixelRatio < maxRatio) { slow = 0; if (++good >= 8) setRatio(Math.min(maxRatio, pixelRatio + 0.1)); } else slow = good = 0; /* weak GPU: fewer pixels under sustained pressure, restored slowly when there is headroom */ }
     if (reduced && !dirty && !flight) return; // reduced motion: a still scene, redrawn only when the view changes
     dirty = false;
@@ -1240,7 +1250,7 @@ export function createWorld({ canvas, data, labels: labelEls, onPick = () => {},
       bu.pts.geometry.attributes.position.needsUpdate = true;
       bu.pts.material.opacity = 1 - bu.life;
       if (bu.life >= 1) { scene.remove(bu.pts); bu.pts.geometry.dispose(); bu.pts.material.dispose(); bursts.splice(i, 1); }
-      dirty = true;
+      invalidate();
     }
     halo.material.opacity = 0.62 + Math.sin(t * 1.5) * 0.06;
 
@@ -1271,19 +1281,24 @@ export function createWorld({ canvas, data, labels: labelEls, onPick = () => {},
     camera.lookAt(rig.target);
     camera.updateMatrixWorld();
     dome.position.copy(camera.position);
+    view.setFromProjectionMatrix(viewMatrix.multiplyMatrices(camera.projectionMatrix, camera.matrixWorldInverse));
 
     blend();
     // far tier for the capital: beyond 150 units its islands are drawn as their one-mesh copies and the birds rest (back under 120)
     const capDist = camera.position.length();
     if (capitalFar ? capDist < 120 : capDist > 150) { capitalFar = !capitalFar; for (const l of capitalLod) { l.near.visible = !capitalFar; l.far.visible = capitalFar; } }
-    if (pending.length) { populate(pending.shift()); dirty = true; }
+    if (pending.length) { populate(pending.shift()); invalidate(); }
     for (const z of zoneList) {
       if (!z.group) continue;
       z.spin.rotation.y += dt * (z.cfg.air.spin || 0);
       const camDist = camera.position.distanceTo(z.center), outside = 1 - sstep(0.1, 0.75, z.w);
       z.group.scale.setScalar(1 + 0.25 * outside + over * 1.25); // from far away a zone is drawn a little larger so its silhouette stays readable
       // far tier: hide the small island props beyond 170 units, bring them back under 145 (hysteresis, no flicker)
-      if (z.far ? camDist < 145 : camDist > 170) { z.far = !z.far; for (const m of z.flora) m.visible = !z.far; }
+      if (z.far ? camDist < 145 : camDist > 170) {
+        z.far = !z.far;
+        for (const m of z.flora) m.visible = !z.far;
+        if (z.farSolid) { z.farSolid.visible = z.far; for (const m of z.solid) m.visible = !z.far; }
+      }
       if (z.ring) z.ring.material.opacity = 0.4 + 0.5 * z.w;
       if (z.sphere) {
         for (const sp of z.sphere.haze) sp.material.opacity = z.sphere.base * sp.userData.k * (0.25 + 0.75 * outside);
@@ -1291,12 +1306,13 @@ export function createWorld({ canvas, data, labels: labelEls, onPick = () => {},
       }
       if (z.w > 0.001 || idleDone) loadDecor(z);
       if (z.parts) stepParticles(z, dt, camDist);
-      if (z.decor && !(z.resting && z.w === 0)) { z.appear = Math.min(1, z.appear + (reduced ? 1 : real / 1.2)); z.decor.update(t, dt, z.w, z.appear, camera); if (z.appear < 1) dirty = true; z.resting = z.w === 0 && z.appear >= 1; }
+      if (z.decor && !(z.resting && z.w === 0)) { z.appear = Math.min(1, z.appear + (reduced ? 1 : real / 1.2)); z.decor.update(t, dt, z.w, z.appear, camera); if (z.appear < 1) invalidate(); z.resting = z.w === 0 && z.appear >= 1; }
     }
     placeLabels();
     renderer.render(scene, camera);
     if (!firstFrame) { firstFrame = true; performance.mark('world:first-frame'); }
-    if (now - stateT > 80) { stateT = now; onState(state()); }
+    if (reduced || now - stateT > 80) { stateT = now; onState(state()); }
+    if (!reduced || dirty || flight) schedule();
   }
   function state() {
     let here = null, best = 0;
@@ -1310,10 +1326,13 @@ export function createWorld({ canvas, data, labels: labelEls, onPick = () => {},
   warm.add(new THREE.Mesh(UNIT.box, bakedMat), new THREE.Mesh(UNIT.box, ghostMat), new THREE.InstancedMesh(UNIT.box, MAT.trunk, 1), new THREE.Points(UNIT.box, new THREE.PointsMaterial({ map: dotTex, transparent: true, depthWrite: false })), new THREE.Sprite(new THREE.SpriteMaterial({ map: dotTex, transparent: true, depthWrite: false, fog: false })), new THREE.InstancedMesh(UNIT.box, new THREE.MeshStandardMaterial({ flatShading: true, transparent: true, fog: false }), 1));
   warm.scale.setScalar(0.0001);
   scene.add(warm);
-  let compiled = false;
   const ready = renderer.compileAsync(scene, camera).catch(() => {}).then(() => { scene.remove(warm); compiled = true; lastT = performance.now(); schedule(); });
-  reducedQ.addEventListener('change', () => { reduced = reducedQ.matches; dirty = true; });
-  document.addEventListener('visibilitychange', () => { lastT = performance.now(); dirty = true; if (compiled && !frameId) schedule(); });
+  reducedQ.addEventListener('change', () => {
+    reduced = reducedQ.matches; lastT = performance.now(); fpsN = fpsT = 0;
+    if (reduced && flight) { destination(dest); rig.target.copy(dest); rig.dist = goal.dist; rig.pitch = goal.pitch; flight = null; }
+    invalidate();
+  });
+  document.addEventListener('visibilitychange', () => { lastT = performance.now(); invalidate(); });
 
   return {
     ready,
@@ -1323,7 +1342,7 @@ export function createWorld({ canvas, data, labels: labelEls, onPick = () => {},
       paused = !!value;
       const now = performance.now();
       if (paused) { pausedAt = now; cancelAnimationFrame(frameId); frameId = 0; }
-      else { if (flight) flight.t0 += now - pausedAt; lastT = now; dirty = true; if (compiled) schedule(); }
+      else { if (flight) flight.t0 += now - pausedAt; lastT = now; invalidate(); }
     },
     /** glide to an island and follow it; null returns to the current zone */
     flyTo(id) {
@@ -1333,13 +1352,13 @@ export function createWorld({ canvas, data, labels: labelEls, onPick = () => {},
       if (b) { goal.zone = b.zone; goal.dist = b.focus; goal.pitch = 0.38; } else { goal.dist = goal.zone === 'capital' ? HOME : ZONE; goal.pitch = goal.zone === 'capital' ? 0.6 : 0.52; }
       glide();
     },
-    goZone(id) { if (!zones[id]) return; populate(zones[id]); Object.assign(goal, { follow: null, point: null, over: false, zone: id, dist: id === 'capital' ? HOME : zones[id].r < 20 ? 30 : ZONE, pitch: id === 'capital' ? 0.6 : 0.52 }); glide(); },
-    goOverview() { Object.assign(goal, { follow: null, point: null, over: true, dist: OVER, pitch: 1.08 }); glide(); },
+    goZone(id) { if (!zones[id]) return; interact(); populate(zones[id]); Object.assign(goal, { follow: null, point: null, over: false, zone: id, dist: id === 'capital' ? HOME : zones[id].r < 20 ? 30 : ZONE, pitch: id === 'capital' ? 0.6 : 0.52 }); glide(); },
+    goOverview() { interact(); Object.assign(goal, { follow: null, point: null, over: true, dist: OVER, pitch: 1.08 }); glide(); },
     /** glide to any point of the world plane (minimap) */
-    goPoint(x, z) { Object.assign(goal, { follow: null, over: false, point: new THREE.Vector3(x, 0, z), dist: Math.min(goal.dist, 90), pitch: 0.52 }); goal.zone = null; glide(); },
+    goPoint(x, z) { interact(); Object.assign(goal, { follow: null, over: false, point: new THREE.Vector3(x, 0, z), dist: Math.min(goal.dist, 90), pitch: 0.52 }); goal.zone = null; glide(); },
     zoomBy(f) { zoomTo(goal.dist * f); },
-    setPanel(open) { panelOpen = open; dirty = true; },
+    setPanel(open) { panelOpen = open; invalidate(); },
     celebrate(colors) { if (reduced) return; colors.forEach((c, i) => setTimeout(() => { const a = rand(0, 6.28), r = rand(4, 22); burst(new THREE.Vector3(rig.target.x + Math.cos(a) * r, rand(9, 16), rig.target.z + Math.sin(a) * r), c); }, i * 260)); },
-    redraw() { dirty = true; },
+    redraw() { invalidate(); },
   };
 }
