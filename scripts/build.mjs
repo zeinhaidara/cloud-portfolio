@@ -6,7 +6,7 @@
 import { readFileSync, writeFileSync, existsSync, mkdirSync, readdirSync, unlinkSync } from 'node:fs';
 import { resolve, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { island, ghostIsland, liteBase, zoneScene, icon, pickBuilding, relight, cloud, HEIGHT } from './lib/art.mjs';
+import { island, ghostIsland, icon, pickBuilding, relight, cloud } from './lib/art.mjs';
 
 const root = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 const args = process.argv.slice(2);
@@ -40,7 +40,6 @@ const esc = (s) => String(s ?? '').replace(/&/g, '&amp;').replace(/</g, '&lt;').
 const code = (s) => esc(s).replace(/`([^`]+)`/g, '<code>$1</code>');
 const projects = json('data/projects.json').filter((p) => p.visibility === 'PUBLIC').map((p) => ({ ...p, ...(W.overrides[p.name] || {}) }));
 const zones = W.zones, zoneById = Object.fromEntries(zones.map((z) => [z.id, z]));
-const RING = W.ring;
 
 const VAL = { cloud: ['Run on real cloud', 'live'], ci: ['CI with mocks only', 'manual'], review: ['Source review only', 'open'], none: ['Not run', 'none'] };
 const vcat = (v) => { const t = String(v).toLowerCase(); return t.startsWith('run on real cloud') ? 'cloud' : t.startsWith('ci with mocks') ? 'ci' : t.startsWith('not run') ? 'none' : 'review'; };
@@ -59,14 +58,15 @@ function zoneOf(p) {
   return 'capital';
 }
 const rad = (deg) => (deg * Math.PI) / 180;
-const r1 = (v) => Math.round(v);
+const r2 = (v) => Math.round(v * 100) / 100;
+// 3D layout: the capital at the origin, ten zones on a ring (zone n at -90° + 36°·(n-1)), the archive islet outside it
+const R3 = W.ring3d;
 for (const z of zones) {
-  if (z.id === 'capital') Object.assign(z, { x: 0, y: 0, r: RING.capitalRadius });
-  else if (z.id === 'archive') Object.assign(z, { x: -1720, y: 1560, r: 250 });
-  else { const a = rad(-90 + (z.n - 1) * 36); Object.assign(z, { x: r1(Math.cos(a) * RING.radius), y: r1(Math.sin(a) * RING.radius), r: RING.zoneRadius }); }
+  if (z.id === 'capital') Object.assign(z, { cx: 0, cz: 0, r: R3.capitalRadius });
+  else if (z.id === 'archive') Object.assign(z, { cx: r2(Math.cos(rad(R3.archive.angle)) * R3.archive.radius), cz: r2(Math.sin(rad(R3.archive.angle)) * R3.archive.radius), r: R3.archive.zoneRadius });
+  else { const a = rad(-90 + (z.n - 1) * 36); Object.assign(z, { cx: r2(Math.cos(a) * R3.radius), cz: r2(Math.sin(a) * R3.radius), r: R3.zoneRadius }); }
   z.islands = []; z.slots = [];
 }
-const WORLD = { x0: -2100, y0: -2060, w: 4200, h: 4040 };
 for (const p of projects) {
   const z = zoneById[zoneOf(p)], pl = W.placements[p.name] || {};
   p.zone = z; p.v = vcat(p.validation_level);
@@ -74,44 +74,33 @@ for (const p of projects) {
   p.ground = pl.ground || z.ground; p.building = pl.building || pickBuilding(p);
   p.cc = Number.isInteger(p.challenge_number) ? String(p.challenge_number).padStart(2, '0') : null;
   p.href = `projects/${p.name}.html`;
+  if (z.id === 'capital' && pl.orbit != null) Object.assign(p, { orbit: pl.orbit, speed: pl.speed, phase: pl.phase });
   z.islands.push(p);
 }
 for (const z of zones) {
   if (z.range) {
     // five fixed slots, one per challenge number; an empty slot is an uncharted island
-    const extras = z.islands.filter((p) => !p.cc);
     for (let k = z.range[0]; k <= z.range[1]; k++) {
-      const i = k - z.range[0], a = rad(-90 + i * 72), p = z.islands.find((q) => q.challenge_number === k);
-      const slot = { n: k, x: r1(Math.cos(a) * RING.islandOrbit), y: r1(Math.sin(a) * RING.islandOrbit * 0.94), p };
-      if (p) { p.lx = slot.x; p.ly = slot.y; }
-      z.slots.push(slot);
+      const p = z.islands.find((q) => q.challenge_number === k);
+      if (p) p.slot = k - z.range[0];
+      z.slots.push({ n: k, slot: k - z.range[0], p });
     }
-    extras.forEach((p, i) => { const a = rad(-54 + i * 72); p.lx = r1(Math.cos(a) * (RING.islandOrbit + 110)); p.ly = r1(Math.sin(a) * (RING.islandOrbit + 110) * 0.94); });
     z.islands.sort((a, b) => (a.challenge_number ?? 99) - (b.challenge_number ?? 99));
   } else if (z.id === 'capital') {
-    const order = Object.keys(W.placements);
-    z.islands.sort((a, b) => (order.indexOf(a.name) + 1 || 99) - (order.indexOf(b.name) + 1 || 99));
-    const orbit = z.islands.filter((p) => !['signpost', 'balloon'].includes(p.building));
-    orbit.forEach((p, i) => { const a = rad(-90 + (i * 360) / orbit.length); p.lx = r1(Math.cos(a) * 310); p.ly = r1(Math.sin(a) * 310 * 0.94); });
-    z.islands.forEach((p) => { if (p.building === 'signpost') { p.lx = 0; p.ly = 10; } if (p.building === 'balloon') { p.lx = 372; p.ly = -292; } });
-  } else {
-    z.islands.forEach((p, i) => { const k = z.islands.length; p.lx = k === 1 ? 0 : r1(Math.cos((i / k) * 6.283) * 120); p.ly = k === 1 ? 20 : r1(Math.sin((i / k) * 6.283) * 110); });
+    z.islands.sort((a, b) => (a.orbit ?? 99) - (b.orbit ?? 99));
   }
-  z.islands.forEach((p) => { p.wx = z.x + p.lx; p.wy = z.y + p.ly; });
 }
 const byName = Object.fromEntries(projects.map((p) => [p.name, p]));
 const night = (z) => z.mode === 'night';
 const zoneLabel = (z) => (z.range ? `Zone ${String(z.n).padStart(2, '0')} · ${String(z.range[0]).padStart(2, '0')}–${z.range[1]}` : z.id === 'capital' ? 'Centre of the world' : 'Offshore');
 
 /* ---------- island art ---------- */
-const VB = '-115 -200 230 330'; // one island: origin at the centre of its top face
 const artOf = (p) => relight(island({ ground: p.ground, building: p.building, color: p.color, size: p.size, seed: p.name, night: night(p.zone) }), p.zone.light);
-const liteOf = (p) => (p.building === 'balloon' ? `<circle cy="-72" r="34" fill="${p.color}"/><rect x="-9" y="-16" width="18" height="14" fill="#a8743f"/>` : relight(liteBase(62 * p.size, p.ground), p.zone.light));
 const iconSvg = (z, size = 44) => `<svg viewBox="-26 -30 52 56" width="${size}" height="${size}" aria-hidden="true" focusable="false">${relight(icon(z.icon, z.color), null)}</svg>`;
 
 /* ---------- shared page pieces ---------- */
 const FAVICON = `<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%230c1017'/%3E%3Cpath d='M8 9h16L8 23h16' fill='none' stroke='%23ffad48' stroke-width='3'/%3E%3C/svg%3E">`;
-const FONTS = `<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&display=swap" media="print" onload="this.media='all'"><noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&display=swap"></noscript>`;
+const FONTS = `<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&display=swap">`;
 function head({ title, desc, path, base = '', css, extra = '' }) {
   const url = SITE.url + path;
   return `<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><title>${esc(title)}</title>
@@ -127,33 +116,6 @@ const backdrop = `<div class="backdrop" aria-hidden="true"><span class="cl c1"><
 const footer = (base) => `<footer><a class="brand" href="${base}index.html">ZEIN / CLOUD</a><span>Cloud Portfolio · 2026</span><a href="${base}projects.html">All projects</a><a href="${SITE.github}">GitHub profile</a></footer>`;
 
 /* ---------- world page ---------- */
-function mapZone(z) {
-  const isl = z.islands.map((p) => `<a class="isl" id="i-${p.name}" href="${p.href}" style="left:${p.lx}px;top:${p.ly}px;--c:${p.color};--ly:${-r1((HEIGHT[p.building] || 1.6) * 37 * p.size + (p.ground === 'castle' ? 34 : 24))}px"><span class="bob" style="animation-delay:-${(Math.abs(p.lx + p.ly) % 50) / 10}s"><svg viewBox="${VB}" width="230" height="330" aria-hidden="true" focusable="false">${liteOf(p)}</svg></span><span class="plabel"><i></i>${p.cc ? `<em>${p.cc}</em> ` : ''}<span class="t">${esc(p.short)}</span><span class="vh">${p.short === p.title ? '' : ` (${esc(p.title)})`}. ${esc(VAL[p.v][0])}. Case study.</span></span></a>`).join('');
-  const ghosts = z.slots.filter((s) => !s.p).map((s) => `<span class="isl ghost" style="left:${s.x}px;top:${s.y}px"><span class="bob"><svg viewBox="${VB}" width="230" height="330" aria-hidden="true" focusable="false"><use href="#ghost"/></svg></span><span class="plabel" style="--ly:-52px"><em>${s.n}</em><span class="t">Uncharted · coming soon</span></span></span>`).join('');
-  const ferry = z.id === 'capital' ? W.capitalLinks.filter((nm) => byName[nm]).map((nm, i) => { const p = byName[nm]; return `<a class="plabel ferry" href="${p.href}" style="left:${-190 + i * 380}px;top:452px;--c:${p.zone.color}"><i></i><em>${p.cc}</em><span class="t">${esc(p.title)}</span><small>· ${esc(p.zone.short)}</small></a>`; }).join('') : '';
-  return `<div class="zone" id="z-${z.id}" data-zone="${z.id}" data-mode="${z.mode}" style="left:${z.x - WORLD.x0}px;top:${z.y - WORLD.y0}px;--r:${z.r}px;--o:${z.id === 'capital' ? 310 : z.range ? RING.islandOrbit : 0}px;--fx:${z.range ? r1((z.x / RING.radius) * z.r * 0.5) : 0}px;--fy:${z.range ? r1((z.y / RING.radius) * z.r * 0.5) : 0}px;${skyVars(z)}"><div class="air"></div><div class="ring"></div><div class="scn" aria-hidden="true"></div><a class="zlabel" href="#${z.id}">${iconSvg(z, 48)}<span><b>${esc(z.short)}</b><small>${esc(z.climate)}</small></span></a>${isl}${ghosts}${ferry}</div>`;
-}
-function worldDecor() {
-  // dotted routes: spokes from the capital and the ring between neighbours; faint clouds between the zones
-  const ring = zones.filter((z) => z.range);
-  let routes = '', clouds = '';
-  const pt = (z) => `${z.x - WORLD.x0} ${z.y - WORLD.y0}`;
-  ring.forEach((z, i) => {
-    const nx = ring[(i + 1) % ring.length], a = Math.atan2(z.y, z.x);
-    routes += `<path d="M${r1(Math.cos(a) * 600 - WORLD.x0)} ${r1(Math.sin(a) * 600 - WORLD.y0)}L${r1(Math.cos(a) * 990 - WORLD.x0)} ${r1(Math.sin(a) * 990 - WORLD.y0)}"/>`;
-    routes += `<path d="M${pt(z)}A${RING.radius} ${RING.radius} 0 0 1 ${pt(nx)}" class="soft"/>`;
-  });
-  const arch = zoneById.archive, z7 = zoneById.finops;
-  routes += `<path d="M${pt(z7)}Q${z7.x - 520 - WORLD.x0} ${z7.y + 420 - WORLD.y0} ${pt(arch)}" class="soft"/>`;
-  let seed = 7;
-  const rnd = () => { seed = (seed * 16807) % 2147483647; return seed / 2147483647; };
-  for (let i = 0; i < 40; i++) {
-    const x = rnd() * WORLD.w, y = rnd() * WORLD.h, wx = x + WORLD.x0, wy = y + WORLD.y0;
-    if (zones.some((z) => Math.hypot(wx - z.x, wy - z.y) < z.r * 0.92)) continue;
-    clouds += `<use href="#cl${i % 4}" transform="translate(${r1(x)} ${r1(y)}) scale(${(0.7 + rnd() * 0.9).toFixed(2)})" opacity="${(0.55 + rnd() * 0.4).toFixed(2)}"/>`;
-  }
-  return `<svg class="decor" viewBox="0 0 ${WORLD.w} ${WORLD.h}" width="${WORLD.w}" height="${WORLD.h}" aria-hidden="true" focusable="false"><defs>${[0, 1, 2, 3].map((i) => `<g id="cl${i}">${relight(cloud(120, '#f4f7fb', i + 11), null)}</g>`).join('')}<g id="ghost">${ghostIsland()}</g></defs><g class="routes">${routes}</g>${clouds}</svg>`;
-}
 function zoneCard(z) {
   const items = (z.range ? z.slots : z.islands.map((p) => ({ p }))).map((s) => s.p
     ? `<li id="p-${s.p.name}"><a href="${s.p.href}"><b>${s.p.cc ? `<em>${s.p.cc}</em> ` : ''}${esc(s.p.title)}</b><span>${esc(s.p.domain)}</span></a>${badge(s.p)}</li>`
@@ -163,48 +125,47 @@ function zoneCard(z) {
 }
 function indexPage() {
   const placement = {
-    world: WORLD,
-    zones: zones.map((z) => ({ id: z.id, n: z.n, name: z.name, short: z.short, x: z.x, y: z.y, r: z.r, color: z.color, mode: z.mode, fx: z.fx, sky: z.sky, range: z.range || null })),
-    islands: projects.map((p) => ({ name: p.name, title: p.title, short: p.short, zone: p.zone.id, x: p.wx, y: p.wy, href: p.href, cc: p.cc, v: p.v, stack: p.stack.join(' ') })),
-    uncharted: zones.flatMap((z) => z.slots.filter((s) => !s.p).map((s) => ({ n: s.n, zone: z.id, x: z.x + s.x, y: z.y + s.y }))),
+    ring: R3,
+    zones: zones.map((z) => ({ id: z.id, n: z.n, name: z.name, short: z.short, color: z.color, x: z.cx, z: z.cz, r: z.r, sky: z.sky, air: z.air, range: z.range || null })),
+    islands: projects.map((p) => ({ name: p.name, title: p.title, short: p.short, zone: p.zone.id, href: p.href, cc: p.cc, v: p.v, vl: VAL[p.v][0], vc: VAL[p.v][1], color: p.color, size: p.size, ground: p.ground, building: p.building,
+      summary: p.summary, domain: p.domain, stack: p.stack, repo: p.repo_url, slot: p.slot ?? null, orbit: p.orbit ?? null, speed: p.speed ?? null, phase: p.phase ?? null })),
+    uncharted: zones.flatMap((z) => z.slots.filter((s) => !s.p).map((s) => ({ n: s.n, zone: z.id, slot: s.slot }))),
+    contact: { email: SITE.email, github: SITE.github },
   };
   const dock = zones.map((z) => `<a href="#${z.id}" data-fly="${z.id}" style="--c:${z.color}"><i></i>${esc(z.short)}</a>`).join('');
-  const mini = zones.map((z) => `<a href="#${z.id}" data-fly="${z.id}" aria-label="${esc(z.name)}"><circle cx="${z.x}" cy="${z.y}" r="${z.r * 0.82}" fill="${z.sky[1]}" stroke="${z.color}" stroke-width="46"/></a>`).join('');
-  const desc = 'Cloud engineering projects by Zein as one world of floating islands: a capital of flagship platforms ringed by ten climate zones, one per Code Clinic domain. AWS, Azure and Google Cloud.';
+  const mini = zones.map((z) => `<a href="#${z.id}" data-fly="${z.id}" aria-label="${esc(z.name)}"><circle cx="${z.cx}" cy="${z.cz}" r="${z.r * 0.72}" fill="${z.sky[1]}" stroke="${z.color}" stroke-width="5"/></a>`).join('');
+  const labels = zones.map((z) => `<a class="zlabel" id="zl-${z.id}" href="#${z.id}" data-fly="${z.id}" style="--c:${z.color}">${iconSvg(z, 30)}<b>${esc(z.short)}</b></a>`).join('')
+    + projects.map((p) => `<a class="plabel" id="l-${p.name}" href="${p.href}" data-id="${p.name}" style="--c:${p.color}"><i></i>${p.cc ? `<em>${p.cc}</em> ` : ''}<span class="t">${esc(p.short)}</span><span class="vh">${p.short === p.title ? '' : ` (${esc(p.title)})`}. ${esc(VAL[p.v][0])}.</span><b class="check" aria-hidden="true"></b></a>`).join('')
+    + placement.uncharted.map((u) => `<span class="plabel ghost" id="g-${u.n}"><em>${u.n}</em><span class="t">Uncharted · coming soon</span></span>`).join('');
+  const desc = 'Cloud engineering projects by Zein as one 3D world of floating islands: a capital of flagship platforms around the sun, ringed by ten climate zones, one per Code Clinic domain. AWS, Azure and Google Cloud.';
   const html = `<!doctype html>
 <html lang="en"><head>${head({ title: SITE.title, desc, path: '', css: ['tokens.css', 'world.css'] })}
 </head>
 <body>
+<script>try{var c=document.createElement('canvas');if(!/[?&]view=list/.test(location.search)&&sessionStorage.getItem('zein-view')!=='list'&&window.WebGLRenderingContext&&(c.getContext('webgl2')||c.getContext('webgl')))document.body.className='gl'}catch(e){}</script>
+<canvas id="stage" aria-hidden="true"></canvas>
+<div class="labels" id="labels">${labels}</div>
 <header class="top"><a class="brand" href="index.html">ZEIN<span> / CLOUD ENGINEERING</span></a>
- <form class="search" id="search" role="search" autocomplete="off"><label class="vh" for="q">Find a project on the map</label><input id="q" type="search" placeholder="Find a project…" aria-controls="q-list" aria-expanded="false" role="combobox" aria-autocomplete="list"><ul id="q-list" role="listbox" hidden></ul></form>
- <nav aria-label="Main navigation"><a href="projects.html">All projects</a><a class="pill gh" href="${SITE.github}">GitHub</a><a class="pill" href="mailto:${SITE.email}">Contact</a></nav></header>
+ <form class="search" id="search" role="search" autocomplete="off"><label class="vh" for="q">Find a project</label><input id="q" type="search" placeholder="Find a project…" aria-controls="q-list" aria-expanded="false" role="combobox" aria-autocomplete="list"><ul id="q-list" role="listbox" hidden></ul></form>
+ <nav aria-label="Main navigation"><a href="projects.html">All projects</a><button class="pill" type="button" id="b-view" aria-pressed="false" hidden>List view</button><a class="pill gh" href="${SITE.github}">GitHub</a><a class="pill" href="mailto:${SITE.email}">Contact</a></nav></header>
 <main>
 <section class="intro"><div class="eyebrow">AWS · AZURE · GCP · INFRASTRUCTURE · APPLICATIONS</div>
  <h1>Ideas into systems.<br><span>Built in the cloud.</span></h1>
- <p>Every island is a project I built. The capital holds the flagships; ten climate zones ring it, one per Code Clinic domain. <span class="d">Drag to explore, pick a zone to fly in, or use</span><span class="m">Pick a zone below, or use</span> <a href="projects.html">the full list</a>.</p></section>
-<div class="map" id="map" role="group" aria-label="World map: ${projects.length} project islands in ${zones.length} zones. Drag to pan, scroll or pinch to zoom, Tab to move between islands.">
- <div class="world" id="world" style="width:${WORLD.w}px;height:${WORLD.h}px">${worldDecor()}${zones.map(mapZone).join('')}</div>
- <canvas id="fx" aria-hidden="true"></canvas>
-</div>
+ <p>Every island is a project I built. The flagships circle the sun; ten climate zones ring them, one per Code Clinic domain. <span class="d">Drag to look around, pick a zone below to fly there. The balloon says hi.</span><span class="m">Pick a zone below, or open <a href="projects.html">the full list</a>.</span></p></section>
+<aside class="panel" id="panel" hidden aria-live="polite"><button class="close" id="p-close" type="button" aria-label="Close project">✕</button><span class="kind" id="p-kind"></span><h2 id="p-title"></h2><p class="pv"><span class="st" id="p-val"></span></p><p id="p-blurb"></p><div class="tags" id="p-tags"></div><div class="actions"><a class="cta" id="p-main" href="#">Read the case study</a><a class="link" id="p-src" href="#">Source on GitHub</a></div></aside>
 <div class="zones" id="zones"><h2 class="vh">Zones and projects</h2>${zones.map(zoneCard).join('')}</div>
 <div class="hud" id="hud">
- <div class="ctl" role="group" aria-label="Map controls"><button type="button" id="b-home" title="Capital (Home)"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 11l8-7 8 7v9h-5v-6H9v6H4z"/></svg><span>Capital</span></button><button type="button" id="b-all" title="Whole world (0)"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="8.5" fill="none"/><circle cx="12" cy="12" r="2.6"/></svg><span>World</span></button><button type="button" id="b-in" aria-label="Zoom in" title="Zoom in (+)">+</button><button type="button" id="b-out" aria-label="Zoom out" title="Zoom out (−)">−</button></div>
- <div class="minimap" id="minimap"><svg viewBox="${WORLD.x0} ${WORLD.y0} ${WORLD.w} ${WORLD.h}" role="img" aria-label="Minimap. The orange frame is the part of the world on screen."><title>Minimap</title>${mini}<rect id="mm-view" x="0" y="0" width="10" height="10"/><g id="mm-here"><circle r="90" class="p"/><circle r="46"/></g></svg><span id="mm-where" aria-live="polite">Capital</span></div>
+ <div class="ctl" role="group" aria-label="Camera controls"><button type="button" id="b-home" title="Capital (Home)"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 11l8-7 8 7v9h-5v-6H9v6H4z"/></svg><span>Capital</span></button><button type="button" id="b-all" title="Whole world (0)"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="8.5" fill="none"/><circle cx="12" cy="12" r="2.6"/></svg><span>World</span></button><button type="button" id="b-in" aria-label="Zoom in" title="Zoom in (+)">+</button><button type="button" id="b-out" aria-label="Zoom out" title="Zoom out (−)">−</button></div>
+ <div class="minimap" id="minimap"><svg viewBox="-250 -250 500 500" role="img" aria-label="Minimap of the zone ring. The orange dot is where the camera is looking."><title>Minimap</title><circle cx="0" cy="0" r="${R3.radius}" class="orbit"/>${mini}<g id="mm-here"><circle r="20" class="p"/><circle r="9"/></g></svg><span id="mm-where" aria-live="polite">Capital</span></div>
 </div>
-<nav class="dock" id="dock" aria-label="Zones">${dock}</nav>
+<nav class="dock" id="dock" aria-label="Zones"><span class="score" id="score"></span>${dock}</nav>
+<div class="toast" id="toast" role="status" hidden><b>Every island explored.</b> Thanks for the visit. <a href="mailto:${SITE.email}">Say hi ✉</a></div>
 </main>
-<noscript><style>.map,.hud,.dock,.search{display:none!important}.zones{display:block!important}html,body{overflow:auto!important;height:auto!important;position:static!important}</style></noscript>
 <script type="application/json" id="placement">${JSON.stringify(placement)}</script>
-<script type="module" src="world.js"></script>
+<script type="module" src="app.js"></script>
 </body></html>
 `;
   return { html, placement };
-}
-
-/* ---------- zone scenery (lazy-loaded by world.js) ---------- */
-function zoneData(z) {
-  const sc = zoneScene(z, z.r);
-  return { id: z.id, back: sc.back, sprites: sc.sprites, islands: Object.fromEntries(z.islands.map((p) => [p.name, artOf(p)])) };
 }
 
 /* ---------- case studies ---------- */
@@ -310,7 +271,6 @@ const { html: indexHtml, placement } = indexPage();
 out.set('index.html', indexHtml);
 out.set('projects.html', listPage());
 out.set('world/placement.json', JSON.stringify(placement, null, 1) + '\n');
-for (const z of zones) out.set(`world/${z.id}.json`, JSON.stringify(zoneData(z)) + '\n');
 for (const p of projects) out.set(p.href, casePage(p));
 for (const [from, to] of Object.entries(W.redirects)) out.set(from, redirect(to));
 out.set('404.html', notFound);

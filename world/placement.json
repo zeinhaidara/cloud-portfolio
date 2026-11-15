@@ -1,9 +1,14 @@
 {
- "world": {
-  "x0": -2100,
-  "y0": -2060,
-  "w": 4200,
-  "h": 4040
+ "ring": {
+  "radius": 150,
+  "zoneRadius": 34,
+  "capitalRadius": 46,
+  "islandOrbit": 15,
+  "archive": {
+   "angle": 144,
+   "radius": 215,
+   "zoneRadius": 16
+  }
  },
  "zones": [
   {
@@ -11,17 +16,45 @@
    "n": 0,
    "name": "Capital",
    "short": "Capital",
-   "x": 0,
-   "y": 0,
-   "r": 500,
    "color": "#ff5d6c",
-   "mode": "day",
-   "fx": "none",
+   "x": 0,
+   "z": 0,
+   "r": 46,
    "sky": [
     "#5f97c9",
     "#c9dceb",
     "#8fb4d4"
    ],
+   "air": {
+    "fog": [
+     "#bfd3e4",
+     60,
+     240
+    ],
+    "hemi": [
+     "#e2edf6",
+     "#7f9f72",
+     1.25
+    ],
+    "sun": [
+     "#ffe9cf",
+     1.15
+    ],
+    "cloud": "#f4f7fb",
+    "stars": 0,
+    "lit": 0,
+    "particles": null,
+    "built": true,
+    "flora": [
+     "tree"
+    ],
+    "creatures": [
+     "birds",
+     "planes"
+    ],
+    "decor": null,
+    "spin": 0
+   },
    "range": null
   },
   {
@@ -29,17 +62,51 @@
    "n": 1,
    "name": "Cloud Infrastructure & Provisioning",
    "short": "Provisioning",
-   "x": 0,
-   "y": -1500,
-   "r": 430,
    "color": "#ff8a1f",
-   "mode": "day",
-   "fx": "motes",
+   "x": 0,
+   "z": -150,
+   "r": 34,
    "sky": [
     "#4f9fd6",
     "#ffe9cf",
     "#9fd6cf"
    ],
+   "air": {
+    "fog": [
+     "#f3e3c8",
+     70,
+     260
+    ],
+    "hemi": [
+     "#fff1dc",
+     "#8fbf7a",
+     1.35
+    ],
+    "sun": [
+     "#ffd9a0",
+     1.35
+    ],
+    "cloud": "#f4f7fb",
+    "stars": 0,
+    "lit": 0,
+    "particles": {
+     "type": "motes",
+     "count": 220,
+     "color": "#fff3c4",
+     "size": 0.34
+    },
+    "built": true,
+    "flora": [
+     "palm",
+     "palm",
+     "rockSand"
+    ],
+    "creatures": [
+     "parrot"
+    ],
+    "decor": "tropical",
+    "spin": 0.02
+   },
    "range": [
     1,
     5
@@ -50,17 +117,48 @@
    "n": 2,
    "name": "CI/CD & GitOps",
    "short": "CI/CD & GitOps",
-   "x": 882,
-   "y": -1214,
-   "r": 430,
    "color": "#2f9bff",
-   "mode": "day",
-   "fx": "gust",
+   "x": 88.17,
+   "z": -121.35,
+   "r": 34,
    "sky": [
     "#6ea6d4",
     "#d6e4ee",
     "#a9c6de"
    ],
+   "air": {
+    "fog": [
+     "#d6e4ee",
+     60,
+     240
+    ],
+    "hemi": [
+     "#e8f1f8",
+     "#8fb07a",
+     1.25
+    ],
+    "sun": [
+     "#fff1dc",
+     1.15
+    ],
+    "cloud": "#f4f7fb",
+    "stars": 0,
+    "lit": 0,
+    "particles": {
+     "type": "dust",
+     "count": 90,
+     "color": "#f4f8fc",
+     "size": 0.3
+    },
+    "built": false,
+    "flora": [
+     "tree",
+     "tree"
+    ],
+    "creatures": [],
+    "decor": null,
+    "spin": 0.03
+   },
    "range": [
     6,
     10
@@ -71,17 +169,48 @@
    "n": 3,
    "name": "Containers & Kubernetes",
    "short": "Kubernetes",
-   "x": 1427,
-   "y": -464,
-   "r": 430,
    "color": "#7c5cff",
-   "mode": "night",
-   "fx": "storm",
+   "x": 142.66,
+   "z": -46.35,
+   "r": 34,
    "sky": [
     "#4a5263",
     "#7f8899",
     "#5d6677"
    ],
+   "air": {
+    "fog": [
+     "#7f8899",
+     35,
+     150
+    ],
+    "hemi": [
+     "#c3ccd6",
+     "#5d6677",
+     0.95
+    ],
+    "sun": [
+     "#cfd6e6",
+     0.5
+    ],
+    "cloud": "#737c8e",
+    "stars": 0,
+    "lit": 0.5,
+    "particles": {
+     "type": "dust",
+     "count": 90,
+     "color": "#c9d6ee",
+     "size": 0.3
+    },
+    "built": false,
+    "flora": [
+     "rockGrey",
+     "tree"
+    ],
+    "creatures": [],
+    "decor": null,
+    "spin": 0.02
+   },
    "range": [
     11,
     15
@@ -92,17 +221,49 @@
    "n": 4,
    "name": "Security & Compliance",
    "short": "Security",
-   "x": 1427,
-   "y": 464,
-   "r": 430,
    "color": "#12b981",
-   "mode": "night",
-   "fx": "fireflies",
+   "x": 142.66,
+   "z": 46.35,
+   "r": 34,
    "sky": [
     "#04060c",
     "#1c2747",
     "#0d1426"
    ],
+   "air": {
+    "fog": [
+     "#1c2230",
+     22,
+     120
+    ],
+    "hemi": [
+     "#7d8fc4",
+     "#1a1f33",
+     0.6
+    ],
+    "sun": [
+     "#9fb6ff",
+     0.45
+    ],
+    "cloud": "#1c2540",
+    "stars": 0.6,
+    "lit": 1,
+    "particles": {
+     "type": "dust",
+     "count": 90,
+     "color": "#e4ff8a",
+     "size": 0.3
+    },
+    "built": false,
+    "flora": [
+     "pine",
+     "pine",
+     "pine"
+    ],
+    "creatures": [],
+    "decor": null,
+    "spin": 0.015
+   },
    "range": [
     16,
     20
@@ -113,17 +274,48 @@
    "n": 5,
    "name": "Monitoring & Observability",
    "short": "Observability",
-   "x": 882,
-   "y": 1214,
-   "r": 430,
    "color": "#f2b705",
-   "mode": "night",
-   "fx": "rain",
+   "x": 88.17,
+   "z": 121.35,
+   "r": 34,
    "sky": [
     "#080c16",
     "#1f2a44",
     "#151b2b"
    ],
+   "air": {
+    "fog": [
+     "#1f2a44",
+     30,
+     150
+    ],
+    "hemi": [
+     "#8fa3cc",
+     "#1f2a44",
+     0.65
+    ],
+    "sun": [
+     "#a9c3ea",
+     0.45
+    ],
+    "cloud": "#2a3248",
+    "stars": 0.3,
+    "lit": 1,
+    "particles": {
+     "type": "dust",
+     "count": 90,
+     "color": "#a9c3ea",
+     "size": 0.3
+    },
+    "built": false,
+    "flora": [
+     "pine",
+     "rockGrey"
+    ],
+    "creatures": [],
+    "decor": null,
+    "spin": 0.02
+   },
    "range": [
     21,
     25
@@ -134,17 +326,49 @@
    "n": 6,
    "name": "Automation & Scripting",
    "short": "Automation",
-   "x": 0,
-   "y": 1500,
-   "r": 430,
    "color": "#3fbf6f",
-   "mode": "day",
-   "fx": "leaves",
+   "x": 0,
+   "z": 150,
+   "r": 34,
    "sky": [
     "#7fa9cc",
     "#c9dceb",
     "#dfe8d6"
    ],
+   "air": {
+    "fog": [
+     "#cfe0d6",
+     55,
+     230
+    ],
+    "hemi": [
+     "#e2edf6",
+     "#6fa066",
+     1.2
+    ],
+    "sun": [
+     "#fff1dc",
+     1.1
+    ],
+    "cloud": "#f4f7fb",
+    "stars": 0,
+    "lit": 0,
+    "particles": {
+     "type": "dust",
+     "count": 90,
+     "color": "#bfe6b0",
+     "size": 0.3
+    },
+    "built": false,
+    "flora": [
+     "pine",
+     "pine",
+     "tree"
+    ],
+    "creatures": [],
+    "decor": null,
+    "spin": 0.012
+   },
    "range": [
     26,
     30
@@ -155,17 +379,52 @@
    "n": 7,
    "name": "Cost Optimization & FinOps",
    "short": "FinOps",
-   "x": -882,
-   "y": 1214,
-   "r": 430,
    "color": "#e0a100",
-   "mode": "day",
-   "fx": "heat",
+   "x": -88.17,
+   "z": 121.35,
+   "r": 34,
    "sky": [
     "#f0a050",
     "#ffd08a",
     "#f3c27a"
    ],
+   "air": {
+    "fog": [
+     "#ffd08a",
+     55,
+     220
+    ],
+    "hemi": [
+     "#fff0dc",
+     "#c9954f",
+     1.3
+    ],
+    "sun": [
+     "#ffb060",
+     1.55
+    ],
+    "cloud": "#fff0dc",
+    "stars": 0,
+    "lit": 0,
+    "particles": {
+     "type": "heat",
+     "count": 240,
+     "color": "#fff0dc",
+     "size": 0.3
+    },
+    "built": true,
+    "flora": [
+     "cactus",
+     "cactus",
+     "rockSand",
+     "dune"
+    ],
+    "creatures": [
+     "vulture"
+    ],
+    "decor": "desert",
+    "spin": 0.012
+   },
    "range": [
     31,
     35
@@ -176,17 +435,51 @@
    "n": 8,
    "name": "Networking & Connectivity",
    "short": "Networking",
-   "x": -1427,
-   "y": 464,
-   "r": 430,
    "color": "#38b6ff",
-   "mode": "night",
-   "fx": "snow",
+   "x": -142.66,
+   "z": 46.35,
+   "r": 34,
    "sky": [
     "#0e1422",
     "#2c3550",
     "#1d2538"
    ],
+   "air": {
+    "fog": [
+     "#232c44",
+     40,
+     180
+    ],
+    "hemi": [
+     "#b9cdf2",
+     "#3a4666",
+     1.1
+    ],
+    "sun": [
+     "#b9c8ff",
+     0.85
+    ],
+    "cloud": "#3a4666",
+    "stars": 1,
+    "lit": 0.8,
+    "particles": {
+     "type": "snow",
+     "count": 700,
+     "color": "#e8f0ff",
+     "size": 0.36
+    },
+    "built": true,
+    "flora": [
+     "pineSnow",
+     "crystal",
+     "drift"
+    ],
+    "creatures": [
+     "penguin"
+    ],
+    "decor": "ice",
+    "spin": 0.014
+   },
    "range": [
     36,
     40
@@ -197,17 +490,48 @@
    "n": 9,
    "name": "Disaster Recovery & Reliability",
    "short": "Reliability",
-   "x": -1427,
-   "y": -464,
-   "r": 430,
    "color": "#e05a47",
-   "mode": "night",
-   "fx": "ember",
+   "x": -142.66,
+   "z": -46.35,
+   "r": 34,
    "sky": [
     "#1c0d0a",
     "#4a1f12",
     "#2a1410"
    ],
+   "air": {
+    "fog": [
+     "#4a1f12",
+     40,
+     170
+    ],
+    "hemi": [
+     "#c98a6a",
+     "#2a1410",
+     0.7
+    ],
+    "sun": [
+     "#ff8a3d",
+     0.7
+    ],
+    "cloud": "#3a2018",
+    "stars": 0.3,
+    "lit": 0.7,
+    "particles": {
+     "type": "dust",
+     "count": 90,
+     "color": "#ff8a3d",
+     "size": 0.3
+    },
+    "built": false,
+    "flora": [
+     "rockLava",
+     "rockLava"
+    ],
+    "creatures": [],
+    "decor": null,
+    "spin": 0.015
+   },
    "range": [
     41,
     45
@@ -218,17 +542,48 @@
    "n": 10,
    "name": "Advanced / Cross-Cutting",
    "short": "Advanced",
-   "x": -882,
-   "y": -1214,
-   "r": 430,
    "color": "#1e6ad6",
-   "mode": "day",
-   "fx": "none",
+   "x": -88.17,
+   "z": -121.35,
+   "r": 34,
    "sky": [
     "#3f79b8",
     "#cfe0ee",
     "#f4f7fb"
    ],
+   "air": {
+    "fog": [
+     "#dbe8f3",
+     80,
+     300
+    ],
+    "hemi": [
+     "#f4f8fc",
+     "#9fb0c8",
+     1.35
+    ],
+    "sun": [
+     "#fff3e0",
+     1.25
+    ],
+    "cloud": "#ffffff",
+    "stars": 0,
+    "lit": 0,
+    "particles": {
+     "type": "dust",
+     "count": 70,
+     "color": "#ffffff",
+     "size": 0.3
+    },
+    "built": false,
+    "flora": [
+     "pineSnow",
+     "rockGrey"
+    ],
+    "creatures": [],
+    "decor": null,
+    "spin": 0.01
+   },
    "range": [
     46,
     50
@@ -239,17 +594,43 @@
    "n": 11,
    "name": "Archive",
    "short": "Archive",
-   "x": -1720,
-   "y": 1560,
-   "r": 250,
    "color": "#8a93a6",
-   "mode": "day",
-   "fx": "none",
+   "x": -173.94,
+   "z": 126.37,
+   "r": 16,
    "sky": [
     "#8fa3b8",
     "#c3ccd6",
     "#b3bfcb"
    ],
+   "air": {
+    "fog": [
+     "#c3ccd6",
+     50,
+     210
+    ],
+    "hemi": [
+     "#dfe6ee",
+     "#8a93a6",
+     1.05
+    ],
+    "sun": [
+     "#eef2f7",
+     0.8
+    ],
+    "cloud": "#e6ebf0",
+    "stars": 0,
+    "lit": 0,
+    "particles": null,
+    "built": false,
+    "flora": [
+     "rockGrey",
+     "tree"
+    ],
+    "creatures": [],
+    "decor": null,
+    "spin": 0.01
+   },
    "range": null
   }
  ],
@@ -259,590 +640,1210 @@
    "title": "Multi-AZ three-tier VPC module",
    "short": "Multi-AZ three-tier VPC module",
    "zone": "provisioning",
-   "x": 0,
-   "y": -1749,
    "href": "projects/01-terraform-multi-az-vpc.html",
    "cc": "01",
    "v": "ci",
-   "stack": "Terraform AWS VPC tflint terraform test"
+   "vl": "CI with mocks only",
+   "vc": "manual",
+   "color": "#ff8a1f",
+   "size": 0.92,
+   "ground": "tropical",
+   "building": "bridge",
+   "summary": "Terraform module for a three-tier, multi-AZ AWS VPC with NAT strategy, S3/DynamoDB and ECR/STS endpoints, and flow logs",
+   "domain": "Networking / IaC",
+   "stack": [
+    "Terraform",
+    "AWS VPC",
+    "tflint",
+    "terraform test"
+   ],
+   "repo": "https://github.com/zeinhaidara/01-terraform-multi-az-vpc",
+   "slot": 0,
+   "orbit": null,
+   "speed": null,
+   "phase": null
   },
   {
    "name": "02-ansible-linux-hardening",
    "title": "CIS-subset Linux hardening roles",
    "short": "CIS-subset Linux hardening roles",
    "zone": "provisioning",
-   "x": 252,
-   "y": -1577,
    "href": "projects/02-ansible-linux-hardening.html",
    "cc": "02",
    "v": "ci",
-   "stack": "Ansible Molecule ansible-lint Ubuntu RHEL"
+   "vl": "CI with mocks only",
+   "vc": "manual",
+   "color": "#ff8a1f",
+   "size": 0.92,
+   "ground": "tropical",
+   "building": "vault",
+   "summary": "Ansible roles that harden Ubuntu and RHEL EC2 fleets to a CIS benchmark subset: SSH lockdown, fail2ban, unattended upgrades, with check-mode and idempotency tests",
+   "domain": "Linux / Configuration management",
+   "stack": [
+    "Ansible",
+    "Molecule",
+    "ansible-lint",
+    "Ubuntu",
+    "RHEL"
+   ],
+   "repo": "https://github.com/zeinhaidara/02-ansible-linux-hardening",
+   "slot": 1,
+   "orbit": null,
+   "speed": null,
+   "phase": null
   },
   {
    "name": "03-python-ebs-orphan-report",
    "title": "Orphaned EBS volume report",
    "short": "Orphaned EBS volume report",
    "zone": "provisioning",
-   "x": 156,
-   "y": -1298,
    "href": "projects/03-python-ebs-orphan-report.html",
    "cc": "03",
    "v": "ci",
-   "stack": "Python boto3 moto"
+   "vl": "CI with mocks only",
+   "vc": "manual",
+   "color": "#ff8a1f",
+   "size": 0.92,
+   "ground": "tropical",
+   "building": "terminal",
+   "summary": "Python tool that finds unattached EBS volumes older than N days across an AWS Organization, reports their monthly cost, and writes a CSV for human review. It never deletes.",
+   "domain": "FinOps / AWS automation",
+   "stack": [
+    "Python",
+    "boto3",
+    "moto"
+   ],
+   "repo": "https://github.com/zeinhaidara/03-python-ebs-orphan-report",
+   "slot": 2,
+   "orbit": null,
+   "speed": null,
+   "phase": null
   },
   {
    "name": "04-terraform-cross-account-ci-role",
    "title": "Cross-account CI role module",
    "short": "Cross-account CI role module",
    "zone": "provisioning",
-   "x": -156,
-   "y": -1298,
    "href": "projects/04-terraform-cross-account-ci-role.html",
    "cc": "04",
    "v": "ci",
-   "stack": "Terraform AWS IAM OIDC"
+   "vl": "CI with mocks only",
+   "vc": "manual",
+   "color": "#ff8a1f",
+   "size": 0.92,
+   "ground": "tropical",
+   "building": "vault",
+   "summary": "Terraform module that creates a least-privilege IAM role a CI pipeline can assume in another AWS account, with an external ID and a trust policy scoped to one role.",
+   "domain": "IAM / Security",
+   "stack": [
+    "Terraform",
+    "AWS IAM",
+    "OIDC"
+   ],
+   "repo": "https://github.com/zeinhaidara/04-terraform-cross-account-ci-role",
+   "slot": 3,
+   "orbit": null,
+   "speed": null,
+   "phase": null
   },
   {
    "name": "05-bash-ebs-snapshot-retention",
    "title": "EBS snapshot retention script",
    "short": "EBS snapshot retention script",
    "zone": "provisioning",
-   "x": -252,
-   "y": -1577,
    "href": "projects/05-bash-ebs-snapshot-retention.html",
    "cc": "05",
    "v": "ci",
-   "stack": "Bash AWS CLI shellcheck"
+   "vl": "CI with mocks only",
+   "vc": "manual",
+   "color": "#ff8a1f",
+   "size": 0.92,
+   "ground": "tropical",
+   "building": "terminal",
+   "summary": "Bash script that snapshots EBS volumes tagged Backup=true and prunes only the snapshots it created, past a retention period. Prune is a dry run unless --execute is set.",
+   "domain": "Backup / AWS automation",
+   "stack": [
+    "Bash",
+    "AWS CLI",
+    "shellcheck"
+   ],
+   "repo": "https://github.com/zeinhaidara/05-bash-ebs-snapshot-retention",
+   "slot": 4,
+   "orbit": null,
+   "speed": null,
+   "phase": null
   },
   {
    "name": "06-github-actions-image-pipeline",
    "title": "Container image pipeline (build, scan, sign)",
    "short": "Container image pipeline (build, scan, sign)",
    "zone": "cicd",
-   "x": 882,
-   "y": -1463,
    "href": "projects/06-github-actions-image-pipeline.html",
    "cc": "06",
    "v": "ci",
-   "stack": "GitHub Actions Docker Trivy cosign GHCR"
+   "vl": "CI with mocks only",
+   "vc": "manual",
+   "color": "#2f9bff",
+   "size": 0.92,
+   "ground": "village",
+   "building": "crate",
+   "summary": "GitHub Actions pipeline that builds a multi-arch container image, scans it with Trivy, signs it with Cosign, and pushes it to GHCR only from main.",
+   "domain": "CI/CD / Supply chain",
+   "stack": [
+    "GitHub Actions",
+    "Docker",
+    "Trivy",
+    "cosign",
+    "GHCR"
+   ],
+   "repo": "https://github.com/zeinhaidara/06-github-actions-image-pipeline",
+   "slot": 0,
+   "orbit": null,
+   "speed": null,
+   "phase": null
   },
   {
    "name": "07-semver-tag-action",
    "title": "Semantic-version tag action",
    "short": "Semantic-version tag action",
    "zone": "cicd",
-   "x": 1134,
-   "y": -1291,
    "href": "projects/07-semver-tag-action.html",
    "cc": "07",
    "v": "ci",
-   "stack": "GitHub Actions Bash"
+   "vl": "CI with mocks only",
+   "vc": "manual",
+   "color": "#2f9bff",
+   "size": 0.92,
+   "ground": "village",
+   "building": "gear",
+   "summary": "Reusable GitHub Action that reads conventional commits since the last stable tag, picks the next semantic version, tags HEAD, and creates a GitHub release with the changelog as notes.",
+   "domain": "CI/CD / Release automation",
+   "stack": [
+    "GitHub Actions",
+    "Bash"
+   ],
+   "repo": "https://github.com/zeinhaidara/07-semver-tag-action",
+   "slot": 1,
+   "orbit": null,
+   "speed": null,
+   "phase": null
   },
   {
    "name": "08-terraform-plan-policy-check",
    "title": "Terraform plan policy check",
    "short": "Terraform plan policy check",
    "zone": "cicd",
-   "x": 1038,
-   "y": -1012,
    "href": "projects/08-terraform-plan-policy-check.html",
    "cc": "08",
    "v": "ci",
-   "stack": "Python Terraform plan JSON"
+   "vl": "CI with mocks only",
+   "vc": "manual",
+   "color": "#2f9bff",
+   "size": 0.92,
+   "ground": "village",
+   "building": "shield",
+   "summary": "Python tool that checks a Terraform plan JSON against policy rules (public S3 buckets, required tags, allowed instance types) and fails the pipeline on any violation. Runs on plan output, no AWS calls.",
+   "domain": "Policy as code",
+   "stack": [
+    "Python",
+    "Terraform plan JSON"
+   ],
+   "repo": "https://github.com/zeinhaidara/08-terraform-plan-policy-check",
+   "slot": 2,
+   "orbit": null,
+   "speed": null,
+   "phase": null
   },
   {
    "name": "09-argocd-applicationset-kustomize",
    "title": "Argo CD ApplicationSet with Kustomize overlays",
    "short": "Argo CD ApplicationSet with Kustomize overlays",
    "zone": "cicd",
-   "x": 726,
-   "y": -1012,
    "href": "projects/09-argocd-applicationset-kustomize.html",
    "cc": "09",
    "v": "ci",
-   "stack": "Argo CD Kustomize kubeconform"
+   "vl": "CI with mocks only",
+   "vc": "manual",
+   "color": "#2f9bff",
+   "size": 0.92,
+   "ground": "village",
+   "building": "wheel",
+   "summary": "Argo CD ApplicationSet that renders one Kustomize base into dev, stage and prod Applications. Dev and stage auto-sync, prod syncs manually.",
+   "domain": "GitOps / Kubernetes",
+   "stack": [
+    "Argo CD",
+    "Kustomize",
+    "kubeconform"
+   ],
+   "repo": "https://github.com/zeinhaidara/09-argocd-applicationset-kustomize",
+   "slot": 3,
+   "orbit": null,
+   "speed": null,
+   "phase": null
   },
   {
    "name": "10-terraform-drift-detection",
    "title": "Scheduled Terraform drift detection",
    "short": "Scheduled Terraform drift detection",
    "zone": "cicd",
-   "x": 630,
-   "y": -1291,
    "href": "projects/10-terraform-drift-detection.html",
    "cc": "10",
    "v": "ci",
-   "stack": "GitHub Actions Bash Terraform Slack"
+   "vl": "CI with mocks only",
+   "vc": "manual",
+   "color": "#2f9bff",
+   "size": 0.92,
+   "ground": "village",
+   "building": "gear",
+   "summary": "Scheduled GitHub Actions workflow that runs terraform plan with detailed exit codes, reports infrastructure drift, and posts a short summary to Slack or Teams.",
+   "domain": "IaC operations",
+   "stack": [
+    "GitHub Actions",
+    "Bash",
+    "Terraform",
+    "Slack"
+   ],
+   "repo": "https://github.com/zeinhaidara/10-terraform-drift-detection",
+   "slot": 4,
+   "orbit": null,
+   "speed": null,
+   "phase": null
   },
   {
    "name": "11-helm-12factor-chart",
    "title": "12-factor app Helm chart",
    "short": "12-factor app Helm chart",
    "zone": "containers",
-   "x": 1427,
-   "y": -713,
    "href": "projects/11-helm-12factor-chart.html",
    "cc": "11",
    "v": "ci",
-   "stack": "Helm HPA PDB NetworkPolicy External Secrets"
+   "vl": "CI with mocks only",
+   "vc": "manual",
+   "color": "#7c5cff",
+   "size": 0.92,
+   "ground": "city",
+   "building": "wheel",
+   "summary": "Helm chart for a stateless 12-factor app with HPA, PodDisruptionBudget, a NetworkPolicy limited to a labelled namespace, and an ExternalSecret that renders only when secrets are enabled. Values are checked by a schema. Not deployed to any cluster.",
+   "domain": "Kubernetes packaging",
+   "stack": [
+    "Helm",
+    "HPA",
+    "PDB",
+    "NetworkPolicy",
+    "External Secrets"
+   ],
+   "repo": "https://github.com/zeinhaidara/11-helm-12factor-chart",
+   "slot": 0,
+   "orbit": null,
+   "speed": null,
+   "phase": null
   },
   {
    "name": "12-k8s-configmap-secret-controller",
    "title": "ConfigMap-to-Secret sync controller",
    "short": "ConfigMap-to-Secret sync controller",
    "zone": "containers",
-   "x": 1679,
-   "y": -541,
    "href": "projects/12-k8s-configmap-secret-controller.html",
    "cc": "12",
    "v": "ci",
-   "stack": "Python Kubernetes API AWS Secrets Manager"
+   "vl": "CI with mocks only",
+   "vc": "manual",
+   "color": "#7c5cff",
+   "size": 0.92,
+   "ground": "city",
+   "building": "shield",
+   "summary": "Python Kubernetes controller that watches ConfigMaps with a sync annotation, reads the named secret from AWS Secrets Manager, and creates or updates a Kubernetes Secret. Tested with a fake secret store, no cluster or AWS calls.",
+   "domain": "Kubernetes controllers",
+   "stack": [
+    "Python",
+    "Kubernetes API",
+    "AWS Secrets Manager"
+   ],
+   "repo": "https://github.com/zeinhaidara/12-k8s-configmap-secret-controller",
+   "slot": 1,
+   "orbit": null,
+   "speed": null,
+   "phase": null
   },
   {
    "name": "13-python-pod-security-audit",
    "title": "Pod security audit CLI",
    "short": "Pod security audit CLI",
    "zone": "containers",
-   "x": 1583,
-   "y": -262,
    "href": "projects/13-python-pod-security-audit.html",
    "cc": "13",
    "v": "ci",
-   "stack": "Python Kubernetes"
+   "vl": "CI with mocks only",
+   "vc": "manual",
+   "color": "#7c5cff",
+   "size": 0.92,
+   "ground": "city",
+   "building": "shield",
+   "summary": "Python CLI that audits Kubernetes pods for privileged containers, hostPath mounts and missing limits",
+   "domain": "Kubernetes security",
+   "stack": [
+    "Python",
+    "Kubernetes"
+   ],
+   "repo": "https://github.com/zeinhaidara/13-python-pod-security-audit",
+   "slot": 2,
+   "orbit": null,
+   "speed": null,
+   "phase": null
   },
   {
    "name": "14-helm-observability-sidecar-library",
    "title": "Observability sidecar Helm library chart",
    "short": "Observability sidecar Helm library chart",
    "zone": "containers",
-   "x": 1271,
-   "y": -262,
    "href": "projects/14-helm-observability-sidecar-library.html",
    "cc": "14",
    "v": "ci",
-   "stack": "Helm library chart kubeconform"
+   "vl": "CI with mocks only",
+   "vc": "manual",
+   "color": "#7c5cff",
+   "size": 0.92,
+   "ground": "city",
+   "building": "wheel",
+   "summary": "Helm library chart that adds metrics/logging sidecars and security contexts, with render tests",
+   "domain": "Kubernetes packaging / Observability",
+   "stack": [
+    "Helm library chart",
+    "kubeconform"
+   ],
+   "repo": "https://github.com/zeinhaidara/14-helm-observability-sidecar-library",
+   "slot": 3,
+   "orbit": null,
+   "speed": null,
+   "phase": null
   },
   {
    "name": "15-python-networkpolicy-generator",
    "title": "NetworkPolicy generator",
    "short": "NetworkPolicy generator",
    "zone": "containers",
-   "x": 1175,
-   "y": -541,
    "href": "projects/15-python-networkpolicy-generator.html",
    "cc": "15",
    "v": "ci",
-   "stack": "Python Kubernetes NetworkPolicy"
+   "vl": "CI with mocks only",
+   "vc": "manual",
+   "color": "#7c5cff",
+   "size": 0.92,
+   "ground": "city",
+   "building": "shield",
+   "summary": "Python tool that turns a simple intent file into Kubernetes NetworkPolicy manifests",
+   "domain": "Kubernetes security",
+   "stack": [
+    "Python",
+    "Kubernetes NetworkPolicy"
+   ],
+   "repo": "https://github.com/zeinhaidara/15-python-networkpolicy-generator",
+   "slot": 4,
+   "orbit": null,
+   "speed": null,
+   "phase": null
   },
   {
    "name": "16-lambda-iam-mfa-enforcement",
    "title": "IAM MFA enforcement Lambda",
    "short": "IAM MFA enforcement Lambda",
    "zone": "security",
-   "x": 1427,
-   "y": 215,
    "href": "projects/16-lambda-iam-mfa-enforcement.html",
    "cc": "16",
    "v": "ci",
-   "stack": "Python AWS Lambda IAM SNS"
+   "vl": "CI with mocks only",
+   "vc": "manual",
+   "color": "#12b981",
+   "size": 0.92,
+   "ground": "castle",
+   "building": "vault",
+   "summary": "AWS Lambda that checks new IAM users for MFA and sends a notification, tested with mocked boto3 clients",
+   "domain": "Security / Compliance",
+   "stack": [
+    "Python",
+    "AWS Lambda",
+    "IAM",
+    "SNS"
+   ],
+   "repo": "https://github.com/zeinhaidara/16-lambda-iam-mfa-enforcement",
+   "slot": 0,
+   "orbit": null,
+   "speed": null,
+   "phase": null
   },
   {
    "name": "17-ansible-ssh-key-rotation",
    "title": "SSH key rotation role",
    "short": "SSH key rotation role",
    "zone": "security",
-   "x": 1679,
-   "y": 387,
    "href": "projects/17-ansible-ssh-key-rotation.html",
    "cc": "17",
    "v": "ci",
-   "stack": "Ansible OpenSSH Python tests"
+   "vl": "CI with mocks only",
+   "vc": "manual",
+   "color": "#12b981",
+   "size": 0.92,
+   "ground": "castle",
+   "building": "vault",
+   "summary": "Ansible role rotating SSH host keys/authorized_keys, updating inventory, notifying owners, tested",
+   "domain": "Linux / Security",
+   "stack": [
+    "Ansible",
+    "OpenSSH",
+    "Python tests"
+   ],
+   "repo": "https://github.com/zeinhaidara/17-ansible-ssh-key-rotation",
+   "slot": 1,
+   "orbit": null,
+   "speed": null,
+   "phase": null
   },
   {
    "name": "18-terraform-s3-public-remediation",
    "title": "Public S3 bucket auto-remediation",
    "short": "Public S3 bucket auto-remediation",
    "zone": "security",
-   "x": 1583,
-   "y": 666,
    "href": "projects/18-terraform-s3-public-remediation.html",
    "cc": "18",
    "v": "ci",
-   "stack": "Terraform AWS Config SSM remediation"
+   "vl": "CI with mocks only",
+   "vc": "manual",
+   "color": "#12b981",
+   "size": 0.92,
+   "ground": "castle",
+   "building": "vault",
+   "summary": "Terraform AWS Config rule that detects and remediates public S3 buckets, with tests",
+   "domain": "Security / Compliance",
+   "stack": [
+    "Terraform",
+    "AWS Config",
+    "SSM remediation"
+   ],
+   "repo": "https://github.com/zeinhaidara/18-terraform-s3-public-remediation",
+   "slot": 2,
+   "orbit": null,
+   "speed": null,
+   "phase": null
   },
   {
    "name": "19-python-securityhub-jira-aggregator",
    "title": "Security Hub to Jira aggregator",
    "short": "Security Hub to Jira aggregator",
    "zone": "security",
-   "x": 1271,
-   "y": 666,
    "href": "projects/19-python-securityhub-jira-aggregator.html",
    "cc": "19",
    "v": "ci",
-   "stack": "Python AWS Security Hub Jira"
+   "vl": "CI with mocks only",
+   "vc": "manual",
+   "color": "#12b981",
+   "size": 0.92,
+   "ground": "castle",
+   "building": "shield",
+   "summary": "Python tool that aggregates and prioritizes Security Hub findings, opens Jira tickets, with fakes",
+   "domain": "Security operations",
+   "stack": [
+    "Python",
+    "AWS Security Hub",
+    "Jira"
+   ],
+   "repo": "https://github.com/zeinhaidara/19-python-securityhub-jira-aggregator",
+   "slot": 3,
+   "orbit": null,
+   "speed": null,
+   "phase": null
   },
   {
    "name": "20-precommit-secret-scan",
    "title": "Pre-commit secret scanner",
    "short": "Pre-commit secret scanner",
    "zone": "security",
-   "x": 1175,
-   "y": 387,
    "href": "projects/20-precommit-secret-scan.html",
    "cc": "20",
    "v": "ci",
-   "stack": "Python pre-commit"
+   "vl": "CI with mocks only",
+   "vc": "manual",
+   "color": "#12b981",
+   "size": 0.92,
+   "ground": "castle",
+   "building": "shield",
+   "summary": "Pre-commit hook that blocks commits containing secrets, with tests and CI",
+   "domain": "DevSecOps",
+   "stack": [
+    "Python",
+    "pre-commit"
+   ],
+   "repo": "https://github.com/zeinhaidara/20-precommit-secret-scan",
+   "slot": 4,
+   "orbit": null,
+   "speed": null,
+   "phase": null
   },
   {
    "name": "21-terraform-prometheus-grafana-stack",
    "title": "Prometheus/Grafana/Alertmanager stack module",
    "short": "Prometheus/Grafana/Alertmanager stack module",
    "zone": "observability",
-   "x": 882,
-   "y": 965,
    "href": "projects/21-terraform-prometheus-grafana-stack.html",
    "cc": "21",
    "v": "ci",
-   "stack": "Terraform Helm provider Prometheus Grafana promtool"
+   "vl": "CI with mocks only",
+   "vc": "manual",
+   "color": "#f2b705",
+   "size": 0.92,
+   "ground": "rainy",
+   "building": "wheel",
+   "summary": "Terraform module that deploys Prometheus, Grafana and Alertmanager with node and pod health alerts",
+   "domain": "Observability",
+   "stack": [
+    "Terraform",
+    "Helm provider",
+    "Prometheus",
+    "Grafana",
+    "promtool"
+   ],
+   "repo": "https://github.com/zeinhaidara/21-terraform-prometheus-grafana-stack",
+   "slot": 0,
+   "orbit": null,
+   "speed": null,
+   "phase": null
   },
   {
    "name": "22-python-metric-anomaly-alerts",
    "title": "CloudWatch metric anomaly alerts",
    "short": "CloudWatch metric anomaly alerts",
    "zone": "observability",
-   "x": 1134,
-   "y": 1137,
    "href": "projects/22-python-metric-anomaly-alerts.html",
    "cc": "22",
    "v": "ci",
-   "stack": "Python CloudWatch Slack"
+   "vl": "CI with mocks only",
+   "vc": "manual",
+   "color": "#f2b705",
+   "size": 0.92,
+   "ground": "rainy",
+   "building": "beacon",
+   "summary": "Python script that finds CloudWatch metric anomalies with simple statistics and posts Slack alerts, tested with fakes",
+   "domain": "Monitoring",
+   "stack": [
+    "Python",
+    "CloudWatch",
+    "Slack"
+   ],
+   "repo": "https://github.com/zeinhaidara/22-python-metric-anomaly-alerts",
+   "slot": 1,
+   "orbit": null,
+   "speed": null,
+   "phase": null
   },
   {
    "name": "23-fluentbit-k8s-log-routing",
    "title": "Fluent Bit Kubernetes log routing",
    "short": "Fluent Bit Kubernetes log routing",
    "zone": "observability",
-   "x": 1038,
-   "y": 1416,
    "href": "projects/23-fluentbit-k8s-log-routing.html",
    "cc": "23",
    "v": "ci",
-   "stack": "Fluent Bit Kubernetes DaemonSet kubeconform"
+   "vl": "CI with mocks only",
+   "vc": "manual",
+   "color": "#f2b705",
+   "size": 0.92,
+   "ground": "rainy",
+   "building": "beacon",
+   "summary": "Fluent Bit DaemonSet config that enriches Kubernetes container logs and routes them to Elasticsearch, S3 and Splunk",
+   "domain": "Logging",
+   "stack": [
+    "Fluent Bit",
+    "Kubernetes DaemonSet",
+    "kubeconform"
+   ],
+   "repo": "https://github.com/zeinhaidara/23-fluentbit-k8s-log-routing",
+   "slot": 2,
+   "orbit": null,
+   "speed": null,
+   "phase": null
   },
   {
    "name": "24-python-slo-burnrate-metrics",
    "title": "SLO burn-rate metrics service",
    "short": "SLO burn-rate metrics service",
    "zone": "observability",
-   "x": 726,
-   "y": 1416,
    "href": "projects/24-python-slo-burnrate-metrics.html",
    "cc": "24",
    "v": "ci",
-   "stack": "Python prometheus-client Prometheus rules"
+   "vl": "CI with mocks only",
+   "vc": "manual",
+   "color": "#f2b705",
+   "size": 0.92,
+   "ground": "rainy",
+   "building": "beacon",
+   "summary": "Python service exposing order latency metrics with Prometheus client and SLO burn-rate alert rules, tested with promtool",
+   "domain": "SRE / Observability",
+   "stack": [
+    "Python",
+    "prometheus-client",
+    "Prometheus rules"
+   ],
+   "repo": "https://github.com/zeinhaidara/24-python-slo-burnrate-metrics",
+   "slot": 3,
+   "orbit": null,
+   "speed": null,
+   "phase": null
   },
   {
    "name": "25-ansible-datadog-agent-rollout",
    "title": "Datadog agent rollout role",
    "short": "Datadog agent rollout role",
    "zone": "observability",
-   "x": 630,
-   "y": 1137,
    "href": "projects/25-ansible-datadog-agent-rollout.html",
    "cc": "25",
    "v": "ci",
-   "stack": "Ansible Datadog Linux Windows"
+   "vl": "CI with mocks only",
+   "vc": "manual",
+   "color": "#f2b705",
+   "size": 0.92,
+   "ground": "rainy",
+   "building": "vault",
+   "summary": "Ansible role that installs and tags the Datadog agent on mixed Linux and Windows hosts, with APM enabled by a flag, tested with lint and check mode",
+   "domain": "Monitoring / Configuration management",
+   "stack": [
+    "Ansible",
+    "Datadog",
+    "Linux",
+    "Windows"
+   ],
+   "repo": "https://github.com/zeinhaidara/25-ansible-datadog-agent-rollout",
+   "slot": 4,
+   "orbit": null,
+   "speed": null,
+   "phase": null
   },
   {
    "name": "26-bash-asg-bluegreen-deploy",
    "title": "ASG blue/green and canary deploy framework",
    "short": "ASG blue/green and canary deploy framework",
    "zone": "automation",
-   "x": 0,
-   "y": 1251,
    "href": "projects/26-bash-asg-bluegreen-deploy.html",
    "cc": "26",
    "v": "ci",
-   "stack": "Bash AWS Auto Scaling ALB"
+   "vl": "CI with mocks only",
+   "vc": "manual",
+   "color": "#3fbf6f",
+   "size": 0.92,
+   "ground": "forest",
+   "building": "gear",
+   "summary": "Bash framework for blue/green and canary deployments of EC2 Auto Scaling Groups, with logging, error handling and dry-run mode",
+   "domain": "Deployment automation",
+   "stack": [
+    "Bash",
+    "AWS Auto Scaling",
+    "ALB"
+   ],
+   "repo": "https://github.com/zeinhaidara/26-bash-asg-bluegreen-deploy",
+   "slot": 0,
+   "orbit": null,
+   "speed": null,
+   "phase": null
   },
   {
    "name": "27-python-cloud-tagging-cli",
    "title": "Cloud resource tagging CLI",
    "short": "Cloud resource tagging CLI",
    "zone": "automation",
-   "x": 252,
-   "y": 1423,
    "href": "projects/27-python-cloud-tagging-cli.html",
    "cc": "27",
    "v": "ci",
-   "stack": "Python boto3"
+   "vl": "CI with mocks only",
+   "vc": "manual",
+   "color": "#3fbf6f",
+   "size": 0.92,
+   "ground": "forest",
+   "building": "terminal",
+   "summary": "Python CLI that reports and bulk-fixes non-conforming AWS resource tags, with a provider interface stubbed for Azure and GCP. Tested with fakes in CI.",
+   "domain": "Governance / FinOps",
+   "stack": [
+    "Python",
+    "boto3"
+   ],
+   "repo": "https://github.com/zeinhaidara/27-python-cloud-tagging-cli",
+   "slot": 1,
+   "orbit": null,
+   "speed": null,
+   "phase": null
   },
   {
    "name": "28-lambda-unused-resource-cleanup",
    "title": "Unused AWS resource cleanup Lambda",
    "short": "Unused AWS resource cleanup Lambda",
    "zone": "automation",
-   "x": 156,
-   "y": 1702,
    "href": "projects/28-lambda-unused-resource-cleanup.html",
    "cc": "28",
    "v": "ci",
-   "stack": "Python AWS Lambda SNS SQS EventBridge"
+   "vl": "CI with mocks only",
+   "vc": "manual",
+   "color": "#3fbf6f",
+   "size": 0.92,
+   "ground": "forest",
+   "building": "rocket",
+   "summary": "Scheduled Lambda that finds unused Elastic IPs, old AMIs, unattached security groups and orphaned load balancers, with SNS/SQS approval before cleanup",
+   "domain": "FinOps / AWS automation",
+   "stack": [
+    "Python",
+    "AWS Lambda",
+    "SNS",
+    "SQS",
+    "EventBridge"
+   ],
+   "repo": "https://github.com/zeinhaidara/28-lambda-unused-resource-cleanup",
+   "slot": 2,
+   "orbit": null,
+   "speed": null,
+   "phase": null
   },
   {
    "name": "29-azure-resource-group-module",
    "title": "Azure resource group PowerShell module",
    "short": "Azure resource group PowerShell module",
    "zone": "automation",
-   "x": -156,
-   "y": 1702,
    "href": "projects/29-azure-resource-group-module.html",
    "cc": "29",
    "v": "ci",
-   "stack": "PowerShell Az module Pester"
+   "vl": "CI with mocks only",
+   "vc": "manual",
+   "color": "#3fbf6f",
+   "size": 0.92,
+   "ground": "forest",
+   "building": "tower",
+   "summary": "PowerShell module for Azure Resource Groups with consistent naming, locks and budget alerts",
+   "domain": "Azure governance",
+   "stack": [
+    "PowerShell",
+    "Az module",
+    "Pester"
+   ],
+   "repo": "https://github.com/zeinhaidara/29-azure-resource-group-module",
+   "slot": 3,
+   "orbit": null,
+   "speed": null,
+   "phase": null
   },
   {
    "name": "30-python-dynamic-ansible-inventory",
    "title": "Dynamic Ansible inventory",
    "short": "Dynamic Ansible inventory",
    "zone": "automation",
-   "x": -252,
-   "y": 1423,
    "href": "projects/30-python-dynamic-ansible-inventory.html",
    "cc": "30",
    "v": "ci",
-   "stack": "Python Ansible boto3"
+   "vl": "CI with mocks only",
+   "vc": "manual",
+   "color": "#3fbf6f",
+   "size": 0.92,
+   "ground": "forest",
+   "building": "terminal",
+   "summary": "Python dynamic Ansible inventory script for AWS EC2, with a provider interface stubbed for Azure and GCP. Tested with fakes in CI.",
+   "domain": "Configuration management",
+   "stack": [
+    "Python",
+    "Ansible",
+    "boto3"
+   ],
+   "repo": "https://github.com/zeinhaidara/30-python-dynamic-ansible-inventory",
+   "slot": 4,
+   "orbit": null,
+   "speed": null,
+   "phase": null
   },
   {
    "name": "aws-3-tier-github-actions",
    "title": "AWS three-tier delivery on EC2 and ECS",
    "short": "Three-tier delivery",
    "zone": "capital",
-   "x": 0,
-   "y": 291,
    "href": "projects/aws-3-tier-github-actions.html",
    "cc": null,
    "v": "cloud",
-   "stack": "AWS EC2 ASG ECS Fargate ALB RDS MySQL Terraform GitHub Actions FastAPI Checkov Trivy SonarQube"
+   "vl": "Run on real cloud",
+   "vc": "live",
+   "color": "#7c5cff",
+   "size": 1,
+   "ground": "city",
+   "building": "tower",
+   "summary": "One FastAPI/MySQL image deployed to both EC2 Auto Scaling and ECS Fargate behind an ALB with Terraform, OIDC GitHub Actions, immutable ECR tags and a load-test workflow.",
+   "domain": "Cloud infrastructure / CI/CD",
+   "stack": [
+    "AWS EC2 ASG",
+    "ECS Fargate",
+    "ALB",
+    "RDS MySQL",
+    "Terraform",
+    "GitHub Actions",
+    "FastAPI",
+    "Checkov",
+    "Trivy",
+    "SonarQube"
+   ],
+   "repo": "https://github.com/zeinhaidara/aws-3-tier-github-actions",
+   "slot": null,
+   "orbit": 3,
+   "speed": 0.06,
+   "phase": 4.1
   },
   {
    "name": "aws-retail-microservices-eks",
    "title": "Orbital Expeditions: event-driven microservices on EKS",
    "short": "Orbital Expeditions",
    "zone": "capital",
-   "x": 268,
-   "y": -146,
    "href": "projects/aws-retail-microservices-eks.html",
    "cc": null,
    "v": "cloud",
-   "stack": "AWS EKS Fargate Terraform Helm GitHub Actions Python DynamoDB RDS MySQL Valkey EventBridge SQS SES Prometheus Grafana"
+   "vl": "Run on real cloud",
+   "vc": "live",
+   "color": "#ff8a1f",
+   "size": 1.25,
+   "ground": "desert",
+   "building": "rocket",
+   "summary": "Six-service fictional storefront on EKS Fargate with DynamoDB reservations, an RDS transactional outbox, Valkey cache, EventBridge to SQS with DLQ, SES email and Prometheus/Grafana.",
+   "domain": "Microservices / Kubernetes platform",
+   "stack": [
+    "AWS EKS Fargate",
+    "Terraform",
+    "Helm",
+    "GitHub Actions",
+    "Python",
+    "DynamoDB",
+    "RDS MySQL",
+    "Valkey",
+    "EventBridge",
+    "SQS",
+    "SES",
+    "Prometheus",
+    "Grafana"
+   ],
+   "repo": "https://github.com/zeinhaidara/aws-retail-microservices-eks",
+   "slot": null,
+   "orbit": 0,
+   "speed": 0.11,
+   "phase": 0.4
   },
   {
    "name": "azure-aks-referral-platform",
    "title": "Northbridge Health referral platform on Azure",
    "short": "Northbridge Health",
    "zone": "capital",
-   "x": -268,
-   "y": 146,
    "href": "projects/azure-aks-referral-platform.html",
    "cc": null,
    "v": "review",
-   "stack": "Azure AKS Terraform Helm Azure Pipelines Key Vault ACR Private Endpoints Python"
+   "vl": "Source review only",
+   "vc": "open",
+   "color": "#1e6ad6",
+   "size": 1.05,
+   "ground": "tropical",
+   "building": "bridge",
+   "summary": "Terraform modules, Helm chart and Azure Pipelines for a referral API and worker on AKS with private endpoints, workload identity and Key Vault.",
+   "domain": "Azure platform / Kubernetes",
+   "stack": [
+    "Azure AKS",
+    "Terraform",
+    "Helm",
+    "Azure Pipelines",
+    "Key Vault",
+    "ACR",
+    "Private Endpoints",
+    "Python"
+   ],
+   "repo": "https://github.com/zeinhaidara/azure-aks-referral-platform",
+   "slot": null,
+   "orbit": 5,
+   "speed": 0.035,
+   "phase": 1.3
   },
   {
    "name": "cloud-portfolio",
    "title": "Cloud portfolio site",
    "short": "This portfolio",
    "zone": "capital",
-   "x": 0,
-   "y": 10,
    "href": "projects/cloud-portfolio.html",
    "cc": null,
    "v": "cloud",
-   "stack": "HTML CSS JavaScript Inline SVG Node build script GitHub Pages"
+   "vl": "Run on real cloud",
+   "vc": "live",
+   "color": "#ff5d6c",
+   "size": 0.8,
+   "ground": "village",
+   "building": "signpost",
+   "summary": "Static GitHub Pages portfolio: one continuous 3D world of project islands in blended climate zones, with a generated case study for every public repository.",
+   "domain": "Portfolio",
+   "stack": [
+    "HTML",
+    "CSS",
+    "JavaScript",
+    "three.js",
+    "Node build script",
+    "GitHub Pages"
+   ],
+   "repo": "https://github.com/zeinhaidara/cloud-portfolio",
+   "slot": null,
+   "orbit": 6,
+   "speed": 0.03,
+   "phase": 3.3
   },
   {
    "name": "forest-run-unity-game",
    "title": "Forest Run (Unity 3D game)",
    "short": "Forest Run (Unity 3D game)",
    "zone": "archive",
-   "x": -1720,
-   "y": 1580,
    "href": "projects/forest-run-unity-game.html",
    "cc": null,
    "v": "none",
-   "stack": "Unity C#"
+   "vl": "Not run",
+   "vc": "none",
+   "color": "#8a93a6",
+   "size": 0.92,
+   "ground": "rocky",
+   "building": "tower",
+   "summary": "Team Unity 3D platformer with enemy AI and scoring, built as a Georgia Tech course project (Team SJMSK).",
+   "domain": "Game development (coursework)",
+   "stack": [
+    "Unity",
+    "C#"
+   ],
+   "repo": "https://github.com/zeinhaidara/forest-run-unity-game",
+   "slot": null,
+   "orbit": null,
+   "speed": null,
+   "phase": null
   },
   {
    "name": "gcp-ai-log-analyzer",
    "title": "AI Log Analyzer on GCP",
    "short": "AI Log Analyzer",
    "zone": "capital",
-   "x": 268,
-   "y": 146,
    "href": "projects/gcp-ai-log-analyzer.html",
    "cc": null,
    "v": "cloud",
-   "stack": "GCP Cloud Run Vertex AI Gemini Google ADK Pub/Sub Firestore BigQuery Cloud Build Terraform Python"
+   "vl": "Run on real cloud",
+   "vc": "live",
+   "color": "#f2b705",
+   "size": 1.1,
+   "ground": "snow",
+   "building": "observatory",
+   "summary": "Log upload and incident replay dashboard plus a private ADK agent that makes one Gemini call per log on Vertex AI, with Pub/Sub, Firestore, Cloud Storage and BigQuery incident history.",
+   "domain": "AI operations / Serverless",
+   "stack": [
+    "GCP Cloud Run",
+    "Vertex AI Gemini",
+    "Google ADK",
+    "Pub/Sub",
+    "Firestore",
+    "BigQuery",
+    "Cloud Build",
+    "Terraform",
+    "Python"
+   ],
+   "repo": "https://github.com/zeinhaidara/gcp-ai-log-analyzer",
+   "slot": null,
+   "orbit": 2,
+   "speed": 0.03,
+   "phase": 0.85
   },
   {
    "name": "github-actions-oidc-s3-pipeline",
    "title": "GitHub Actions to AWS over OIDC",
    "short": "GitHub → AWS pipeline",
    "zone": "capital",
-   "x": -268,
-   "y": -146,
    "href": "projects/github-actions-oidc-s3-pipeline.html",
    "cc": null,
    "v": "cloud",
-   "stack": "GitHub Actions AWS IAM OIDC S3 Docker Flask Trivy Gitleaks Bandit pip-audit"
+   "vl": "Run on real cloud",
+   "vc": "live",
+   "color": "#2f9bff",
+   "size": 0.9,
+   "ground": "volcanic",
+   "building": "gear",
+   "summary": "Flask app and static site promoted through dev, stage and main with Bandit, pip-audit, Gitleaks and Trivy gates, deployed to S3 with short-lived OIDC credentials.",
+   "domain": "CI/CD / Security",
+   "stack": [
+    "GitHub Actions",
+    "AWS IAM OIDC",
+    "S3",
+    "Docker",
+    "Flask",
+    "Trivy",
+    "Gitleaks",
+    "Bandit",
+    "pip-audit"
+   ],
+   "repo": "https://github.com/zeinhaidara/github-actions-oidc-s3-pipeline",
+   "slot": null,
+   "orbit": 4,
+   "speed": 0.045,
+   "phase": 5.5
   },
   {
    "name": "healthcare-eks-secops",
    "title": "Healthcare SecOps on EKS",
    "short": "Healthcare SecOps",
    "zone": "capital",
-   "x": 0,
-   "y": -291,
    "href": "projects/healthcare-eks-secops.html",
    "cc": null,
    "v": "cloud",
-   "stack": "AWS EKS Fargate Terraform Argo CD Helm GitHub Actions FastAPI Trivy Checkov CodeQL ZAP External Secrets DynamoDB KMS"
+   "vl": "Run on real cloud",
+   "vc": "live",
+   "color": "#12b981",
+   "size": 1.2,
+   "ground": "castle",
+   "building": "shield",
+   "summary": "Read-only patient lookup API on EKS Fargate delivered through scan-gated CI, Argo CD GitOps, approval-gated Terraform and OIDC-only access, with a logged controls and exceptions register.",
+   "domain": "DevSecOps / Kubernetes platform",
+   "stack": [
+    "AWS EKS Fargate",
+    "Terraform",
+    "Argo CD",
+    "Helm",
+    "GitHub Actions",
+    "FastAPI",
+    "Trivy",
+    "Checkov",
+    "CodeQL",
+    "ZAP",
+    "External Secrets",
+    "DynamoDB",
+    "KMS"
+   ],
+   "repo": "https://github.com/zeinhaidara/healthcare-eks-secops",
+   "slot": null,
+   "orbit": 1,
+   "speed": 0.08,
+   "phase": 2.2
   },
   {
    "name": "zeinhaidara",
    "title": "Profile README",
-   "short": "Say hi · profile",
+   "short": "Say hi",
    "zone": "capital",
-   "x": 372,
-   "y": -292,
    "href": "projects/zeinhaidara.html",
    "cc": null,
    "v": "none",
-   "stack": "Markdown"
+   "vl": "Not run",
+   "vc": "none",
+   "color": "#ff5d6c",
+   "size": 1,
+   "ground": "none",
+   "building": "balloon",
+   "summary": "GitHub profile README.",
+   "domain": "Profile",
+   "stack": [
+    "Markdown"
+   ],
+   "repo": "https://github.com/zeinhaidara/zeinhaidara",
+   "slot": null,
+   "orbit": null,
+   "speed": null,
+   "phase": null
   }
  ],
  "uncharted": [
   {
    "n": 31,
    "zone": "finops",
-   "x": -882,
-   "y": 965
+   "slot": 0
   },
   {
    "n": 32,
    "zone": "finops",
-   "x": -630,
-   "y": 1137
+   "slot": 1
   },
   {
    "n": 33,
    "zone": "finops",
-   "x": -726,
-   "y": 1416
+   "slot": 2
   },
   {
    "n": 34,
    "zone": "finops",
-   "x": -1038,
-   "y": 1416
+   "slot": 3
   },
   {
    "n": 35,
    "zone": "finops",
-   "x": -1134,
-   "y": 1137
+   "slot": 4
   },
   {
    "n": 36,
    "zone": "networking",
-   "x": -1427,
-   "y": 215
+   "slot": 0
   },
   {
    "n": 37,
    "zone": "networking",
-   "x": -1175,
-   "y": 387
+   "slot": 1
   },
   {
    "n": 38,
    "zone": "networking",
-   "x": -1271,
-   "y": 666
+   "slot": 2
   },
   {
    "n": 39,
    "zone": "networking",
-   "x": -1583,
-   "y": 666
+   "slot": 3
   },
   {
    "n": 40,
    "zone": "networking",
-   "x": -1679,
-   "y": 387
+   "slot": 4
   },
   {
    "n": 41,
    "zone": "reliability",
-   "x": -1427,
-   "y": -713
+   "slot": 0
   },
   {
    "n": 42,
    "zone": "reliability",
-   "x": -1175,
-   "y": -541
+   "slot": 1
   },
   {
    "n": 43,
    "zone": "reliability",
-   "x": -1271,
-   "y": -262
+   "slot": 2
   },
   {
    "n": 44,
    "zone": "reliability",
-   "x": -1583,
-   "y": -262
+   "slot": 3
   },
   {
    "n": 45,
    "zone": "reliability",
-   "x": -1679,
-   "y": -541
+   "slot": 4
   },
   {
    "n": 46,
    "zone": "advanced",
-   "x": -882,
-   "y": -1463
+   "slot": 0
   },
   {
    "n": 47,
    "zone": "advanced",
-   "x": -630,
-   "y": -1291
+   "slot": 1
   },
   {
    "n": 48,
    "zone": "advanced",
-   "x": -726,
-   "y": -1012
+   "slot": 2
   },
   {
    "n": 49,
    "zone": "advanced",
-   "x": -1038,
-   "y": -1012
+   "slot": 3
   },
   {
    "n": 50,
    "zone": "advanced",
-   "x": -1134,
-   "y": -1291
+   "slot": 4
   }
- ]
+ ],
+ "contact": {
+  "email": "zeinhaidara@gmail.com",
+  "github": "https://github.com/zeinhaidara"
+ }
 }
