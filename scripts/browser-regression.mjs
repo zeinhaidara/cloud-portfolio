@@ -33,6 +33,12 @@ try {
   page.setDefaultTimeout(10000);
   const state = () => page.evaluate(() => window.__world.state());
   const ready = (p) => p.waitForFunction(() => document.body.classList.contains('ready'));
+  const backgroundPoint = () => page.evaluate(() => {
+    for (const y of [0.4, 0.5, 0.6]) for (const x of [0.3, 0.5, 0.65]) {
+      if (document.elementFromPoint(innerWidth * x, innerHeight * y)?.id === 'stage') return { x: innerWidth * x, y: innerHeight * y };
+    }
+    throw new Error('No canvas background available for camera interaction');
+  });
   console.log('running: desktop preservation checks');
   await page.goto(base + '?wx=clear&time=noon', { waitUntil: 'domcontentloaded' });
   await ready(page);
@@ -44,6 +50,33 @@ try {
   assert.equal(await page.locator('.zcard[data-mode="night"]').count(), 0, 'list fallbacks use the same daytime');
   // every zone outside the capital carries its own weather-and-terrain sphere once populated
   await page.waitForFunction(() => window.__world.state().spheres === 11);
+  await page.screenshot({ path: resolve(root, 'memory/screenshots/navigation-capital.png') });
+  await page.emulateMedia({ reducedMotion: 'no-preference' });
+  await page.locator('.dock [data-fly="finops"]').click();
+  await page.waitForTimeout(100);
+  const interruptAt = await backgroundPoint();
+  await page.mouse.move(interruptAt.x, interruptAt.y);
+  await page.mouse.down();
+  await page.mouse.move(interruptAt.x + 70, interruptAt.y + 25, { steps: 4 });
+  await page.mouse.up();
+  const interrupted = await state();
+  await page.waitForTimeout(300);
+  assert.ok(Math.hypot((await state()).x - interrupted.x, (await state()).z - interrupted.z) < 1, 'drag interrupts the automated flight instead of continuing to its old destination');
+  assert.ok(Math.abs((await state()).pitch - interrupted.pitch) < 0.001, 'manual tilt stays where the visitor leaves it');
+  assert.equal((await state()).flying, false);
+  await page.locator('.dock [data-fly="provisioning"]').click();
+  await page.waitForTimeout(100);
+  const wheelAt = await backgroundPoint();
+  await page.mouse.move(wheelAt.x, wheelAt.y);
+  await page.mouse.wheel(0, -100);
+  await page.waitForFunction(() => !window.__world.state().flying);
+  const wheelStopped = await state();
+  await page.waitForTimeout(200);
+  assert.ok(Math.hypot((await state()).x - wheelStopped.x, (await state()).z - wheelStopped.z) < 1, 'wheel input also stops translation');
+  for (const zone of ['networking', 'finops', 'provisioning']) await page.locator(`.dock [data-fly="${zone}"]`).click();
+  await page.waitForFunction(() => window.__world.state().weights.provisioning > 0.99 && !window.__world.state().flying);
+  await page.emulateMedia({ reducedMotion: 'reduce' });
+  await page.locator('#b-home').click();
   for (const zone of ['provisioning', 'finops', 'networking']) {
     await page.locator(`.dock [data-fly="${zone}"]`).click();
     await page.waitForFunction((z) => window.__world.state().weights[z] === 1, zone);
@@ -59,6 +92,7 @@ try {
   assert.match(await page.locator('#p-main').getAttribute('href'), /healthcare-eks-secops/);
   await page.locator('#p-back').click();
   assert.equal(await page.locator('#panel').isVisible(), false, 'back button returns from the island to its zone');
+  assert.equal(new URL(page.url()).hash, '#capital');
   await page.waitForFunction(() => window.__world.state().here === 'capital');
   await page.keyboard.press('0');
   await page.waitForFunction(() => window.__world.state().over === 1);
@@ -77,6 +111,7 @@ try {
   });
   await page.waitForFunction(() => window.auditScene);
   await page.evaluate(() => { window.auditScene.onAfterRender = (_renderer, _scene, camera) => { window.auditCamera = camera; }; });
+  await page.waitForFunction(() => window.auditCamera);
   const flagshipPositions = () => page.evaluate(() => {
     const names = ['aws-retail-microservices-eks', 'healthcare-eks-secops', 'gcp-ai-log-analyzer', 'aws-3-tier-github-actions', 'github-actions-oidc-s3-pipeline', 'azure-aks-referral-platform'];
     return names.map((name) => {
@@ -106,6 +141,36 @@ try {
   assert.ok(weather.visible > 0 && weather.visible < weather.all, 'off-screen weather is culled while distant visible weather remains');
   await page.waitForTimeout(250);
   (await flagshipPositions()).forEach((p, i) => assert.notEqual(p.x, flagships[i].x, `${p.name} orbits`));
+  const movingTarget = await page.evaluate(async () => {
+    const { Vector3 } = await import('./vendor/three.module.min.js');
+    const D = JSON.parse(document.getElementById('placement').textContent);
+    for (const p of D.islands.filter((p) => p.orbit != null)) {
+      const group = window.auditScene.children.find((g) => g.children.some((c) => c.userData.id === p.name));
+      const point = group.children.find((c) => c.userData.id === p.name).getWorldPosition(new Vector3()).project(window.auditCamera);
+      const x = (point.x / 2 + 0.5) * innerWidth, y = (-point.y / 2 + 0.5) * innerHeight;
+      if (point.z < 1 && document.elementFromPoint(x, y)?.id === 'stage') return { id: p.name, x, y };
+    }
+    throw new Error('No unobstructed flagship target');
+  });
+  await page.mouse.move(movingTarget.x, movingTarget.y);
+  await page.mouse.click(movingTarget.x, movingTarget.y);
+  assert.equal(await page.locator('#panel').isVisible(), true, 'moving islands remain selectable through the canvas');
+  assert.equal((await state()).following, movingTarget.id);
+  await page.keyboard.press('Escape');
+  assert.equal(new URL(page.url()).hash, '#capital', 'closing a project clears its stale project route');
+  assert.equal(await page.locator('.dock [data-fly="capital"]').evaluate((el) => el === document.activeElement), true, 'closing restores keyboard focus to the parent zone');
+  await page.locator('#b-all').click();
+  await page.waitForFunction(() => window.__world.state().over === 1);
+  const terrain = await page.evaluate(async () => {
+    const { Vector3 } = await import('./vendor/three.module.min.js');
+    const z = JSON.parse(document.getElementById('placement').textContent).zones.find((z) => z.id === 'provisioning');
+    const p = new Vector3(z.x, 3, z.z).project(window.auditCamera);
+    return { x: (p.x / 2 + 0.5) * innerWidth, y: (-p.y / 2 + 0.5) * innerHeight };
+  });
+  assert.equal(await page.evaluate(({ x, y }) => document.elementFromPoint(x, y)?.id, terrain), 'stage');
+  await page.mouse.click(terrain.x, terrain.y);
+  await page.waitForFunction(() => window.__world.state().weights.provisioning > 0.99);
+  assert.equal(await page.locator('#provisioning').evaluate((el) => el.classList.contains('on')), true, 'terrain selection uses the existing zone panel');
   await page.locator('#b-all').click();
   await page.waitForFunction(() => window.__world.state().over === 1);
   assert.equal(await page.evaluate(() => {
@@ -129,12 +194,6 @@ try {
   await page.waitForFunction(() => window.__world.state().weights.capital > 0.99);
   const before = await state();
   await page.waitForFunction((yaw) => window.__world.state().yaw !== yaw, before.yaw);
-  const backgroundPoint = () => page.evaluate(() => {
-    for (const y of [0.4, 0.5, 0.6]) for (const x of [0.3, 0.5, 0.65]) {
-      if (document.elementFromPoint(innerWidth * x, innerHeight * y)?.id === 'stage') return { x: innerWidth * x, y: innerHeight * y };
-    }
-    throw new Error('No canvas background available for camera interaction');
-  });
   const drag = await backgroundPoint();
   await page.mouse.move(drag.x, drag.y);
   await page.mouse.down(); await page.mouse.move(drag.x + 100, drag.y + 40, { steps: 5 }); await page.mouse.up();
@@ -256,6 +315,58 @@ try {
   })), true, 'portrait overview labels fit without hiding their accessible names');
   await phone.locator('#b-view').click();
   assert.equal(await phone.locator('#capital').isVisible(), true);
+  await phone.locator('#b-view').click();
+  await phone.evaluate(async () => {
+    const { Scene } = await import('./vendor/three.module.min.js');
+    const update = Scene.prototype.updateMatrixWorld;
+    Scene.prototype.updateMatrixWorld = function (...args) {
+      window.phoneScene = this;
+      this.onAfterRender = (_r, _s, camera) => { window.phoneCamera = camera; };
+      return update.apply(this, args);
+    };
+    window.__world.redraw();
+  });
+  await phone.locator('.dock [data-fly="provisioning"]').click();
+  await phone.waitForFunction(() => window.__world.state().weights.provisioning === 1 && window.phoneCamera);
+  await phone.evaluate(() => window.__world.zoomBy(1.6));
+  await phone.waitForFunction(() => Math.abs(window.__world.state().dist - 66 * 1.6) < 0.01);
+  const touchTarget = await phone.evaluate(async () => {
+    const { Vector3, Vector2, Raycaster } = await import('./vendor/three.module.min.js');
+    const hits = [];
+    window.phoneScene.traverse((m) => { if (m.isMesh && m.userData.id) hits.push(m); });
+    const D = JSON.parse(document.getElementById('placement').textContent);
+    for (const p of D.islands.filter((p) => p.zone === 'provisioning')) {
+      const hit = hits.find((h) => h.userData.id === p.name), center = hit.getWorldPosition(new Vector3()).project(window.phoneCamera);
+      for (const [dx, dy] of [[21, 0], [-21, 0], [0, -21], [0, 21]]) {
+        const x = (center.x / 2 + 0.5) * innerWidth + dx, y = (-center.y / 2 + 0.5) * innerHeight + dy;
+        if (document.elementFromPoint(x, y)?.id !== 'stage') continue;
+        const ray = new Raycaster(); ray.setFromCamera(new Vector2(x / innerWidth * 2 - 1, 1 - y / innerHeight * 2), window.phoneCamera);
+        if (!ray.intersectObjects(hits, false).length) return { x, y, id: p.name };
+      }
+    }
+    throw new Error('No unobstructed tap just outside the original island hit geometry');
+  });
+  await touch('touchStart', [[1, touchTarget.x, touchTarget.y]]);
+  await touch('touchEnd', []);
+  assert.equal(await phone.evaluate(() => window.__world.state().following), touchTarget.id, '44px touch padding selects an island outside its original hit geometry');
+  await phone.locator('#p-close').click();
+  await phone.locator('#b-home').click();
+  await phone.evaluate(() => window.__world.zoomBy(0.8));
+  await phone.waitForFunction(() => Math.abs(window.__world.state().dist - 74 * 0.8) < 0.01);
+  await phone.evaluate(() => dispatchEvent(new Event('resize')));
+  await phone.waitForTimeout(100);
+  assert.ok(Math.abs(await phone.evaluate(() => window.__world.state().dist) - 74 * 0.8) < 0.01, 'same-size resize, including adaptive resolution, preserves manual zoom');
+  await phone.setViewportSize({ width: 812, height: 375 });
+  await phone.locator('#b-all').click();
+  await phone.waitForFunction(() => window.__world.state().over === 1);
+  assert.equal(await phone.evaluate(() => document.documentElement.scrollWidth > innerWidth), false, 'landscape does not overflow horizontally');
+  assert.equal(await phone.locator('.zlabel.on').count(), 12, 'landscape overview retains all twelve destinations');
+  assert.equal(await phone.locator('.zlabel.on').evaluateAll((links) => links.every((a) => { const r = a.getBoundingClientRect(); return r.top >= 0 && r.bottom <= innerHeight; })), true, 'landscape overview labels fit vertically');
+  assert.equal(await phone.locator('.zlabel.on').evaluateAll((links) => {
+    const boxes = links.map((a) => a.getBoundingClientRect());
+    return boxes.every((a, i) => boxes.slice(i + 1).every((b) => a.right <= b.left || b.right <= a.left || a.bottom <= b.top || b.bottom <= a.top));
+  }), true, 'landscape reuses compact labels so adjacent zone names do not cover each other');
+  await phone.screenshot({ path: resolve(root, 'memory/screenshots/navigation-landscape.png') });
   // Exercise the real adaptive controller with controlled frame timestamps, independent of host load.
   const adaptive = await browser.newContext({ viewport: { width: 375, height: 812 }, deviceScaleFactor: 2, isMobile: true });
   await adaptive.route('https://fonts.googleapis.com/**', (r) => r.abort());
@@ -318,6 +429,26 @@ try {
   await page.locator('.hero.off').waitFor();
   assert.equal(await page.locator('.hero>svg').isVisible(), true);
   assert.equal(await page.locator('#hero-canvas').isVisible(), false);
+  const journey = await context.newPage();
+  await journey.goto(base + '#p-healthcare-eks-secops', { waitUntil: 'domcontentloaded' });
+  await ready(journey);
+  await journey.locator('#p-main').click();
+  await journey.waitForURL('**/projects/healthcare-eks-secops.html');
+  await journey.goBack({ waitUntil: 'domcontentloaded' });
+  await ready(journey);
+  assert.equal(await journey.locator('#panel').isVisible(), true, 'browser Back from a case study restores the island panel');
+  assert.equal(new URL(journey.url()).hash, '#p-healthcare-eks-secops');
+  await journey.locator('#p-close').click();
+  assert.equal(new URL(journey.url()).hash, '#capital');
+  await journey.locator('.dock [data-fly="provisioning"]').focus();
+  await journey.keyboard.press('Enter');
+  await journey.waitForFunction(() => window.__world.state().here === 'provisioning');
+  await journey.locator('#l-01-terraform-multi-az-vpc').focus();
+  await journey.keyboard.press('Enter');
+  assert.equal(await journey.locator('#panel').isVisible(), true, 'islands remain keyboard accessible');
+  await journey.keyboard.press('Escape');
+  assert.equal(new URL(journey.url()).hash, '#provisioning');
+  await journey.close();
   assert.deepEqual(errors, []);
   console.log('ok: mobile, no-WebGL/no-JavaScript fallbacks, three original heroes and hero failure fallback');
 } finally {
