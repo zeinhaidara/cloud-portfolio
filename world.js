@@ -1045,7 +1045,7 @@ export function createWorld({ canvas, data, labels: labelEls, onPick = () => {},
   /* ---------- camera rig: the original orbiting camera, with glides between places ---------- */
   const sstep = (a, b, x) => { const t = Math.min(1, Math.max(0, (x - a) / (b - a))); return t * t * (3 - 2 * t); };
   const ease = (x) => (x < 0.5 ? 4 * x * x * x : 1 - Math.pow(-2 * x + 2, 3) / 2);
-  let HOME = 62, ZONE = 54, OVER = 420, W = 1, H = 1;
+  let HOME = 62, ZONE = 54, OVER = 420, W = 1, H = 1, safeTop = 0, safeBottom = 0;
   const rig = { yaw: -1.58, pitch: 0.95, dist: 170, target: new THREE.Vector3(), off: 0, offY: 0, px: 0, py: 0 };
   const goal = { dist: HOME, follow: null, zone: 'capital', point: null, pitch: 0.6, over: false };
   let flight = null, dirty = true, panelOpen = false, t = 0, compiled = false;
@@ -1055,6 +1055,8 @@ export function createWorld({ canvas, data, labels: labelEls, onPick = () => {},
     const oldW = W, oldH = H;
     W = canvas.clientWidth || window.innerWidth; H = canvas.clientHeight || window.innerHeight;
     renderer.setSize(W, H, false);
+    const top = document.querySelector('.top'), dock = document.querySelector('.dock');
+    safeTop = top ? top.getBoundingClientRect().bottom : 0; safeBottom = dock ? dock.offsetHeight : 0;
     const tall = W / H < 0.9;
     camera.aspect = W / H;
     camera.fov = tall ? 64 : 50; // phones: wider lens and a step back so every island fits
@@ -1136,8 +1138,9 @@ export function createWorld({ canvas, data, labels: labelEls, onPick = () => {},
     canvas.classList.remove('drag');
     if (down && moved < 6 && e.type === 'pointerup') {
       const id = pick(e);
-      if (id && bodies[id]) onPick(id);
-      else { const c = pickCloud(e); if (c) { if (c.userData.poof < 0) c.userData.poof = 0; } else if (id) onPick(id); }
+      if (id && bodies[id]) onPick(e.pointerType === 'touch' && !islandNamed(bodies[id]) ? bodies[id].zone : id); // touch has no hover: show the zone, its names, then open
+      else if (id) onPick(id);
+      else { const c = pickCloud(e); if (c && c.userData.poof < 0) c.userData.poof = 0; }
     }
     down = null;
   };
@@ -1245,15 +1248,29 @@ export function createWorld({ canvas, data, labels: labelEls, onPick = () => {},
   const addLabel = (el, kind, ref) => { if (el) L.push({ el, kind, ref, on: null }); };
   for (const b of Object.values(bodies)) addLabel(labelEls.islands[b.id], 'island', b);
   for (const z of zoneList) addLabel(labelEls.zones[z.id], 'zone', z);
+  const islandNamed = (b) => goal.follow === b.id || hovered === b.id || (b.zone === 'capital' ? zones.capital.w > 0.12 && over < 0.5 : zones[b.zone].w > 0.35);
+  if (window.ResizeObserver) { // label sizes are kept current by the browser, so placing them never forces a layout
+    const byEl = new Map(L.map((l) => [l.el, l]));
+    const ro = new ResizeObserver((entries) => { for (const e of entries) { const l = byEl.get(e.target), b = e.borderBoxSize && e.borderBoxSize[0]; l.w = b ? b.inlineSize : e.target.offsetWidth; l.h = b ? b.blockSize : e.target.offsetHeight; } });
+    for (const l of L) ro.observe(l.el);
+  }
   function placeLabels() {
     for (const l of L) {
       let show, y = 0;
       if (l.kind === 'zone') { show = l.ref.w < 0.45 && (over > 0.2 || l.ref.id !== 'capital'); tmp.copy(l.ref.center); y = l.ref.id === 'capital' ? 9 : 11 + over * 26; } // above the enlarged landform, so the label never hides its biome
       else if (l.kind === 'ghost') { show = zones[l.ref.zone].w > 0.35; if (show) l.ref.mesh.getWorldPosition(tmp); y = 2.6; }
-      else { const zw = zones[l.ref.zone].w; show = goal.follow === l.ref.id || hovered === l.ref.id || (l.ref.zone === 'capital' ? zw > 0.12 && over < 0.5 : zw > 0.35); if (show) l.ref.pos(tmp); y = l.ref.lift; }
+      else { show = islandNamed(l.ref); if (show) l.ref.pos(tmp); y = l.ref.lift; }
       if (show) { tmp.y += y; tmp.project(camera); if (tmp.z > 1 || Math.abs(tmp.x) > 1.15 || Math.abs(tmp.y) > 1.15) show = false; }
       if (show !== l.on) { l.on = show; l.el.classList.toggle('on', show); }
-      if (show) l.el.style.transform = 'translate(' + ((tmp.x * 0.5 + 0.5) * W).toFixed(1) + 'px,' + ((-tmp.y * 0.5 + 0.5) * H - 10).toFixed(1) + 'px) translate(-50%,-100%)';
+      if (show) {
+        let px = (tmp.x * 0.5 + 0.5) * W, py = (-tmp.y * 0.5 + 0.5) * H - 10;
+        if (px < 160 || px > W - 160 || py < safeTop + 70 || py > H - safeBottom) { // near an edge: keep the whole label readable, clear of the header and dock
+          const w = l.w ?? l.el.offsetWidth, h = l.h ?? l.el.offsetHeight;
+          const top = l.kind === 'zone' && over > 0.5 ? 0 : safeTop; // whole-world view: twelve zone names need the full height to stay apart
+          px = Math.min(W - w / 2 - 6, Math.max(w / 2 + 6, px)); py = Math.min(H - safeBottom - 6, Math.max(top + h + 6, py));
+        }
+        l.el.style.transform = 'translate(' + px.toFixed(1) + 'px,' + py.toFixed(1) + 'px) translate(-50%,-100%)';
+      }
       if (l.kind !== 'ghost') { const hot = hovered === l.ref.id || goal.follow === l.ref.id; if (hot !== l.hot) { l.hot = hot; l.el.classList.toggle('hot', hot); } }
     }
   }
