@@ -1050,7 +1050,9 @@ export function createWorld({ canvas, data, labels: labelEls, onPick = () => {},
   const goal = { dist: HOME, follow: null, zone: 'capital', point: null, pitch: 0.6, over: false };
   let flight = null, dirty = true, panelOpen = false, t = 0, compiled = false;
   const tmp = new THREE.Vector3(), dest = new THREE.Vector3();
+  const zoneDistance = (id) => id === 'capital' ? HOME : zones[id]?.r < 20 ? 30 : ZONE;
   function resize() {
+    const oldW = W, oldH = H;
     W = canvas.clientWidth || window.innerWidth; H = canvas.clientHeight || window.innerHeight;
     renderer.setSize(W, H, false);
     const tall = W / H < 0.9;
@@ -1062,7 +1064,7 @@ export function createWorld({ canvas, data, labels: labelEls, onPick = () => {},
       const extent = Math.max(RING.radius + RING.zoneRadius * 2.5, RING.archive.radius + RING.archive.zoneRadius * 2.5);
       OVER = Math.max(OVER, extent * 1.15 / Math.sin(halfFov));
     }
-    if (!goal.follow) goal.dist = goal.over ? OVER : goal.zone === 'capital' ? HOME : ZONE;
+    if (!goal.follow && !goal.point && (W !== oldW || H !== oldH)) goal.dist = goal.over ? OVER : zoneDistance(goal.zone);
     camera.updateProjectionMatrix();
     invalidate();
   }
@@ -1082,13 +1084,18 @@ export function createWorld({ canvas, data, labels: labelEls, onPick = () => {},
     if (reduced) { rig.target.copy(dest); rig.dist = goal.dist; rig.pitch = goal.pitch; }
     invalidate();
   }
+  function interrupt() {
+    if (!flight) return;
+    flight = null;
+    Object.assign(goal, { point: rig.target.clone(), follow: null, dist: rig.dist, pitch: rig.pitch, over: rig.dist > 230 });
+  }
 
   /* ---------- input: drag to orbit, wheel or pinch to zoom, hover, click ---------- */
   const pts = new Map();
   let down = null, moved = 0, hovered = null, touched = false, pinch = 0;
   const mouse = { x: 0, y: 0 };
   const interact = () => { if (!touched) { touched = true; onInteract(); } };
-  const zoomTo = (d) => { goal.dist = Math.min(OVER * 1.15, Math.max(8, d)); goal.over = goal.dist > 230; flight = null; invalidate(); };
+  const zoomBy = (factor) => { interrupt(); goal.dist = Math.min(OVER * 1.15, Math.max(8, goal.dist * factor)); goal.over = goal.dist > 230; invalidate(); };
   canvas.addEventListener('pointerdown', (e) => {
     pts.set(e.pointerId, { x: e.clientX, y: e.clientY });
     if (pts.size === 1) { down = { x: e.clientX, y: e.clientY }; moved = 0; }
@@ -1103,15 +1110,16 @@ export function createWorld({ canvas, data, labels: labelEls, onPick = () => {},
     if (p) { p.x = e.clientX; p.y = e.clientY; }
     if (p && pts.size === 2) {
       const [a, b] = [...pts.values()], d = Math.hypot(a.x - b.x, a.y - b.y);
-      if (pinch > 0 && d > 0) { interact(); zoomTo(goal.dist * (pinch / d)); pinch = d; }
+      if (pinch > 0 && d > 0) { interact(); zoomBy(pinch / d); pinch = d; }
       return;
     }
     if (down) {
       const dx = e.clientX - down.x, dy = e.clientY - down.y;
       moved += Math.abs(dx) + Math.abs(dy);
-      if (moved > 6) interact();
+      if (moved > 6) { interact(); interrupt(); }
       rig.yaw -= dx * 0.005;
       rig.pitch = Math.min(1.35, Math.max(0.1, rig.pitch + dy * 0.005));
+      goal.pitch = rig.pitch;
       down = { x: e.clientX, y: e.clientY };
       invalidate();
     } else {
@@ -1120,7 +1128,7 @@ export function createWorld({ canvas, data, labels: labelEls, onPick = () => {},
       canvas.classList.toggle('hover', !!hovered || !!pickCloud(e));
     }
   });
-  canvas.addEventListener('pointerleave', () => { hovered = null; mouse.x = mouse.y = 0; invalidate(); });
+  canvas.addEventListener('pointerleave', () => { hovered = null; canvas.classList.remove('hover'); mouse.x = mouse.y = 0; invalidate(); });
   const release = (e) => {
     pts.delete(e.pointerId);
     if (pts.size < 2) pinch = 0;
@@ -1128,23 +1136,54 @@ export function createWorld({ canvas, data, labels: labelEls, onPick = () => {},
     canvas.classList.remove('drag');
     if (down && moved < 6 && e.type === 'pointerup') {
       const id = pick(e);
-      if (id) onPick(id);
-      else { const c = pickCloud(e); if (c && c.userData.poof < 0) c.userData.poof = 0; }
+      if (id && bodies[id]) onPick(id);
+      else { const c = pickCloud(e); if (c) { if (c.userData.poof < 0) c.userData.poof = 0; } else if (id) onPick(id); }
     }
     down = null;
   };
   canvas.addEventListener('pointerup', release);
   canvas.addEventListener('pointercancel', release);
-  canvas.addEventListener('wheel', (e) => { e.preventDefault(); interact(); zoomTo(goal.dist * (1 + Math.sign(e.deltaY) * (e.ctrlKey ? 0.04 : 0.09))); }, { passive: false });
+  canvas.addEventListener('wheel', (e) => { e.preventDefault(); interact(); zoomBy(1 + Math.sign(e.deltaY) * (e.ctrlKey ? 0.04 : 0.09)); }, { passive: false });
 
   const ray = new THREE.Raycaster(), ndc = new THREE.Vector2();
+  const zonePickSphere = new THREE.Sphere(), zonePickPoint = new THREE.Vector3();
   const bodyList = Object.values(bodies), hitList = bodyList.map((b) => b.hit);
   function cast(e) {
     const rc = canvas.getBoundingClientRect();
     ndc.set(((e.clientX - rc.left) / W) * 2 - 1, -((e.clientY - rc.top) / H) * 2 + 1);
     ray.setFromCamera(ndc, camera);
   }
-  function pick(e) { cast(e); const h = ray.intersectObjects(hitList, false); return h.length ? h[0].object.userData.id : null; }
+  function pick(e) {
+    cast(e);
+    const h = ray.intersectObjects(hitList, false);
+    if (h.length) return h[0].object.userData.id;
+    // A minimum 44px touch target for islands in the current zone; no extra meshes or frame work.
+    if (e.pointerType === 'touch') {
+      const rc = canvas.getBoundingClientRect();
+      let closest = 22 * 22, id = null;
+      for (const b of bodyList) {
+        if (zones[b.zone].w < 0.35 && goal.follow !== b.id) continue;
+        b.hit.getWorldPosition(tmp); tmp.project(camera);
+        if (tmp.z < -1 || tmp.z > 1) continue;
+        const dx = (tmp.x * 0.5 + 0.5) * W + rc.left - e.clientX, dy = (-tmp.y * 0.5 + 0.5) * H + rc.top - e.clientY;
+        const d = dx * dx + dy * dy;
+        if (d < closest) { closest = d; id = b.id; }
+      }
+      if (id) return id;
+    }
+    let nearest = Infinity, id = null;
+    for (const z of zoneList) {
+      if (z.id !== 'capital' && !z.group) continue;
+      const scale = z.group ? z.group.scale.x * z.big.scale.x : 1;
+      zonePickSphere.center.copy(z.center); zonePickSphere.center.y += z.id === 'capital' ? 0 : 3 * scale;
+      zonePickSphere.radius = z.id === 'capital' ? 3 : z.r * 0.45 * scale;
+      if (ray.ray.intersectSphere(zonePickSphere, zonePickPoint)) {
+        const d = ray.ray.origin.distanceToSquared(zonePickPoint);
+        if (d < nearest) { nearest = d; id = z.id; }
+      }
+    }
+    return id;
+  }
   function pickCloud(e) { if (rig.dist > 160) return null; cast(e); const h = ray.intersectObject(cloudMesh, false); return h.length ? cloudOf[h[0].instanceId] : null; }
 
   /* ---------- blending: one sky for the whole world, mixed from the zones near the focus point ---------- */
@@ -1211,11 +1250,11 @@ export function createWorld({ canvas, data, labels: labelEls, onPick = () => {},
       let show, y = 0;
       if (l.kind === 'zone') { show = l.ref.w < 0.45 && (over > 0.2 || l.ref.id !== 'capital'); tmp.copy(l.ref.center); y = l.ref.id === 'capital' ? 9 : 11 + over * 26; } // above the enlarged landform, so the label never hides its biome
       else if (l.kind === 'ghost') { show = zones[l.ref.zone].w > 0.35; if (show) l.ref.mesh.getWorldPosition(tmp); y = 2.6; }
-      else { const zw = zones[l.ref.zone].w; show = goal.follow === l.ref.id || (l.ref.zone === 'capital' ? zw > 0.12 && over < 0.5 : zw > 0.35); if (show) l.ref.pos(tmp); y = l.ref.lift; }
+      else { const zw = zones[l.ref.zone].w; show = goal.follow === l.ref.id || hovered === l.ref.id || (l.ref.zone === 'capital' ? zw > 0.12 && over < 0.5 : zw > 0.35); if (show) l.ref.pos(tmp); y = l.ref.lift; }
       if (show) { tmp.y += y; tmp.project(camera); if (tmp.z > 1 || Math.abs(tmp.x) > 1.15 || Math.abs(tmp.y) > 1.15) show = false; }
       if (show !== l.on) { l.on = show; l.el.classList.toggle('on', show); }
       if (show) l.el.style.transform = 'translate(' + ((tmp.x * 0.5 + 0.5) * W).toFixed(1) + 'px,' + ((-tmp.y * 0.5 + 0.5) * H - 10).toFixed(1) + 'px) translate(-50%,-100%)';
-      if (l.kind === 'island') { const hot = hovered === l.ref.id; if (hot !== l.hot) { l.hot = hot; l.el.classList.toggle('hot', hot); } }
+      if (l.kind !== 'ghost') { const hot = hovered === l.ref.id || goal.follow === l.ref.id; if (hot !== l.hot) { l.hot = hot; l.el.classList.toggle('hot', hot); } }
     }
   }
 
@@ -1353,7 +1392,7 @@ export function createWorld({ canvas, data, labels: labelEls, onPick = () => {},
   function state() {
     let here = null, best = 0;
     for (const z of zoneList) if (z.raw > best) { best = z.raw; here = z.id; }
-    return { x: rig.target.x, z: rig.target.z, dist: rig.dist, yaw: rig.yaw, over, here: best > 0.25 ? here : null, weights: Object.fromEntries(zoneList.map((z) => [z.id, +z.w.toFixed(3)])), lit, fps, calls: renderer.info.render.calls, triangles: renderer.info.render.triangles, pixelRatio, paused, frames: renderer.info.render.frame, geometries: renderer.info.memory.geometries, textures: renderer.info.memory.textures, spheres: zoneList.filter((z) => z.sphere).length };
+    return { x: rig.target.x, z: rig.target.z, dist: rig.dist, yaw: rig.yaw, pitch: rig.pitch, following: goal.follow, flying: !!flight, over, here: best > 0.25 ? here : null, weights: Object.fromEntries(zoneList.map((z) => [z.id, +z.w.toFixed(3)])), lit, fps, calls: renderer.info.render.calls, triangles: renderer.info.render.triangles, pixelRatio, paused, frames: renderer.info.render.frame, geometries: renderer.info.memory.geometries, textures: renderer.info.memory.textures, spheres: zoneList.filter((z) => z.sphere).length };
   }
   performance.mark('world:built');
   // Compile every shader variant off the main thread before the first frame (parallel compile where the browser
@@ -1385,14 +1424,14 @@ export function createWorld({ canvas, data, labels: labelEls, onPick = () => {},
       if (id) populate(zones[zoneOfIsland[id]]);
       const b = id && bodies[id];
       goal.follow = b ? id : null; goal.point = null; goal.over = false;
-      if (b) { goal.zone = b.zone; goal.dist = b.focus; goal.pitch = 0.38; } else { goal.dist = goal.zone === 'capital' ? HOME : ZONE; goal.pitch = goal.zone === 'capital' ? 0.6 : 0.52; }
+      if (b) { goal.zone = b.zone; goal.dist = b.focus; goal.pitch = 0.38; } else { goal.dist = zoneDistance(goal.zone); goal.pitch = goal.zone === 'capital' ? 0.6 : 0.52; }
       glide();
     },
-    goZone(id) { if (!zones[id]) return; interact(); populate(zones[id]); Object.assign(goal, { follow: null, point: null, over: false, zone: id, dist: id === 'capital' ? HOME : zones[id].r < 20 ? 30 : ZONE, pitch: id === 'capital' ? 0.6 : 0.52 }); glide(); },
+    goZone(id) { if (!zones[id]) return; interact(); populate(zones[id]); Object.assign(goal, { follow: null, point: null, over: false, zone: id, dist: zoneDistance(id), pitch: id === 'capital' ? 0.6 : 0.52 }); glide(); },
     goOverview() { interact(); Object.assign(goal, { follow: null, point: null, over: true, dist: OVER, pitch: 1.08 }); glide(); },
     /** glide to any point of the world plane (minimap) */
     goPoint(x, z) { interact(); Object.assign(goal, { follow: null, over: false, point: new THREE.Vector3(x, 0, z), dist: Math.min(goal.dist, 90), pitch: 0.52 }); goal.zone = null; glide(); },
-    zoomBy(f) { zoomTo(goal.dist * f); },
+    zoomBy,
     setPanel(open) { panelOpen = open; invalidate(); },
     celebrate(colors) { if (reduced) return; colors.forEach((c, i) => setTimeout(() => { const a = rand(0, 6.28), r = rand(4, 22); burst(new THREE.Vector3(rig.target.x + Math.cos(a) * r, rand(9, 16), rig.target.z + Math.sin(a) * r), c); }, i * 260)); },
     redraw() { invalidate(); },

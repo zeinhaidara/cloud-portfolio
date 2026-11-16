@@ -152,7 +152,7 @@ function indexPage() {
 <main>
 <section class="intro"><div class="eyebrow">AWS · AZURE · GCP · INFRASTRUCTURE · APPLICATIONS</div>
  <h1>Ideas into systems.<br><span>Built in the cloud.</span></h1>
- <p>Every island is a project I built. The flagships circle the sun; ten climate zones ring them, one per Code Clinic domain. <span class="d">Drag to look around, pick a zone below to fly there. The balloon says hi.</span><span class="m">Pick a zone below, or open <a href="projects.html">the full list</a>.</span></p></section>
+ <p>Every island is a project I built. The flagships circle the sun; ten climate zones ring them, one per Code Clinic domain. <span class="d">Drag to look around, pick an island or zone to fly there. The balloon says hi.</span><span class="m">Drag to orbit, pinch to zoom, or tap an island or zone. <a href="projects.html">All projects</a>.</span></p></section>
 <aside class="panel" id="panel" hidden aria-live="polite"><button class="close" id="p-close" type="button" aria-label="Close project">✕</button><span class="kind" id="p-kind"></span><h2 id="p-title"></h2><p class="pv"><span class="st" id="p-val"></span></p><p id="p-blurb"></p><div class="tags" id="p-tags"></div><div class="actions"><a class="cta" id="p-main" href="#">Read the case study</a><button class="link" id="p-back" type="button">Back to zone</button><a class="link" id="p-src" href="#">Source on GitHub</a></div></aside>
 <div class="zones" id="zones"><h2 class="vh">Zones and projects</h2>${zones.map(zoneCard).join('')}</div>
 <div class="hud" id="hud">

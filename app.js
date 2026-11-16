@@ -35,7 +35,7 @@ function start() {
   if (!loading) {
     const labels = { islands: Object.fromEntries(D.islands.map((p) => [p.name, $('l-' + p.name)])), zones: Object.fromEntries(D.zones.map((z) => [z.id, $('zl-' + z.id)])), ghosts: Object.fromEntries(D.uncharted.map((u) => [u.n, $('g-' + u.n)])) };
     loading = import('./world.js').then((m) => {
-      world = m.createWorld({ canvas: $('stage'), data: D, labels, onPick: focus, onInteract: () => body.classList.add('touched'), onState, onError(name) {
+      world = m.createWorld({ canvas: $('stage'), data: D, labels, onPick: (id) => Z[id] ? goZone(id) : focus(id), onInteract: () => body.classList.add('touched'), onState, onError(name) {
         const toast = $('toast');
         toast.textContent = `${name} scenery could not load. You can still explore its projects.`;
         toast.hidden = false;
@@ -82,10 +82,16 @@ function focus(id) {
   marks();
 }
 function closePanel(stay) {
+  const zone = focused && I[focused].zone;
   focused = null;
   $('panel').hidden = true;
   body.classList.remove('panel-open');
-  if (world) { world.setPanel(false); if (!stay) world.flyTo(null); }
+  if (world) { world.setPanel(false); if (!stay && zone) world.goZone(zone); }
+  if (!stay && zone) {
+    showCard(zone === 'capital' ? null : Z[zone]);
+    history.replaceState(null, '', '#' + zone);
+    document.querySelector(`.dock [data-fly="${zone}"]`).focus({ preventScroll: true });
+  }
   marks();
 }
 function celebrate() {
@@ -126,7 +132,7 @@ function onState(s) {
 }
 function route() {
   const h = decodeURIComponent(location.hash.slice(1));
-  if (Z[h]) { if (h !== 'capital') goZone(h); return; }
+  if (Z[h]) { goZone(h); return; }
   if (h.startsWith('p-') && I[h.slice(2)]) focus(h.slice(2));
 }
 
@@ -140,7 +146,7 @@ document.addEventListener('click', (e) => {
 });
 $('labels').addEventListener('focusin', (e) => { const l = e.target.closest('a.plabel'); if (l && l.matches(':focus-visible') && world && focused !== l.dataset.id) world.flyTo(l.dataset.id); });
 $('p-close').addEventListener('click', () => closePanel());
-$('p-back').addEventListener('click', () => { const z = focused && I[focused].zone; closePanel(true); if (z) goZone(z); });
+$('p-back').addEventListener('click', () => closePanel());
 $('b-home').addEventListener('click', () => goZone('capital'));
 $('b-all').addEventListener('click', () => { if (!world) return; body.classList.add('touched'); if (focused) closePanel(true); showCard(null); world.goOverview(); history.replaceState(null, '', location.pathname + location.search); });
 $('b-in').addEventListener('click', () => world && world.zoomBy(0.72));
