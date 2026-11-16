@@ -326,6 +326,40 @@ try {
     };
     window.__world.redraw();
   });
+  await phone.locator('#b-home').click();
+  await phone.waitForFunction(() => window.__world.state().here === 'capital' && window.__world.state().over === 0 && window.phoneCamera);
+  await phone.evaluate(() => window.__world.zoomBy(2.4));
+  await phone.waitForFunction(() => window.__world.state().dist > 170);
+  await phone.waitForTimeout(300);
+  assert.equal(await phone.evaluate(() => {
+    const top = document.querySelector('.top').getBoundingClientRect().bottom, bottom = innerHeight - document.querySelector('.dock').offsetHeight;
+    const labels = [...document.querySelectorAll('.plabel.on:not(.ghost), .zlabel.on')];
+    return labels.length > 4 && labels.every((e) => { const r = e.getBoundingClientRect(); return r.left >= 0 && r.right <= innerWidth && r.top >= top - 1 && r.bottom <= bottom + 1; });
+  }), true, 'visible labels stay inside the viewport, below the header and above the dock');
+  // touch has no hover: tapping a distant island whose name is not shown approaches its zone first, where the names appear
+  const distant = await phone.evaluate(async () => {
+    const { Vector3, Vector2, Raycaster } = await import('./vendor/three.module.min.js');
+    const hits = [];
+    window.phoneScene.traverse((m) => { if (m.isMesh && m.userData.id) hits.push(m); });
+    const D = JSON.parse(document.getElementById('placement').textContent);
+    const top = document.querySelector('.top').getBoundingClientRect().bottom, bottom = innerHeight - document.querySelector('.dock').offsetHeight;
+    for (const p of D.islands.filter((p) => p.zone !== 'capital')) {
+      if (document.getElementById('l-' + p.name).classList.contains('on')) continue;
+      const hit = hits.find((h) => h.userData.id === p.name), c = hit.getWorldPosition(new Vector3()).project(window.phoneCamera);
+      const x = (c.x / 2 + 0.5) * innerWidth, y = (-c.y / 2 + 0.5) * innerHeight;
+      if (x < 20 || x > innerWidth - 20 || y < top + 20 || y > bottom - 20 || document.elementFromPoint(x, y)?.id !== 'stage') continue;
+      const ray = new Raycaster(); ray.setFromCamera(new Vector2(x / innerWidth * 2 - 1, 1 - y / innerHeight * 2), window.phoneCamera);
+      if (ray.intersectObjects(hits, false)[0]?.object === hit) return { x, y, id: p.name, zone: p.zone };
+    }
+    return null;
+  });
+  assert.ok(distant, 'a distant island is on screen from the wide capital view');
+  await touch('touchStart', [[1, distant.x, distant.y]]);
+  await touch('touchEnd', []);
+  await phone.waitForFunction((z) => window.__world.state().here === z, distant.zone);
+  assert.equal(await phone.locator('#panel').isHidden(), true, 'the first tap on a distant island does not open it');
+  assert.equal(await phone.evaluate((z) => location.hash === '#' + z, distant.zone), true, 'the first tap approaches the island\'s zone');
+  await phone.waitForFunction((id) => document.getElementById('l-' + id).classList.contains('on'), distant.id);
   await phone.locator('.dock [data-fly="provisioning"]').click();
   await phone.waitForFunction(() => window.__world.state().weights.provisioning === 1 && window.phoneCamera);
   await phone.evaluate(() => window.__world.zoomBy(1.6));
