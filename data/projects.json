@@ -41,12 +41,12 @@
     "tier": "Flagship",
     "repo_url": "https://github.com/zeinhaidara/02-ansible-linux-hardening",
     "demo_url": null,
-    "outcome": "CI green on main after the hygiene PR was merged.",
+    "outcome": "CI green on main: yamllint, ansible-lint, a playbook syntax check, and Molecule converge, idempotence and verify in Ubuntu 24.04 and Rocky 9 containers.",
     "status": "Complete",
     "validation_level": "CI with mocks only",
     "known_limitations": [
       "Validated in CI with mocks, fakes or fixtures only; never run against a real cloud account, cluster or host (stated in README)",
-      "Roles not run against a real EC2 host; 2 workflow actions not SHA-pinned."
+      "Roles not run against a real EC2 host."
     ],
     "next_steps": [],
     "challenge_number": 2,
