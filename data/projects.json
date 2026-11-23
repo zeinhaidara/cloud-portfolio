@@ -768,6 +768,579 @@
     "last_push": "2026-11-11"
   },
   {
+    "name": "31-python-cost-explorer-report",
+    "title": "Weekly AWS cost report",
+    "summary": "Python script that reads two weeks of AWS Cost Explorer spend, finds the top cost drivers by service and by one cost allocation tag, and writes a short Markdown report.",
+    "domain": "FinOps / Cost reporting",
+    "stack": [
+      "Python",
+      "boto3",
+      "AWS Cost Explorer"
+    ],
+    "tier": "Keep",
+    "repo_url": "https://github.com/zeinhaidara/31-python-cost-explorer-report",
+    "demo_url": null,
+    "outcome": "CI green on main.",
+    "status": "Complete",
+    "validation_level": "CI with mocks only",
+    "known_limitations": [
+      "Validated in CI with mocks, fakes or fixtures only; never run against a real cloud account, cluster or host (stated in README)",
+      "AWS only; Azure Cost Management is not implemented (stated in README).",
+      "Markdown output only; PDF is not implemented (stated in README).",
+      "One tag key per run; UnblendedCost only (stated in README)."
+    ],
+    "next_steps": [],
+    "challenge_number": 31,
+    "visibility": "PUBLIC",
+    "archived": false,
+    "last_push": "2026-11-20"
+  },
+  {
+    "name": "32-lambda-scheduled-instance-stop",
+    "title": "Scheduled stop for non-production instances",
+    "summary": "AWS Lambda run by an EventBridge schedule that stops opted-in non-production EC2 and RDS instances outside business hours, with per-resource schedules, timezones and temporary overrides.",
+    "domain": "FinOps / AWS automation",
+    "stack": [
+      "Python",
+      "AWS Lambda",
+      "EventBridge",
+      "EC2",
+      "RDS"
+    ],
+    "tier": "Keep",
+    "repo_url": "https://github.com/zeinhaidara/32-lambda-scheduled-instance-stop",
+    "demo_url": null,
+    "outcome": "CI green on main.",
+    "status": "Complete",
+    "validation_level": "CI with mocks only",
+    "known_limitations": [
+      "Validated in CI with mocks, fakes or fixtures only; never run against a real cloud account, cluster or host (stated in README)",
+      "The IAM policy is checked by a structural test but has not been evaluated by IAM (stated in README).",
+      "The function only stops instances; starting them again is not implemented (stated in README).",
+      "Dry run is the default."
+    ],
+    "next_steps": [],
+    "challenge_number": 32,
+    "visibility": "PUBLIC",
+    "archived": false,
+    "last_push": "2026-11-20"
+  },
+  {
+    "name": "33-terraform-mandatory-tag-policy",
+    "title": "Mandatory cost-allocation tag policy",
+    "summary": "Terraform module (an S3 bucket) that will not plan unless its cost-allocation tags are complete and well formed, using native variable validation and resource preconditions.",
+    "domain": "Governance / FinOps",
+    "stack": [
+      "Terraform",
+      "terraform test",
+      "AWS provider (mocked)"
+    ],
+    "tier": "Keep",
+    "repo_url": "https://github.com/zeinhaidara/33-terraform-mandatory-tag-policy",
+    "demo_url": null,
+    "outcome": "CI green on main.",
+    "status": "Complete",
+    "validation_level": "CI with mocks only",
+    "known_limitations": [
+      "Validated in CI with mocks, fakes or fixtures only; never run against a real cloud account, cluster or host (stated in README)",
+      "Enforcement applies only to resources created through this module; organisation-wide enforcement is not implemented (stated in README).",
+      "Nothing has been planned or applied against a real AWS account (stated in README)."
+    ],
+    "next_steps": [],
+    "challenge_number": 33,
+    "visibility": "PUBLIC",
+    "archived": false,
+    "last_push": "2026-11-20"
+  },
+  {
+    "name": "34-python-vm-rightsizing-advisor",
+    "title": "EC2 rightsizing advisor",
+    "summary": "Read-only Python tool that reads two weeks of CPU and memory use for running EC2 instances and suggests one size down, one size up or no change, using an editable instance catalog.",
+    "domain": "FinOps / Rightsizing",
+    "stack": [
+      "Python",
+      "boto3",
+      "CloudWatch",
+      "YAML"
+    ],
+    "tier": "Keep",
+    "repo_url": "https://github.com/zeinhaidara/34-python-vm-rightsizing-advisor",
+    "demo_url": null,
+    "outcome": "CI green on main.",
+    "status": "Complete",
+    "validation_level": "CI with mocks only",
+    "known_limitations": [
+      "Validated in CI with mocks, fakes or fixtures only; never run against a real cloud account, cluster or host (stated in README)",
+      "AWS EC2 only; Azure is an interface stub (stated in README).",
+      "Moves one size within an instance family only (stated in README).",
+      "Memory data needs the CloudWatch agent on the instance (stated in README)."
+    ],
+    "next_steps": [],
+    "challenge_number": 34,
+    "visibility": "PUBLIC",
+    "archived": false,
+    "last_push": "2026-11-20"
+  },
+  {
+    "name": "35-python-s3-lifecycle-savings-report",
+    "title": "S3 lifecycle savings report",
+    "summary": "Read-only Python job that groups S3 objects by age and size and estimates the monthly saving from Intelligent-Tiering or a Standard-IA lifecycle rule, as a Markdown report.",
+    "domain": "FinOps / Storage",
+    "stack": [
+      "Python",
+      "boto3",
+      "Amazon S3"
+    ],
+    "tier": "Keep",
+    "repo_url": "https://github.com/zeinhaidara/35-python-s3-lifecycle-savings-report",
+    "demo_url": null,
+    "outcome": "CI green on main.",
+    "status": "Complete",
+    "validation_level": "CI with mocks only",
+    "known_limitations": [
+      "Validated in CI with mocks, fakes or fixtures only; never run against a real cloud account, cluster or host (stated in README)",
+      "S3 only; Azure Blob lifecycle is not implemented (stated in README).",
+      "Read-only estimate; it does not create lifecycle rules (stated in README)."
+    ],
+    "next_steps": [],
+    "challenge_number": 35,
+    "visibility": "PUBLIC",
+    "archived": false,
+    "last_push": "2026-11-20"
+  },
+  {
+    "name": "36-terraform-transit-gateway-hub-spoke",
+    "title": "Transit Gateway hub and spoke",
+    "summary": "Terraform module for an AWS Transit Gateway hub, an inspection VPC with a Network Firewall endpoint, spoke attachments and route tables that send spoke-to-spoke traffic through the firewall.",
+    "domain": "Networking / IaC",
+    "stack": [
+      "Terraform",
+      "terraform test",
+      "AWS Transit Gateway",
+      "AWS Network Firewall"
+    ],
+    "tier": "Keep",
+    "repo_url": "https://github.com/zeinhaidara/36-terraform-transit-gateway-hub-spoke",
+    "demo_url": null,
+    "outcome": "CI green on main.",
+    "status": "Complete",
+    "validation_level": "CI with mocks only",
+    "known_limitations": [
+      "Validated in CI with mocks, fakes or fixtures only; never run against a real cloud account, cluster or host (stated in README)",
+      "Nothing has been planned or applied against AWS, so real behaviour such as endpoint creation and route propagation timing is untested (stated in README).",
+      "AWS only; Azure Virtual WAN and Azure Firewall are not implemented (stated in README).",
+      "East-west inspection only; there is no internet egress (stated in README)."
+    ],
+    "next_steps": [],
+    "challenge_number": 36,
+    "visibility": "PUBLIC",
+    "archived": false,
+    "last_push": "2026-11-20"
+  },
+  {
+    "name": "37-python-security-group-audit",
+    "title": "Security group audit",
+    "summary": "Read-only Python script that assumes a role in each AWS account, reads every security group, writes a CSV of every ingress rule and a Markdown report of rules open to the internet and unused groups.",
+    "domain": "Networking / Security audit",
+    "stack": [
+      "Python",
+      "boto3",
+      "AWS STS"
+    ],
+    "tier": "Keep",
+    "repo_url": "https://github.com/zeinhaidara/37-python-security-group-audit",
+    "demo_url": null,
+    "outcome": "CI green on main.",
+    "status": "Complete",
+    "validation_level": "CI with mocks only",
+    "known_limitations": [
+      "Validated in CI with mocks, fakes or fixtures only; never run against a real cloud account, cluster or host (stated in README)",
+      "The IAM JSON files have not been evaluated by IAM (stated in README).",
+      "AWS only; Azure NSGs are not implemented (stated in README).",
+      "Only ingress rules are graded (stated in README)."
+    ],
+    "next_steps": [],
+    "challenge_number": 37,
+    "visibility": "PUBLIC",
+    "archived": false,
+    "last_push": "2026-11-20"
+  },
+  {
+    "name": "38-ansible-ipsec-vpn-tunnels",
+    "title": "IPsec VPN tunnels with Ansible",
+    "summary": "Ansible playbook and role that set up an IKEv2 site-to-site IPsec tunnel with strongSwan and X.509 certificates, plus a systemd health check that writes a Prometheus metric.",
+    "domain": "Networking / VPN",
+    "stack": [
+      "Ansible",
+      "strongSwan",
+      "Python",
+      "pytest",
+      "ansible-lint"
+    ],
+    "tier": "Keep",
+    "repo_url": "https://github.com/zeinhaidara/38-ansible-ipsec-vpn-tunnels",
+    "demo_url": null,
+    "outcome": "CI green on main.",
+    "status": "Complete",
+    "validation_level": "CI with mocks only",
+    "known_limitations": [
+      "Validated in CI with mocks, fakes or fixtures only; never run against a real cloud account, cluster or host (stated in README)",
+      "No tunnel has been brought up: the role has never run against a real host and the swanctl config has not been loaded by a real strongSwan (stated in README).",
+      "IPv4 traffic selectors only (stated in README)."
+    ],
+    "next_steps": [],
+    "challenge_number": 38,
+    "visibility": "PUBLIC",
+    "archived": false,
+    "last_push": "2026-11-20"
+  },
+  {
+    "name": "39-python-gitops-dns-reconciler",
+    "title": "GitOps DNS reconciler",
+    "summary": "Python tool that keeps Route 53 records in line with a YAML file in Git: it prints a plan and applies it as one change batch only when asked, once or in a loop.",
+    "domain": "Networking / DNS",
+    "stack": [
+      "Python",
+      "boto3",
+      "Amazon Route 53",
+      "YAML"
+    ],
+    "tier": "Keep",
+    "repo_url": "https://github.com/zeinhaidara/39-python-gitops-dns-reconciler",
+    "demo_url": null,
+    "outcome": "CI green on main.",
+    "status": "Complete",
+    "validation_level": "CI with mocks only",
+    "known_limitations": [
+      "Validated in CI with mocks, fakes or fixtures only; never run against a real cloud account, cluster or host (stated in README)",
+      "Route 53 only; Azure DNS is an interface stub (stated in README)."
+    ],
+    "next_steps": [],
+    "challenge_number": 39,
+    "visibility": "PUBLIC",
+    "archived": false,
+    "last_push": "2026-11-20"
+  },
+  {
+    "name": "40-terraform-private-api-gateway",
+    "title": "Private API Gateway module",
+    "summary": "Terraform module that exposes an internal service through a private API Gateway REST API, a VPC link and an internal Network Load Balancer, with nothing reachable from the internet.",
+    "domain": "Networking / IaC",
+    "stack": [
+      "Terraform",
+      "terraform test",
+      "API Gateway",
+      "VPC link",
+      "Network Load Balancer"
+    ],
+    "tier": "Keep",
+    "repo_url": "https://github.com/zeinhaidara/40-terraform-private-api-gateway",
+    "demo_url": null,
+    "outcome": "CI green on main.",
+    "status": "Complete",
+    "validation_level": "CI with mocks only",
+    "known_limitations": [
+      "Validated in CI with mocks, fakes or fixtures only; never run against a real cloud account, cluster or host (stated in README)",
+      "Nothing has been planned or applied against AWS, so private DNS resolution, VPC link provisioning time and deployment ordering are untested (stated in README).",
+      "REST APIs only; one VPC endpoint is bound (stated in README)."
+    ],
+    "next_steps": [],
+    "challenge_number": 40,
+    "visibility": "PUBLIC",
+    "archived": false,
+    "last_push": "2026-11-20"
+  },
+  {
+    "name": "41-python-rds-failover-test",
+    "title": "Cross-region RDS failover test",
+    "summary": "Python script that tests disaster recovery by promoting an RDS cross-region read replica, checking application connectivity, timing the failover and writing a Markdown report. Dry run unless --execute is passed.",
+    "domain": "Reliability / Disaster recovery",
+    "stack": [
+      "Python",
+      "boto3",
+      "pytest",
+      "Amazon RDS"
+    ],
+    "tier": "Keep",
+    "repo_url": "https://github.com/zeinhaidara/41-python-rds-failover-test",
+    "demo_url": null,
+    "outcome": "CI green on main.",
+    "status": "Complete",
+    "validation_level": "CI with mocks only",
+    "known_limitations": [
+      "Validated in CI with mocks, fakes or fixtures only; never run against a real cloud account, cluster or host (stated in README)",
+      "Nothing has promoted a real database; the default TCP connectivity check and the boto3 wiring are not exercised by tests (stated in README).",
+      "AWS RDS only; Azure SQL is not implemented (stated in README).",
+      "The default check proves the port is open, not that queries work (stated in README)."
+    ],
+    "next_steps": [],
+    "challenge_number": 41,
+    "visibility": "PUBLIC",
+    "archived": false,
+    "last_push": "2026-11-20"
+  },
+  {
+    "name": "42-terraform-lambda-cross-region-backup",
+    "title": "Cross-region EBS snapshot backup",
+    "summary": "Terraform module and Lambda function that copy the latest snapshot of each tagged EBS volume to a second region on a schedule, encrypted with a KMS key in that region, with retention pruning. Dry run by default.",
+    "domain": "Reliability / Backup",
+    "stack": [
+      "Terraform",
+      "Python",
+      "AWS Lambda",
+      "KMS",
+      "pytest"
+    ],
+    "tier": "Keep",
+    "repo_url": "https://github.com/zeinhaidara/42-terraform-lambda-cross-region-backup",
+    "demo_url": null,
+    "outcome": "CI green on main.",
+    "status": "Complete",
+    "validation_level": "CI with mocks only",
+    "known_limitations": [
+      "Validated in CI with mocks, fakes or fixtures only; never run against a real cloud account, cluster or host (stated in README)",
+      "Nothing has been planned or applied in AWS and the function has never run against real snapshots (stated in README).",
+      "AWS EBS only; Azure managed disks are not implemented (stated in README).",
+      "Copies only the latest snapshot per volume per run (stated in README)."
+    ],
+    "next_steps": [],
+    "challenge_number": 42,
+    "visibility": "PUBLIC",
+    "archived": false,
+    "last_push": "2026-11-20"
+  },
+  {
+    "name": "43-terraform-multiregion-ha-pattern",
+    "title": "Multi-region active-passive pattern",
+    "summary": "Terraform module for an active-passive pair of AWS regions: a DynamoDB global table for data and Route 53 failover records with a health check for traffic.",
+    "domain": "Reliability / High availability",
+    "stack": [
+      "Terraform",
+      "terraform test",
+      "DynamoDB",
+      "Amazon Route 53"
+    ],
+    "tier": "Keep",
+    "repo_url": "https://github.com/zeinhaidara/43-terraform-multiregion-ha-pattern",
+    "demo_url": null,
+    "outcome": "CI green on main.",
+    "status": "Complete",
+    "validation_level": "CI with mocks only",
+    "known_limitations": [
+      "Validated in CI with mocks, fakes or fixtures only; never run against a real cloud account, cluster or host (stated in README)",
+      "Nothing has been planned or applied in AWS, so replication lag, health check timing and real failover behaviour are untested (stated in README)."
+    ],
+    "next_steps": [],
+    "challenge_number": 43,
+    "visibility": "PUBLIC",
+    "archived": false,
+    "last_push": "2026-11-20"
+  },
+  {
+    "name": "44-python-chaos-engineering-fis",
+    "title": "Chaos runner for AWS FIS",
+    "summary": "Python script that runs AWS Fault Injection Service experiments one at a time and checks the system recovers on its own within a time limit. Dry run unless --execute is passed.",
+    "domain": "Reliability / Chaos engineering",
+    "stack": [
+      "Python",
+      "boto3",
+      "pytest",
+      "AWS FIS"
+    ],
+    "tier": "Keep",
+    "repo_url": "https://github.com/zeinhaidara/44-python-chaos-engineering-fis",
+    "demo_url": null,
+    "outcome": "CI green on main.",
+    "status": "Complete",
+    "validation_level": "CI with mocks only",
+    "known_limitations": [
+      "Validated in CI with mocks, fakes or fixtures only; never run against a real cloud account, cluster or host (stated in README)",
+      "Nothing has started a real FIS experiment; the default HTTP check and the boto3 wiring are not exercised by tests (stated in README).",
+      "AWS FIS only; Azure Chaos Studio is not implemented (stated in README).",
+      "The steady-state check is a single HTTPS status code (stated in README)."
+    ],
+    "next_steps": [],
+    "challenge_number": 44,
+    "visibility": "PUBLIC",
+    "archived": false,
+    "last_push": "2026-11-20"
+  },
+  {
+    "name": "45-lambda-ecs-autoremediation",
+    "title": "ECS auto-remediation Lambda",
+    "summary": "AWS Lambda that watches ECS services and applies two controlled fixes: a new deployment after a crashed task and a one-task scale-out for unhealthy targets, only on services tagged for it. Dry run by default.",
+    "domain": "Reliability / Auto-remediation",
+    "stack": [
+      "Python",
+      "AWS Lambda",
+      "EventBridge",
+      "Amazon ECS",
+      "pytest"
+    ],
+    "tier": "Keep",
+    "repo_url": "https://github.com/zeinhaidara/45-lambda-ecs-autoremediation",
+    "demo_url": null,
+    "outcome": "CI green on main.",
+    "status": "Complete",
+    "validation_level": "CI with mocks only",
+    "known_limitations": [
+      "Validated in CI with mocks, fakes or fixtures only; never run against a real cloud account, cluster or host (stated in README)",
+      "Nothing has been deployed; the function has never called real ECS or ELB APIs (stated in README).",
+      "ECS only; EKS is not implemented (stated in README).",
+      "Scale-out is never reversed by this function (stated in README)."
+    ],
+    "next_steps": [],
+    "challenge_number": 45,
+    "visibility": "PUBLIC",
+    "archived": false,
+    "last_push": "2026-11-20"
+  },
+  {
+    "name": "46-gitops-crossplane-monorepo",
+    "title": "GitOps monorepo with Argo CD and Crossplane",
+    "summary": "One repository meant for Argo CD to manage cloud infrastructure through Crossplane and an application through Kustomize, with a single root Application. Every manifest is rendered and schema-checked.",
+    "domain": "Advanced / GitOps platform",
+    "stack": [
+      "Argo CD",
+      "Crossplane",
+      "Kustomize",
+      "kubeconform",
+      "Python"
+    ],
+    "tier": "Keep",
+    "repo_url": "https://github.com/zeinhaidara/46-gitops-crossplane-monorepo",
+    "demo_url": null,
+    "outcome": "CI green on main.",
+    "status": "Minimal reference implementation; nothing applied to a cluster",
+    "validation_level": "CI with mocks only; manifests rendered and schema-checked, nothing applied",
+    "known_limitations": [
+      "Validated in CI with mocks, fakes or fixtures only; never run against a real cloud account, cluster or host (stated in README)",
+      "Nothing has been applied to a cluster: no Argo CD sync, no Crossplane reconcile, no S3 bucket created (stated in README).",
+      "No AWS credentials configuration; the Composition function input is not schema-checked (stated in README)."
+    ],
+    "next_steps": [],
+    "challenge_number": 46,
+    "visibility": "PUBLIC",
+    "archived": false,
+    "last_push": "2026-11-20"
+  },
+  {
+    "name": "47-python-opa-compliance-engine",
+    "title": "OPA compliance engine",
+    "summary": "Six Rego rules that check cloud resource configurations, a YAML mapping of those rules to SOC 2 and ISO/IEC 27001 control IDs and a Python runner that writes a pass, fail or not-evaluated Markdown report.",
+    "domain": "Advanced / Policy as code",
+    "stack": [
+      "Rego",
+      "OPA",
+      "Python",
+      "pytest"
+    ],
+    "tier": "Keep",
+    "repo_url": "https://github.com/zeinhaidara/47-python-opa-compliance-engine",
+    "demo_url": null,
+    "outcome": "CI green on main.",
+    "status": "Complete",
+    "validation_level": "CI with mocks only",
+    "known_limitations": [
+      "Validated in CI with mocks, fakes or fixtures only; never run against a real cloud account, cluster or host (stated in README)",
+      "Not an audit: the control mapping is illustrative and no auditor has reviewed it (stated in README).",
+      "No live cloud collection is built; the input is a supplied JSON file (stated in README).",
+      "Six example rules with AWS-shaped input only (stated in README)."
+    ],
+    "next_steps": [],
+    "challenge_number": 47,
+    "visibility": "PUBLIC",
+    "archived": false,
+    "last_push": "2026-11-20"
+  },
+  {
+    "name": "48-fastapi-temp-access-portal",
+    "title": "Temporary access portal",
+    "summary": "FastAPI backend where developers request temporary access to an allowlisted AWS IAM role, an approver decides, and short-lived STS credentials expire by themselves, with an append-only JSON-lines audit log.",
+    "domain": "Advanced / Self-service access",
+    "stack": [
+      "Python",
+      "FastAPI",
+      "pytest",
+      "AWS STS"
+    ],
+    "tier": "Keep",
+    "repo_url": "https://github.com/zeinhaidara/48-fastapi-temp-access-portal",
+    "demo_url": null,
+    "outcome": "CI green on main.",
+    "status": "Complete",
+    "validation_level": "CI with mocks only",
+    "known_limitations": [
+      "Validated in CI with mocks, fakes or fixtures only; never run against a real cloud account, cluster or host (stated in README)",
+      "Authentication is not built: identity is read from a header a trusted proxy is expected to set, so a real deployment needs SSO at a proxy (stated in README).",
+      "Kubernetes namespace access is not implemented (stated in README).",
+      "Requests are held in memory and lost on restart (stated in README)."
+    ],
+    "next_steps": [],
+    "challenge_number": 48,
+    "visibility": "PUBLIC",
+    "archived": false,
+    "last_push": "2026-11-20"
+  },
+  {
+    "name": "49-python-cmdb-sync-tool",
+    "title": "AWS Config to CMDB sync",
+    "summary": "Python tool that pulls the current inventory from AWS Config and keeps a SQLite CMDB in step: new resources inserted, changed ones updated, missing ones soft-retired. Dry run prints the diff.",
+    "domain": "Advanced / Inventory",
+    "stack": [
+      "Python",
+      "AWS Config",
+      "SQLite",
+      "pytest"
+    ],
+    "tier": "Keep",
+    "repo_url": "https://github.com/zeinhaidara/49-python-cmdb-sync-tool",
+    "demo_url": null,
+    "outcome": "CI green on main.",
+    "status": "Complete",
+    "validation_level": "CI with mocks only",
+    "known_limitations": [
+      "Validated in CI with mocks, fakes or fixtures only; never run against a real cloud account, cluster or host (stated in README)",
+      "AWS Config only; Azure Resource Graph, GCP Asset Inventory and ServiceNow are interface stubs (stated in README).",
+      "One account and region per run (stated in README)."
+    ],
+    "next_steps": [],
+    "challenge_number": 49,
+    "visibility": "PUBLIC",
+    "archived": false,
+    "last_push": "2026-11-20"
+  },
+  {
+    "name": "50-golden-path-env-provisioner",
+    "title": "Golden path environment provisioner",
+    "summary": "Template that stands up a greenfield environment (VPC, EKS, observability, sample app) from one parameter file using GitHub Actions, Terraform, Ansible and Kubernetes manifests.",
+    "domain": "Advanced / Platform engineering",
+    "stack": [
+      "Terraform",
+      "Ansible",
+      "GitHub Actions",
+      "Kubernetes",
+      "Python",
+      "pytest"
+    ],
+    "tier": "Keep",
+    "repo_url": "https://github.com/zeinhaidara/50-golden-path-env-provisioner",
+    "demo_url": null,
+    "outcome": "CI green on main.",
+    "status": "Minimal reference implementation; nothing run in AWS",
+    "validation_level": "CI with mocks only; validators and tests run, infrastructure checked statically",
+    "known_limitations": [
+      "Validated in CI with mocks, fakes or fixtures only; never run against a real cloud account, cluster or host (stated in README)",
+      "Nothing in the repository has ever run in a real AWS account or against a real cluster; the Terraform root and cluster play are checked statically only (stated in README).",
+      "Single NAT gateway and a public, CIDR-restricted EKS API endpoint (stated in README)."
+    ],
+    "next_steps": [],
+    "challenge_number": 50,
+    "visibility": "PUBLIC",
+    "archived": false,
+    "last_push": "2026-11-20"
+  },
+  {
     "name": "aws-3-tier-github-actions",
     "title": "AWS three-tier delivery on EC2 and ECS",
     "summary": "One FastAPI/MySQL image deployed to both EC2 Auto Scaling and ECS Fargate behind an ALB with Terraform, OIDC GitHub Actions, immutable ECR tags and a load-test workflow.",

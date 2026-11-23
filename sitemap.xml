@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-<url><loc>https://zeinhaidara.github.io/cloud-portfolio/</loc><lastmod>2026-11-11</lastmod></url>
-<url><loc>https://zeinhaidara.github.io/cloud-portfolio/projects.html</loc><lastmod>2026-11-11</lastmod></url>
+<url><loc>https://zeinhaidara.github.io/cloud-portfolio/</loc><lastmod>2026-11-20</lastmod></url>
+<url><loc>https://zeinhaidara.github.io/cloud-portfolio/projects.html</loc><lastmod>2026-11-20</lastmod></url>
 <url><loc>https://zeinhaidara.github.io/cloud-portfolio/projects/01-terraform-multi-az-vpc.html</loc><lastmod>2026-11-11</lastmod></url>
 <url><loc>https://zeinhaidara.github.io/cloud-portfolio/projects/02-ansible-linux-hardening.html</loc><lastmod>2026-11-11</lastmod></url>
 <url><loc>https://zeinhaidara.github.io/cloud-portfolio/projects/03-python-ebs-orphan-report.html</loc><lastmod>2026-11-11</lastmod></url>
@@ -32,6 +32,26 @@
 <url><loc>https://zeinhaidara.github.io/cloud-portfolio/projects/28-lambda-unused-resource-cleanup.html</loc><lastmod>2026-11-11</lastmod></url>
 <url><loc>https://zeinhaidara.github.io/cloud-portfolio/projects/29-azure-resource-group-module.html</loc><lastmod>2026-11-11</lastmod></url>
 <url><loc>https://zeinhaidara.github.io/cloud-portfolio/projects/30-python-dynamic-ansible-inventory.html</loc><lastmod>2026-11-11</lastmod></url>
+<url><loc>https://zeinhaidara.github.io/cloud-portfolio/projects/31-python-cost-explorer-report.html</loc><lastmod>2026-11-20</lastmod></url>
+<url><loc>https://zeinhaidara.github.io/cloud-portfolio/projects/32-lambda-scheduled-instance-stop.html</loc><lastmod>2026-11-20</lastmod></url>
+<url><loc>https://zeinhaidara.github.io/cloud-portfolio/projects/33-terraform-mandatory-tag-policy.html</loc><lastmod>2026-11-20</lastmod></url>
+<url><loc>https://zeinhaidara.github.io/cloud-portfolio/projects/34-python-vm-rightsizing-advisor.html</loc><lastmod>2026-11-20</lastmod></url>
+<url><loc>https://zeinhaidara.github.io/cloud-portfolio/projects/35-python-s3-lifecycle-savings-report.html</loc><lastmod>2026-11-20</lastmod></url>
+<url><loc>https://zeinhaidara.github.io/cloud-portfolio/projects/36-terraform-transit-gateway-hub-spoke.html</loc><lastmod>2026-11-20</lastmod></url>
+<url><loc>https://zeinhaidara.github.io/cloud-portfolio/projects/37-python-security-group-audit.html</loc><lastmod>2026-11-20</lastmod></url>
+<url><loc>https://zeinhaidara.github.io/cloud-portfolio/projects/38-ansible-ipsec-vpn-tunnels.html</loc><lastmod>2026-11-20</lastmod></url>
+<url><loc>https://zeinhaidara.github.io/cloud-portfolio/projects/39-python-gitops-dns-reconciler.html</loc><lastmod>2026-11-20</lastmod></url>
+<url><loc>https://zeinhaidara.github.io/cloud-portfolio/projects/40-terraform-private-api-gateway.html</loc><lastmod>2026-11-20</lastmod></url>
+<url><loc>https://zeinhaidara.github.io/cloud-portfolio/projects/41-python-rds-failover-test.html</loc><lastmod>2026-11-20</lastmod></url>
+<url><loc>https://zeinhaidara.github.io/cloud-portfolio/projects/42-terraform-lambda-cross-region-backup.html</loc><lastmod>2026-11-20</lastmod></url>
+<url><loc>https://zeinhaidara.github.io/cloud-portfolio/projects/43-terraform-multiregion-ha-pattern.html</loc><lastmod>2026-11-20</lastmod></url>
+<url><loc>https://zeinhaidara.github.io/cloud-portfolio/projects/44-python-chaos-engineering-fis.html</loc><lastmod>2026-11-20</lastmod></url>
+<url><loc>https://zeinhaidara.github.io/cloud-portfolio/projects/45-lambda-ecs-autoremediation.html</loc><lastmod>2026-11-20</lastmod></url>
+<url><loc>https://zeinhaidara.github.io/cloud-portfolio/projects/46-gitops-crossplane-monorepo.html</loc><lastmod>2026-11-20</lastmod></url>
+<url><loc>https://zeinhaidara.github.io/cloud-portfolio/projects/47-python-opa-compliance-engine.html</loc><lastmod>2026-11-20</lastmod></url>
+<url><loc>https://zeinhaidara.github.io/cloud-portfolio/projects/48-fastapi-temp-access-portal.html</loc><lastmod>2026-11-20</lastmod></url>
+<url><loc>https://zeinhaidara.github.io/cloud-portfolio/projects/49-python-cmdb-sync-tool.html</loc><lastmod>2026-11-20</lastmod></url>
+<url><loc>https://zeinhaidara.github.io/cloud-portfolio/projects/50-golden-path-env-provisioner.html</loc><lastmod>2026-11-20</lastmod></url>
 <url><loc>https://zeinhaidara.github.io/cloud-portfolio/projects/aws-3-tier-github-actions.html</loc><lastmod>2026-11-11</lastmod></url>
 <url><loc>https://zeinhaidara.github.io/cloud-portfolio/projects/aws-retail-microservices-eks.html</loc><lastmod>2026-11-11</lastmod></url>
 <url><loc>https://zeinhaidara.github.io/cloud-portfolio/projects/azure-aks-referral-platform.html</loc><lastmod>2026-11-11</lastmod></url>

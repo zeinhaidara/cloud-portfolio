@@ -151,13 +151,16 @@
      "color": "#f4f8fc",
      "size": 0.3
     },
-    "built": false,
+    "built": true,
     "flora": [
      "tree",
      "tree"
     ],
-    "creatures": [],
-    "decor": null,
+    "creatures": [
+     "gull",
+     "kite"
+    ],
+    "decor": "wind",
     "spin": 0.03,
     "sphere": {
      "haze": "#eef5fb",
@@ -166,52 +169,7 @@
       "cap",
       "#ffffff",
       7
-     ],
-     "terrain": {
-      "scale": 4,
-      "ground": "village",
-      "flora": [
-       [
-        "tree",
-        7,
-        2.6
-       ]
-      ],
-      "shapes": [
-       [
-        "box",
-        "#fff5e6",
-        -0.2,
-        -0.2,
-        0.9,
-        3.2
-       ],
-       [
-        "cone",
-        "#e05a47",
-        -0.2,
-        -0.2,
-        0.9,
-        0.9
-       ],
-       [
-        "box",
-        "#fff5e6",
-        0.42,
-        0.25,
-        0.7,
-        2.4
-       ],
-       [
-        "cone",
-        "#3f7be0",
-        0.42,
-        0.25,
-        0.7,
-        0.8
-       ]
-      ]
-     }
+     ]
     }
    },
    "range": [
@@ -256,13 +214,15 @@
      "color": "#5f7896",
      "size": 0.3
     },
-    "built": false,
+    "built": true,
     "flora": [
      "rockGrey",
      "tree"
     ],
-    "creatures": [],
-    "decor": null,
+    "creatures": [
+     "gull"
+    ],
+    "decor": "harbour",
     "spin": 0.02,
     "sphere": {
      "haze": "#5d6677",
@@ -271,68 +231,7 @@
       "cap",
       "#59627a",
       14
-     ],
-     "terrain": {
-      "scale": 4.2,
-      "ground": "city",
-      "flora": [
-       [
-        "rockGrey",
-        5,
-        3
-       ]
-      ],
-      "shapes": [
-       [
-        "disc",
-        "#3a4a66",
-        0,
-        0,
-        9.5,
-        0.12
-       ],
-       [
-        "box",
-        "#ff8a1f",
-        -0.3,
-        -0.1,
-        2.2,
-        1
-       ],
-       [
-        "box",
-        "#2f9bff",
-        0.25,
-        -0.2,
-        2.2,
-        1
-       ],
-       [
-        "box",
-        "#12b981",
-        -0.28,
-        -0.12,
-        2.2,
-        2.9
-       ],
-       [
-        "box",
-        "#f2b705",
-        0.1,
-        0.35,
-        2.2,
-        1
-       ],
-       [
-        "box",
-        "#7c5cff",
-        0.24,
-        -0.18,
-        2.2,
-        2.9
-       ]
-      ]
-     }
+     ]
     }
    },
    "range": [
@@ -377,14 +276,16 @@
      "color": "#e4ff8a",
      "size": 0.32
     },
-    "built": false,
+    "built": true,
     "flora": [
      "pine",
      "pine",
      "pine"
     ],
-    "creatures": [],
-    "decor": null,
+    "creatures": [
+     "owl"
+    ],
+    "decor": "fortress",
     "spin": 0.015,
     "sphere": {
      "haze": "#8fa39a",
@@ -393,52 +294,7 @@
       "cap",
       "#c7d1c9",
       9
-     ],
-     "terrain": {
-      "scale": 4.2,
-      "ground": "castle",
-      "flora": [
-       [
-        "pine",
-        16,
-        3
-       ]
-      ],
-      "shapes": [
-       [
-        "box",
-        "#c3c8d2",
-        -0.1,
-        -0.1,
-        1.5,
-        3.4
-       ],
-       [
-        "cone",
-        "#12b981",
-        -0.1,
-        -0.1,
-        1.3,
-        1.6
-       ],
-       [
-        "box",
-        "#c3c8d2",
-        0.3,
-        0.15,
-        1.1,
-        2.4
-       ],
-       [
-        "cone",
-        "#12b981",
-        0.3,
-        0.15,
-        1,
-        1.2
-       ]
-      ]
-     }
+     ]
     }
    },
    "range": [
@@ -483,13 +339,13 @@
      "color": "#5f7896",
      "size": 0.3
     },
-    "built": false,
+    "built": true,
     "flora": [
      "pine",
      "rockGrey"
     ],
     "creatures": [],
-    "decor": null,
+    "decor": "lighthouse",
     "spin": 0.02,
     "sphere": {
      "haze": "#8796a8",
@@ -498,57 +354,7 @@
       "cap",
       "#8a94a6",
       12
-     ],
-     "terrain": {
-      "scale": 4.2,
-      "ground": "rainy",
-      "flora": [
-       [
-        "pine",
-        6,
-        2.6
-       ],
-       [
-        "rockGrey",
-        4,
-        3
-       ]
-      ],
-      "shapes": [
-       [
-        "cone",
-        "#7b7f8c",
-        -0.25,
-        -0.2,
-        3.2,
-        5.2
-       ],
-       [
-        "cone",
-        "#8a8e97",
-        0.2,
-        -0.35,
-        2.4,
-        3.6
-       ],
-       [
-        "box",
-        "#fff5e6",
-        0.35,
-        0.3,
-        0.8,
-        4
-       ],
-       [
-        "cone",
-        "#e05a47",
-        0.35,
-        0.3,
-        0.8,
-        1
-       ]
-      ]
-     }
+     ]
     }
    },
    "range": [
@@ -593,52 +399,20 @@
      "color": "#e6f7a8",
      "size": 0.3
     },
-    "built": false,
+    "built": true,
     "flora": [
      "pine",
      "pine",
      "tree"
     ],
-    "creatures": [],
-    "decor": null,
+    "creatures": [
+     "deer"
+    ],
+    "decor": "workshop",
     "spin": 0.012,
     "sphere": {
      "haze": "#bfe6b0",
-     "strength": 0.45,
-     "terrain": {
-      "scale": 4.2,
-      "ground": "forest",
-      "flora": [
-       [
-        "pine",
-        12,
-        3
-       ],
-       [
-        "tree",
-        6,
-        2.6
-       ]
-      ],
-      "shapes": [
-       [
-        "box",
-        "#fff5e6",
-        0,
-        0.1,
-        1.6,
-        1.3
-       ],
-       [
-        "cone",
-        "#8b5a2b",
-        0,
-        0.1,
-        1.5,
-        1.1
-       ]
-      ]
-     }
+     "strength": 0.45
     }
    },
    "range": [
@@ -805,13 +579,13 @@
      "color": "#ff8a3d",
      "size": 0.34
     },
-    "built": false,
+    "built": true,
     "flora": [
      "rockLava",
      "rockLava"
     ],
     "creatures": [],
-    "decor": null,
+    "decor": "volcano",
     "spin": 0.015,
     "sphere": {
      "haze": "#b0603f",
@@ -820,52 +594,7 @@
       "column",
       "#5b5560",
       8
-     ],
-     "terrain": {
-      "scale": 4.4,
-      "ground": "volcanic",
-      "flora": [
-       [
-        "rockLava",
-        6,
-        3
-       ]
-      ],
-      "shapes": [
-       [
-        "cone",
-        "#3a2e2e",
-        -0.15,
-        -0.1,
-        4.2,
-        5.6
-       ],
-       [
-        "cone",
-        "#ff6a00",
-        -0.15,
-        -0.1,
-        1.1,
-        5.9
-       ],
-       [
-        "cone",
-        "#4b3c3c",
-        0.4,
-        -0.3,
-        2.2,
-        2.6
-       ],
-       [
-        "disc",
-        "#38b6ff",
-        0.3,
-        0.35,
-        2.6,
-        0.1
-       ]
-      ]
-     }
+     ]
     }
    },
    "range": [
@@ -910,13 +639,15 @@
      "color": "#ffffff",
      "size": 0.3
     },
-    "built": false,
+    "built": true,
     "flora": [
      "pineSnow",
      "rockGrey"
     ],
-    "creatures": [],
-    "decor": null,
+    "creatures": [
+     "eagle"
+    ],
+    "decor": "summit",
     "spin": 0.01,
     "sphere": {
      "haze": "#f1f6ff",
@@ -925,60 +656,7 @@
       "ring",
       "#ffffff",
       12
-     ],
-     "terrain": {
-      "scale": 4,
-      "ground": "snow",
-      "flora": [
-       [
-        "pineSnow",
-        4,
-        2.4
-       ]
-      ],
-      "shapes": [
-       [
-        "cone",
-        "#8a9bb6",
-        -0.1,
-        -0.1,
-        3.6,
-        8.5
-       ],
-       [
-        "cone",
-        "#ffffff",
-        -0.1,
-        -0.1,
-        1.5,
-        9.6
-       ],
-       [
-        "cone",
-        "#8a9bb6",
-        0.38,
-        0.1,
-        2.4,
-        5
-       ],
-       [
-        "cone",
-        "#ffffff",
-        0.38,
-        0.1,
-        1,
-        5.6
-       ],
-       [
-        "cone",
-        "#6b7b96",
-        -0.42,
-        0.25,
-        2,
-        3.6
-       ]
-      ]
-     }
+     ]
     }
    },
    "range": [
@@ -1853,6 +1531,570 @@
    "phase": null
   },
   {
+   "name": "31-python-cost-explorer-report",
+   "title": "Weekly AWS cost report",
+   "short": "Weekly AWS cost report",
+   "zone": "finops",
+   "href": "projects/31-python-cost-explorer-report.html",
+   "cc": "31",
+   "v": "ci",
+   "vl": "CI with mocks only",
+   "vc": "manual",
+   "color": "#e0a100",
+   "size": 0.92,
+   "ground": "desert",
+   "building": "terminal",
+   "summary": "Python script that reads two weeks of AWS Cost Explorer spend, finds the top cost drivers by service and by one cost allocation tag, and writes a short Markdown report.",
+   "domain": "FinOps / Cost reporting",
+   "stack": [
+    "Python",
+    "boto3",
+    "AWS Cost Explorer"
+   ],
+   "repo": "https://github.com/zeinhaidara/31-python-cost-explorer-report",
+   "slot": 0,
+   "orbit": null,
+   "speed": null,
+   "phase": null
+  },
+  {
+   "name": "32-lambda-scheduled-instance-stop",
+   "title": "Scheduled stop for non-production instances",
+   "short": "Scheduled stop for non-production instances",
+   "zone": "finops",
+   "href": "projects/32-lambda-scheduled-instance-stop.html",
+   "cc": "32",
+   "v": "ci",
+   "vl": "CI with mocks only",
+   "vc": "manual",
+   "color": "#e0a100",
+   "size": 0.92,
+   "ground": "desert",
+   "building": "rocket",
+   "summary": "AWS Lambda run by an EventBridge schedule that stops opted-in non-production EC2 and RDS instances outside business hours, with per-resource schedules, timezones and temporary overrides.",
+   "domain": "FinOps / AWS automation",
+   "stack": [
+    "Python",
+    "AWS Lambda",
+    "EventBridge",
+    "EC2",
+    "RDS"
+   ],
+   "repo": "https://github.com/zeinhaidara/32-lambda-scheduled-instance-stop",
+   "slot": 1,
+   "orbit": null,
+   "speed": null,
+   "phase": null
+  },
+  {
+   "name": "33-terraform-mandatory-tag-policy",
+   "title": "Mandatory cost-allocation tag policy",
+   "short": "Mandatory cost-allocation tag policy",
+   "zone": "finops",
+   "href": "projects/33-terraform-mandatory-tag-policy.html",
+   "cc": "33",
+   "v": "ci",
+   "vl": "CI with mocks only",
+   "vc": "manual",
+   "color": "#e0a100",
+   "size": 0.92,
+   "ground": "desert",
+   "building": "shield",
+   "summary": "Terraform module (an S3 bucket) that will not plan unless its cost-allocation tags are complete and well formed, using native variable validation and resource preconditions.",
+   "domain": "Governance / FinOps",
+   "stack": [
+    "Terraform",
+    "terraform test",
+    "AWS provider (mocked)"
+   ],
+   "repo": "https://github.com/zeinhaidara/33-terraform-mandatory-tag-policy",
+   "slot": 2,
+   "orbit": null,
+   "speed": null,
+   "phase": null
+  },
+  {
+   "name": "34-python-vm-rightsizing-advisor",
+   "title": "EC2 rightsizing advisor",
+   "short": "EC2 rightsizing advisor",
+   "zone": "finops",
+   "href": "projects/34-python-vm-rightsizing-advisor.html",
+   "cc": "34",
+   "v": "ci",
+   "vl": "CI with mocks only",
+   "vc": "manual",
+   "color": "#e0a100",
+   "size": 0.92,
+   "ground": "desert",
+   "building": "terminal",
+   "summary": "Read-only Python tool that reads two weeks of CPU and memory use for running EC2 instances and suggests one size down, one size up or no change, using an editable instance catalog.",
+   "domain": "FinOps / Rightsizing",
+   "stack": [
+    "Python",
+    "boto3",
+    "CloudWatch",
+    "YAML"
+   ],
+   "repo": "https://github.com/zeinhaidara/34-python-vm-rightsizing-advisor",
+   "slot": 3,
+   "orbit": null,
+   "speed": null,
+   "phase": null
+  },
+  {
+   "name": "35-python-s3-lifecycle-savings-report",
+   "title": "S3 lifecycle savings report",
+   "short": "S3 lifecycle savings report",
+   "zone": "finops",
+   "href": "projects/35-python-s3-lifecycle-savings-report.html",
+   "cc": "35",
+   "v": "ci",
+   "vl": "CI with mocks only",
+   "vc": "manual",
+   "color": "#e0a100",
+   "size": 0.92,
+   "ground": "desert",
+   "building": "terminal",
+   "summary": "Read-only Python job that groups S3 objects by age and size and estimates the monthly saving from Intelligent-Tiering or a Standard-IA lifecycle rule, as a Markdown report.",
+   "domain": "FinOps / Storage",
+   "stack": [
+    "Python",
+    "boto3",
+    "Amazon S3"
+   ],
+   "repo": "https://github.com/zeinhaidara/35-python-s3-lifecycle-savings-report",
+   "slot": 4,
+   "orbit": null,
+   "speed": null,
+   "phase": null
+  },
+  {
+   "name": "36-terraform-transit-gateway-hub-spoke",
+   "title": "Transit Gateway hub and spoke",
+   "short": "Transit Gateway hub and spoke",
+   "zone": "networking",
+   "href": "projects/36-terraform-transit-gateway-hub-spoke.html",
+   "cc": "36",
+   "v": "ci",
+   "vl": "CI with mocks only",
+   "vc": "manual",
+   "color": "#38b6ff",
+   "size": 0.92,
+   "ground": "ice",
+   "building": "bridge",
+   "summary": "Terraform module for an AWS Transit Gateway hub, an inspection VPC with a Network Firewall endpoint, spoke attachments and route tables that send spoke-to-spoke traffic through the firewall.",
+   "domain": "Networking / IaC",
+   "stack": [
+    "Terraform",
+    "terraform test",
+    "AWS Transit Gateway",
+    "AWS Network Firewall"
+   ],
+   "repo": "https://github.com/zeinhaidara/36-terraform-transit-gateway-hub-spoke",
+   "slot": 0,
+   "orbit": null,
+   "speed": null,
+   "phase": null
+  },
+  {
+   "name": "37-python-security-group-audit",
+   "title": "Security group audit",
+   "short": "Security group audit",
+   "zone": "networking",
+   "href": "projects/37-python-security-group-audit.html",
+   "cc": "37",
+   "v": "ci",
+   "vl": "CI with mocks only",
+   "vc": "manual",
+   "color": "#38b6ff",
+   "size": 0.92,
+   "ground": "ice",
+   "building": "terminal",
+   "summary": "Read-only Python script that assumes a role in each AWS account, reads every security group, writes a CSV of every ingress rule and a Markdown report of rules open to the internet and unused groups.",
+   "domain": "Networking / Security audit",
+   "stack": [
+    "Python",
+    "boto3",
+    "AWS STS"
+   ],
+   "repo": "https://github.com/zeinhaidara/37-python-security-group-audit",
+   "slot": 1,
+   "orbit": null,
+   "speed": null,
+   "phase": null
+  },
+  {
+   "name": "38-ansible-ipsec-vpn-tunnels",
+   "title": "IPsec VPN tunnels with Ansible",
+   "short": "IPsec VPN tunnels with Ansible",
+   "zone": "networking",
+   "href": "projects/38-ansible-ipsec-vpn-tunnels.html",
+   "cc": "38",
+   "v": "ci",
+   "vl": "CI with mocks only",
+   "vc": "manual",
+   "color": "#38b6ff",
+   "size": 0.92,
+   "ground": "ice",
+   "building": "terminal",
+   "summary": "Ansible playbook and role that set up an IKEv2 site-to-site IPsec tunnel with strongSwan and X.509 certificates, plus a systemd health check that writes a Prometheus metric.",
+   "domain": "Networking / VPN",
+   "stack": [
+    "Ansible",
+    "strongSwan",
+    "Python",
+    "pytest",
+    "ansible-lint"
+   ],
+   "repo": "https://github.com/zeinhaidara/38-ansible-ipsec-vpn-tunnels",
+   "slot": 2,
+   "orbit": null,
+   "speed": null,
+   "phase": null
+  },
+  {
+   "name": "39-python-gitops-dns-reconciler",
+   "title": "GitOps DNS reconciler",
+   "short": "GitOps DNS reconciler",
+   "zone": "networking",
+   "href": "projects/39-python-gitops-dns-reconciler.html",
+   "cc": "39",
+   "v": "ci",
+   "vl": "CI with mocks only",
+   "vc": "manual",
+   "color": "#38b6ff",
+   "size": 0.92,
+   "ground": "ice",
+   "building": "terminal",
+   "summary": "Python tool that keeps Route 53 records in line with a YAML file in Git: it prints a plan and applies it as one change batch only when asked, once or in a loop.",
+   "domain": "Networking / DNS",
+   "stack": [
+    "Python",
+    "boto3",
+    "Amazon Route 53",
+    "YAML"
+   ],
+   "repo": "https://github.com/zeinhaidara/39-python-gitops-dns-reconciler",
+   "slot": 3,
+   "orbit": null,
+   "speed": null,
+   "phase": null
+  },
+  {
+   "name": "40-terraform-private-api-gateway",
+   "title": "Private API Gateway module",
+   "short": "Private API Gateway module",
+   "zone": "networking",
+   "href": "projects/40-terraform-private-api-gateway.html",
+   "cc": "40",
+   "v": "ci",
+   "vl": "CI with mocks only",
+   "vc": "manual",
+   "color": "#38b6ff",
+   "size": 0.92,
+   "ground": "ice",
+   "building": "bridge",
+   "summary": "Terraform module that exposes an internal service through a private API Gateway REST API, a VPC link and an internal Network Load Balancer, with nothing reachable from the internet.",
+   "domain": "Networking / IaC",
+   "stack": [
+    "Terraform",
+    "terraform test",
+    "API Gateway",
+    "VPC link",
+    "Network Load Balancer"
+   ],
+   "repo": "https://github.com/zeinhaidara/40-terraform-private-api-gateway",
+   "slot": 4,
+   "orbit": null,
+   "speed": null,
+   "phase": null
+  },
+  {
+   "name": "41-python-rds-failover-test",
+   "title": "Cross-region RDS failover test",
+   "short": "Cross-region RDS failover test",
+   "zone": "reliability",
+   "href": "projects/41-python-rds-failover-test.html",
+   "cc": "41",
+   "v": "ci",
+   "vl": "CI with mocks only",
+   "vc": "manual",
+   "color": "#e05a47",
+   "size": 0.92,
+   "ground": "volcanic",
+   "building": "terminal",
+   "summary": "Python script that tests disaster recovery by promoting an RDS cross-region read replica, checking application connectivity, timing the failover and writing a Markdown report. Dry run unless --execute is passed.",
+   "domain": "Reliability / Disaster recovery",
+   "stack": [
+    "Python",
+    "boto3",
+    "pytest",
+    "Amazon RDS"
+   ],
+   "repo": "https://github.com/zeinhaidara/41-python-rds-failover-test",
+   "slot": 0,
+   "orbit": null,
+   "speed": null,
+   "phase": null
+  },
+  {
+   "name": "42-terraform-lambda-cross-region-backup",
+   "title": "Cross-region EBS snapshot backup",
+   "short": "Cross-region EBS snapshot backup",
+   "zone": "reliability",
+   "href": "projects/42-terraform-lambda-cross-region-backup.html",
+   "cc": "42",
+   "v": "ci",
+   "vl": "CI with mocks only",
+   "vc": "manual",
+   "color": "#e05a47",
+   "size": 0.92,
+   "ground": "volcanic",
+   "building": "rocket",
+   "summary": "Terraform module and Lambda function that copy the latest snapshot of each tagged EBS volume to a second region on a schedule, encrypted with a KMS key in that region, with retention pruning. Dry run by default.",
+   "domain": "Reliability / Backup",
+   "stack": [
+    "Terraform",
+    "Python",
+    "AWS Lambda",
+    "KMS",
+    "pytest"
+   ],
+   "repo": "https://github.com/zeinhaidara/42-terraform-lambda-cross-region-backup",
+   "slot": 1,
+   "orbit": null,
+   "speed": null,
+   "phase": null
+  },
+  {
+   "name": "43-terraform-multiregion-ha-pattern",
+   "title": "Multi-region active-passive pattern",
+   "short": "Multi-region active-passive pattern",
+   "zone": "reliability",
+   "href": "projects/43-terraform-multiregion-ha-pattern.html",
+   "cc": "43",
+   "v": "ci",
+   "vl": "CI with mocks only",
+   "vc": "manual",
+   "color": "#e05a47",
+   "size": 0.92,
+   "ground": "volcanic",
+   "building": "tower",
+   "summary": "Terraform module for an active-passive pair of AWS regions: a DynamoDB global table for data and Route 53 failover records with a health check for traffic.",
+   "domain": "Reliability / High availability",
+   "stack": [
+    "Terraform",
+    "terraform test",
+    "DynamoDB",
+    "Amazon Route 53"
+   ],
+   "repo": "https://github.com/zeinhaidara/43-terraform-multiregion-ha-pattern",
+   "slot": 2,
+   "orbit": null,
+   "speed": null,
+   "phase": null
+  },
+  {
+   "name": "44-python-chaos-engineering-fis",
+   "title": "Chaos runner for AWS FIS",
+   "short": "Chaos runner for AWS FIS",
+   "zone": "reliability",
+   "href": "projects/44-python-chaos-engineering-fis.html",
+   "cc": "44",
+   "v": "ci",
+   "vl": "CI with mocks only",
+   "vc": "manual",
+   "color": "#e05a47",
+   "size": 0.92,
+   "ground": "volcanic",
+   "building": "terminal",
+   "summary": "Python script that runs AWS Fault Injection Service experiments one at a time and checks the system recovers on its own within a time limit. Dry run unless --execute is passed.",
+   "domain": "Reliability / Chaos engineering",
+   "stack": [
+    "Python",
+    "boto3",
+    "pytest",
+    "AWS FIS"
+   ],
+   "repo": "https://github.com/zeinhaidara/44-python-chaos-engineering-fis",
+   "slot": 3,
+   "orbit": null,
+   "speed": null,
+   "phase": null
+  },
+  {
+   "name": "45-lambda-ecs-autoremediation",
+   "title": "ECS auto-remediation Lambda",
+   "short": "ECS auto-remediation Lambda",
+   "zone": "reliability",
+   "href": "projects/45-lambda-ecs-autoremediation.html",
+   "cc": "45",
+   "v": "ci",
+   "vl": "CI with mocks only",
+   "vc": "manual",
+   "color": "#e05a47",
+   "size": 0.92,
+   "ground": "volcanic",
+   "building": "rocket",
+   "summary": "AWS Lambda that watches ECS services and applies two controlled fixes: a new deployment after a crashed task and a one-task scale-out for unhealthy targets, only on services tagged for it. Dry run by default.",
+   "domain": "Reliability / Auto-remediation",
+   "stack": [
+    "Python",
+    "AWS Lambda",
+    "EventBridge",
+    "Amazon ECS",
+    "pytest"
+   ],
+   "repo": "https://github.com/zeinhaidara/45-lambda-ecs-autoremediation",
+   "slot": 4,
+   "orbit": null,
+   "speed": null,
+   "phase": null
+  },
+  {
+   "name": "46-gitops-crossplane-monorepo",
+   "title": "GitOps monorepo with Argo CD and Crossplane",
+   "short": "GitOps monorepo with Argo CD and Crossplane",
+   "zone": "advanced",
+   "href": "projects/46-gitops-crossplane-monorepo.html",
+   "cc": "46",
+   "v": "ci",
+   "vl": "CI with mocks only",
+   "vc": "manual",
+   "color": "#1e6ad6",
+   "size": 0.92,
+   "ground": "snow",
+   "building": "wheel",
+   "summary": "One repository meant for Argo CD to manage cloud infrastructure through Crossplane and an application through Kustomize, with a single root Application. Every manifest is rendered and schema-checked.",
+   "domain": "Advanced / GitOps platform",
+   "stack": [
+    "Argo CD",
+    "Crossplane",
+    "Kustomize",
+    "kubeconform",
+    "Python"
+   ],
+   "repo": "https://github.com/zeinhaidara/46-gitops-crossplane-monorepo",
+   "slot": 0,
+   "orbit": null,
+   "speed": null,
+   "phase": null
+  },
+  {
+   "name": "47-python-opa-compliance-engine",
+   "title": "OPA compliance engine",
+   "short": "OPA compliance engine",
+   "zone": "advanced",
+   "href": "projects/47-python-opa-compliance-engine.html",
+   "cc": "47",
+   "v": "ci",
+   "vl": "CI with mocks only",
+   "vc": "manual",
+   "color": "#1e6ad6",
+   "size": 0.92,
+   "ground": "snow",
+   "building": "terminal",
+   "summary": "Six Rego rules that check cloud resource configurations, a YAML mapping of those rules to SOC 2 and ISO/IEC 27001 control IDs and a Python runner that writes a pass, fail or not-evaluated Markdown report.",
+   "domain": "Advanced / Policy as code",
+   "stack": [
+    "Rego",
+    "OPA",
+    "Python",
+    "pytest"
+   ],
+   "repo": "https://github.com/zeinhaidara/47-python-opa-compliance-engine",
+   "slot": 1,
+   "orbit": null,
+   "speed": null,
+   "phase": null
+  },
+  {
+   "name": "48-fastapi-temp-access-portal",
+   "title": "Temporary access portal",
+   "short": "Temporary access portal",
+   "zone": "advanced",
+   "href": "projects/48-fastapi-temp-access-portal.html",
+   "cc": "48",
+   "v": "ci",
+   "vl": "CI with mocks only",
+   "vc": "manual",
+   "color": "#1e6ad6",
+   "size": 0.92,
+   "ground": "snow",
+   "building": "terminal",
+   "summary": "FastAPI backend where developers request temporary access to an allowlisted AWS IAM role, an approver decides, and short-lived STS credentials expire by themselves, with an append-only JSON-lines audit log.",
+   "domain": "Advanced / Self-service access",
+   "stack": [
+    "Python",
+    "FastAPI",
+    "pytest",
+    "AWS STS"
+   ],
+   "repo": "https://github.com/zeinhaidara/48-fastapi-temp-access-portal",
+   "slot": 2,
+   "orbit": null,
+   "speed": null,
+   "phase": null
+  },
+  {
+   "name": "49-python-cmdb-sync-tool",
+   "title": "AWS Config to CMDB sync",
+   "short": "AWS Config to CMDB sync",
+   "zone": "advanced",
+   "href": "projects/49-python-cmdb-sync-tool.html",
+   "cc": "49",
+   "v": "ci",
+   "vl": "CI with mocks only",
+   "vc": "manual",
+   "color": "#1e6ad6",
+   "size": 0.92,
+   "ground": "snow",
+   "building": "terminal",
+   "summary": "Python tool that pulls the current inventory from AWS Config and keeps a SQLite CMDB in step: new resources inserted, changed ones updated, missing ones soft-retired. Dry run prints the diff.",
+   "domain": "Advanced / Inventory",
+   "stack": [
+    "Python",
+    "AWS Config",
+    "SQLite",
+    "pytest"
+   ],
+   "repo": "https://github.com/zeinhaidara/49-python-cmdb-sync-tool",
+   "slot": 3,
+   "orbit": null,
+   "speed": null,
+   "phase": null
+  },
+  {
+   "name": "50-golden-path-env-provisioner",
+   "title": "Golden path environment provisioner",
+   "short": "Golden path environment provisioner",
+   "zone": "advanced",
+   "href": "projects/50-golden-path-env-provisioner.html",
+   "cc": "50",
+   "v": "ci",
+   "vl": "CI with mocks only",
+   "vc": "manual",
+   "color": "#1e6ad6",
+   "size": 0.92,
+   "ground": "snow",
+   "building": "gear",
+   "summary": "Template that stands up a greenfield environment (VPC, EKS, observability, sample app) from one parameter file using GitHub Actions, Terraform, Ansible and Kubernetes manifests.",
+   "domain": "Advanced / Platform engineering",
+   "stack": [
+    "Terraform",
+    "Ansible",
+    "GitHub Actions",
+    "Kubernetes",
+    "Python",
+    "pytest"
+   ],
+   "repo": "https://github.com/zeinhaidara/50-golden-path-env-provisioner",
+   "slot": 4,
+   "orbit": null,
+   "speed": null,
+   "phase": null
+  },
+  {
    "name": "aws-3-tier-github-actions",
    "title": "AWS three-tier delivery on EC2 and ECS",
    "short": "Three-tier delivery",
@@ -2140,108 +2382,7 @@
    "phase": null
   }
  ],
- "uncharted": [
-  {
-   "n": 31,
-   "zone": "finops",
-   "slot": 0
-  },
-  {
-   "n": 32,
-   "zone": "finops",
-   "slot": 1
-  },
-  {
-   "n": 33,
-   "zone": "finops",
-   "slot": 2
-  },
-  {
-   "n": 34,
-   "zone": "finops",
-   "slot": 3
-  },
-  {
-   "n": 35,
-   "zone": "finops",
-   "slot": 4
-  },
-  {
-   "n": 36,
-   "zone": "networking",
-   "slot": 0
-  },
-  {
-   "n": 37,
-   "zone": "networking",
-   "slot": 1
-  },
-  {
-   "n": 38,
-   "zone": "networking",
-   "slot": 2
-  },
-  {
-   "n": 39,
-   "zone": "networking",
-   "slot": 3
-  },
-  {
-   "n": 40,
-   "zone": "networking",
-   "slot": 4
-  },
-  {
-   "n": 41,
-   "zone": "reliability",
-   "slot": 0
-  },
-  {
-   "n": 42,
-   "zone": "reliability",
-   "slot": 1
-  },
-  {
-   "n": 43,
-   "zone": "reliability",
-   "slot": 2
-  },
-  {
-   "n": 44,
-   "zone": "reliability",
-   "slot": 3
-  },
-  {
-   "n": 45,
-   "zone": "reliability",
-   "slot": 4
-  },
-  {
-   "n": 46,
-   "zone": "advanced",
-   "slot": 0
-  },
-  {
-   "n": 47,
-   "zone": "advanced",
-   "slot": 1
-  },
-  {
-   "n": 48,
-   "zone": "advanced",
-   "slot": 2
-  },
-  {
-   "n": 49,
-   "zone": "advanced",
-   "slot": 3
-  },
-  {
-   "n": 50,
-   "zone": "advanced",
-   "slot": 4
-  }
- ],
+ "uncharted": [],
  "contact": {
   "email": "zeinhaidara@gmail.com",
   "github": "https://github.com/zeinhaidara"
