@@ -157,3 +157,5 @@ button.link{background:none;border:0;border-bottom:1.5px solid var(--c);cursor:p
 }
 .brand{padding:5px 0}.top nav a:not(.pill){padding:6px 0}
 @media(pointer:coarse){.dock a{min-height:44px}.top nav a:not(.pill){padding:10px 0}}
+/* narrow screens: the header keeps one row; Code Clinic stays linked from the intro and every sub-page footer */
+@media(max-width:600px){.top nav .cc-link{display:none}}
