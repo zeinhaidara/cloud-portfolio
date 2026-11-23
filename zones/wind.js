@@ -67,6 +67,8 @@ export default function build(api, z) {
       if (camera) root.worldToLocal(eye.copy(camera.position));
       rotors.forEach((h, i) => {
         const u = h.userData;
+        h.visible = k > 0.02; // sub-pixel from far away: no draw calls in the whole-world view
+        if (!h.visible) return;
         if (camera) { const a = Math.atan2(eye.x - u.x, eye.z - u.zz); h.rotation.y = a; h.position.x = u.x + Math.sin(a) * 0.6 * u.k; h.position.z = u.zz + Math.cos(a) * 0.6 * u.k; } // the sails turn to the viewer
         h.rotation.z += dt * (1.3 + i * 0.35) * (0.15 + k);
       });

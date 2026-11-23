@@ -29,8 +29,10 @@ export default function build(api, z) {
   const crater = new THREE.Mesh(new THREE.CylinderGeometry(0.85, 0.7, 0.2, 8), lavaMat);
   crater.position.set(-0.9, H / 2 - 0.6 + 4.35, -0.9);
   root.add(crater);
+  const streaks = [];
   for (const [a, len] of [[0.6, 2.2], [2.5, 1.6]]) {
     const st = new THREE.Mesh(new THREE.BoxGeometry(0.2, len, 0.06), lavaMat);
+    streaks.push(st);
     st.position.set(-0.9 + Math.cos(a) * 1.15, H / 2 - 0.6 + 3.5 - len * 0.2, -0.9 + Math.sin(a) * 1.15);
     st.rotation.set(Math.sin(a) * 0.5, -a, -Math.cos(a) * 0.5);
     root.add(st);
@@ -50,6 +52,7 @@ export default function build(api, z) {
       root.scale.setScalar(Math.max(0.001, appear));
       const k = sstep(0.03, 0.45, w) * appear;
       lavaMat.emissiveIntensity = 0.8 + Math.sin(t * 1.6) * 0.2;
+      for (const s of streaks) s.visible = k > 0.02; // the glowing crater stays as the far-view landmark
       flames.forEach((f) => { f.visible = k > 0.02; if (f.visible) { const q = 0.85 + Math.sin(t * 9 + f.userData.ph) * 0.15; f.scale.set(q, 0.8 + Math.sin(t * 7 + f.userData.ph) * 0.25, q); } });
       for (const m of puffs) { m.visible = k > 0.02; if (m.visible) { const p = (t * 0.05 + m.userData.o) % 1; m.position.set(-0.9 + p * 2.2, H / 2 - 0.6 + 4.6 + p * 7, -0.9 + p * 0.8); m.scale.setScalar((0.5 + p * 1.8) * Math.sin(Math.PI * Math.min(1, p * 1.1))); } }
     },

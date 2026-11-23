@@ -52,7 +52,7 @@ export default function build(api, z) {
       const k = sstep(0.03, 0.45, w) * appear;
       cloudSea.rotation.y = t * 0.012;
       cloudSea.scale.setScalar(Math.max(0.001, appear));
-      flag.visible = k > 0.01;
+      flag.visible = pole.visible = k > 0.01;
       if (flag.visible) { flag.material.opacity = k; waveRibbon(flag, t, 0.16, 5, 4); }
       flyFlock(eagle, t, dt, k, 3.5);
     },
