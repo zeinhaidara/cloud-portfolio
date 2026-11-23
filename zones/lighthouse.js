@@ -30,7 +30,8 @@ export default function build(api, z) {
   // the lamp rooms glow and each throws a slowly sweeping beam
   const lampMat = flat('#fff3b0', { emissive: col('#ffd34d'), emissiveIntensity: 0.9, roughness: 0.3 });
   const beamMat = new THREE.MeshBasicMaterial({ color: 0xfff1b0, transparent: true, opacity: 0, depthWrite: false, side: THREE.DoubleSide, forceSinglePass: true, fog: false, blending: THREE.AdditiveBlending });
-  const beamG = new THREE.ConeGeometry(1.5, 11, 12, 1, true).rotateZ(-Math.PI / 2).translate(5.5, 0, 0);
+  // tip at the lamp, widening as it travels out
+  const beamG = new THREE.ConeGeometry(2.2, 11, 12, 1, true).rotateZ(Math.PI / 2).translate(5.5, 0, 0);
   const lamps = [];
   const sweeps = towers.map(([x, zz, k], i) => {
     const y = H / 2 - 0.6 + 4.95 * k, lamp = new THREE.Mesh(new THREE.CylinderGeometry(0.34 * k, 0.34 * k, 0.5 * k, 8), lampMat);
