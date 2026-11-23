@@ -1022,7 +1022,13 @@ export function createWorld({ canvas, data, labels: labelEls, onPick = () => {},
   function loadDecor(z) {
     if (z.decorState !== 0 || !z.group) return;
     z.decorState = 1;
-    import(`./zones/${z.cfg.air.decor}.js`).then((m) => { z.decor = m.default(api, z); z.decorState = 2; invalidate(); }).catch((error) => {
+    import(`./zones/${z.cfg.air.decor}.js`).then((m) => {
+      // the module's own materials compile off the frame first, hidden, so a zone never stalls a flight when it appears
+      const before = new Set([...z.group.children, ...z.big.children]), d = m.default(api, z);
+      const added = [...z.group.children, ...z.big.children].filter((o) => !before.has(o) && o.visible);
+      for (const o of added) o.visible = false;
+      return renderer.compileAsync(z.group, camera, scene).catch(() => {}).then(() => { for (const o of added) o.visible = true; z.decor = d; z.decorState = 2; invalidate(); });
+    }).catch((error) => {
       z.decorState = 3;
       console.error(`Could not load scenery for ${z.cfg.name}`, error);
       onError(z.cfg.name);
@@ -1418,7 +1424,12 @@ export function createWorld({ canvas, data, labels: labelEls, onPick = () => {},
   warm.add(new THREE.Mesh(UNIT.box, bakedMat), new THREE.Mesh(UNIT.box, ghostMat), new THREE.InstancedMesh(UNIT.box, MAT.trunk, 1), new THREE.Points(UNIT.box, new THREE.PointsMaterial({ map: dotTex, transparent: true, depthWrite: false })), new THREE.Sprite(new THREE.SpriteMaterial({ map: dotTex, transparent: true, depthWrite: false, fog: false })), new THREE.InstancedMesh(UNIT.box, new THREE.MeshStandardMaterial({ flatShading: true, transparent: true, fog: false }), 1));
   warm.scale.setScalar(0.0001);
   scene.add(warm);
-  const ready = renderer.compileAsync(scene, camera).catch(() => {}).then(() => { scene.remove(warm); compiled = true; lastT = performance.now(); schedule(); });
+  const ready = renderer.compileAsync(scene, camera).catch(() => {}).then(() => {
+    // Darker local weather switches the lamp lights on, which changes every lit shader. Those variants compile now in the
+    // background (compile() creates them synchronously, linking finishes off-thread), so the first dark zone never freezes a flight.
+    if (lamps.length) { for (const l of lamps) l.light.visible = true; renderer.compileAsync(scene, camera).catch(() => {}); for (const l of lamps) l.light.visible = false; }
+    scene.remove(warm); compiled = true; lastT = performance.now(); schedule();
+  });
   reducedQ.addEventListener('change', () => {
     reduced = reducedQ.matches; lastT = performance.now(); fpsN = fpsT = 0;
     if (reduced && flight) { destination(dest); rig.target.copy(dest); rig.dist = goal.dist; rig.pitch = goal.pitch; flight = null; }
