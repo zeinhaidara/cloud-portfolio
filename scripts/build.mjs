@@ -7,7 +7,7 @@ import { readFileSync, writeFileSync, existsSync, mkdirSync, readdirSync, unlink
 import { resolve, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { island, ghostIsland, icon, pickBuilding, relight, cloud } from './lib/art.mjs';
-import { readManifest } from './check-manifest.mjs';
+import { readManifest, ciState } from './check-manifest.mjs';
 
 const root = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 const args = process.argv.slice(2);
@@ -212,13 +212,13 @@ ${lims.length || steps.length ? `<div id="limitations" class="sub"><div class="s
 /* ---------- Code Clinic: every card comes from data/portfolio-manifest.json ---------- */
 const CAT_LABEL = { 'ci-cd': 'CI/CD', finops: 'FinOps' }; // display spelling only; anything else is capitalised
 const catLabel = (c) => CAT_LABEL[c] || c.charAt(0).toUpperCase() + c.slice(1);
-const CI_LABEL = { pass: ['CI passing', 'live'], fail: ['CI failing', 'open'] };
+const CI_LABEL = { pass: ['CI passing', 'live'], fail: ['CI failing', 'open'], none: ['No CI run on main', 'none'] }; // rule: ciState() in check-manifest.mjs
 function clinicPage() {
   const M = readManifest(root);
   if (M.errors.length) throw new Error('data/portfolio-manifest.json is invalid (run node scripts/check-manifest.mjs):\n  ' + M.errors.join('\n  '));
-  const E = M.entries, cats = [...M.categories].sort((a, b) => catLabel(a).localeCompare(catLabel(b)));
-  const passing = E.filter((e) => e.ci_status_main === 'pass').length;
-  const ci = (s) => { const [t, c] = CI_LABEL[s] || [`CI ${s}`, 'none']; return `<span class="st ${c}">${esc(t.toUpperCase())}</span>`; };
+  const E = M.repos, cats = M.categories; // categories in manifest order, with their counts
+  const passing = E.filter((e) => ciState(e.ci_status_main) === 'pass').length;
+  const ci = (records) => { const [t, c] = CI_LABEL[ciState(records)]; return `<span class="st ${c}">${esc(t.toUpperCase())}</span>`; };
   const row = (dt, dd) => (dd === null || dd === undefined ? '' : `<dt>${dt}</dt><dd>${esc(dd)}</dd>`);
   const cards = E.map((e) => {
     const n = String(e.number).padStart(2, '0');
@@ -227,7 +227,7 @@ function clinicPage() {
 <h2 id="cc-${n}">${esc(e.title)}</h2>
 <p class="cc-sum">${esc(e.summary)}</p>
 <ul class="tags" aria-label="Skills">${e.skills.map((s) => `<li>${esc(s)}</li>`).join('')}</ul>
-<details><summary>Details</summary><dl>${row('Problem', e.problem)}${row('Safety', e.safety)}${row('How it is tested', e.tested)}${row('Limits', e.limits)}${row('Stack', e.stack.join(', '))}</dl></details>
+<details><summary>Details</summary><dl>${row('Problem', e.problem)}${row('Safety', e.safety)}${row('How it is tested', e.tested)}${row('Limits', e.limits)}${row('Stack', e.stack.join(', '))}${row('CI on main', e.ci_status_main.map((r) => `${r.workflow}: ${r.status}`).join('; '))}</dl></details>
 <a class="text-link" href="${esc(e.url)}">Repository on GitHub<span class="vh">: ${esc(e.title)}</span></a>
 </article></li>`;
   }).join('\n');
@@ -245,9 +245,9 @@ function clinicPage() {
 <li><b>${cats.length}</b><span>categories</span></li>
 <li><b>${passing} of ${E.length}</b><span>passing CI on main</span></li>
 </ul>
-<p class="muted cc-note">CI status is a snapshot recorded in the manifest${M.generatedAt ? `, as of ${esc(M.generatedAt)}` : ''}, not a live check. Each repository shows its current status on GitHub.</p>
+<p class="muted cc-note">CI status is a snapshot as of ${esc(M.generatedAt)}, not a live check. A repository counts as passing when every workflow that has run on its main branch passed. Each repository shows its current status on GitHub.</p>
 <div class="cc-filters" id="cc-filters">
-<div class="cc-cats" role="group" aria-label="Filter by category"><button type="button" aria-pressed="true" data-cat="">All <span>${E.length}</span></button>${cats.map((c) => `<button type="button" aria-pressed="false" data-cat="${esc(c)}">${esc(catLabel(c))} <span>${E.filter((e) => e.category === c).length}</span></button>`).join('')}</div>
+<div class="cc-cats" role="group" aria-label="Filter by category"><button type="button" aria-pressed="true" data-cat="">All <span>${E.length}</span></button>${cats.map((c) => `<button type="button" aria-pressed="false" data-cat="${esc(c.name)}">${esc(catLabel(c.name))} <span>${c.count}</span></button>`).join('')}</div>
 <label class="cc-search">Search titles, skills and tools<input type="search" id="cc-q" placeholder="For example Terraform or IAM" aria-controls="cc-list"></label>
 </div>
 <p class="count" id="cc-count" aria-live="polite">Showing ${E.length} of ${E.length} challenges</p>
