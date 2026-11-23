@@ -7,6 +7,7 @@ import { readFileSync, writeFileSync, existsSync, mkdirSync, readdirSync, unlink
 import { resolve, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { island, ghostIsland, icon, pickBuilding, relight, cloud } from './lib/art.mjs';
+import { readManifest, ciState } from './check-manifest.mjs';
 
 const root = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 const args = process.argv.slice(2);
@@ -113,7 +114,7 @@ ${css.map((c) => `<link rel="stylesheet" href="${base}${c}">`).join('')}${extra}
 }
 const skyVars = (z) => `--s0:${z.sky[0]};--s1:${z.sky[1]};--s2:${z.sky[2]};--c:${z.color}`;
 const backdrop = `<div class="backdrop" aria-hidden="true"><span class="cl c1"></span><span class="cl c2"></span><span class="cl c3"></span></div>`;
-const footer = (base) => `<footer><a class="brand" href="${base}index.html">ZEIN / CLOUD</a><span>Cloud Portfolio · 2026</span><a href="${base}projects.html">All projects</a><a href="${SITE.github}">GitHub profile</a></footer>`;
+const footer = (base) => `<footer><a class="brand" href="${base}index.html">ZEIN / CLOUD</a><span>Cloud Portfolio · 2026</span><a href="${base}projects.html">All projects</a><a href="${base}code-clinic.html">Code Clinic</a><a href="${SITE.github}">GitHub profile</a></footer>`;
 const skyControl = `<button class="mode" id="mode" type="button" aria-pressed="false" aria-label="Switch to night" hidden><i aria-hidden="true"><span class="sunI">☀️</span><span class="moonI">🌙</span></i></button>`;
 
 /* ---------- world page ---------- */
@@ -148,11 +149,11 @@ function indexPage() {
 <div class="labels" id="labels">${labels}</div>
 <header class="top"><a class="brand" href="index.html">ZEIN<span> / CLOUD ENGINEERING</span></a>
  <form class="search" id="search" role="search" autocomplete="off"><label class="vh" for="q">Find a project</label><input id="q" type="search" placeholder="Find a project…" aria-controls="q-list" aria-expanded="false" role="combobox" aria-autocomplete="list"><ul id="q-list" role="listbox" hidden></ul></form>
- <nav aria-label="Main navigation"><a href="projects.html">All projects</a><button class="pill" type="button" id="b-view" aria-pressed="false" hidden>List view</button><a class="pill gh" href="${SITE.github}">GitHub</a><a class="pill" href="mailto:${SITE.email}">Contact</a></nav></header>
+ <nav aria-label="Main navigation"><a href="projects.html">All projects</a><a class="cc-link" href="code-clinic.html">Code Clinic</a><button class="pill" type="button" id="b-view" aria-pressed="false" hidden>List view</button><a class="pill gh" href="${SITE.github}">GitHub</a><a class="pill" href="mailto:${SITE.email}">Contact</a></nav></header>
 <main>
 <section class="intro"><div class="eyebrow">AWS · AZURE · GCP · INFRASTRUCTURE · APPLICATIONS</div>
  <h1>Ideas into systems.<br><span>Built in the cloud.</span></h1>
- <p>Every island is a project I built. The flagships circle the sun; ten climate zones ring them, one per Code Clinic domain. <span class="d">Drag to look around, pick an island or zone to fly there. The balloon says hi.</span><span class="m">Drag to orbit, pinch to zoom, or tap an island or zone. <a href="projects.html">All projects</a>.</span></p></section>
+ <p>Every island is a project I built. The flagships circle the sun; ten climate zones ring them, one per <a href="code-clinic.html">Code Clinic</a> domain. <span class="d">Drag to look around, pick an island or zone to fly there. The balloon says hi.</span><span class="m">Drag to orbit, pinch to zoom, or tap an island or zone. <a href="projects.html">All projects</a>.</span></p></section>
 <aside class="panel" id="panel" hidden aria-live="polite"><button class="close" id="p-close" type="button" aria-label="Close project">✕</button><span class="kind" id="p-kind"></span><h2 id="p-title"></h2><p class="pv"><span class="st" id="p-val"></span></p><p id="p-blurb"></p><div class="tags" id="p-tags"></div><div class="actions"><a class="cta" id="p-main" href="#">Read the case study</a><button class="link" id="p-back" type="button">Back to zone</button><a class="link" id="p-src" href="#">Source on GitHub</a></div></aside>
 <div class="zones" id="zones"><h2 class="vh">Zones and projects</h2>${zones.map(zoneCard).join('')}</div>
 <div class="hud" id="hud">
@@ -193,7 +194,7 @@ function casePage(p) {
   return `<!doctype html>
 <html lang="en" data-mode="${z.mode}" data-zone="${z.id}"><head>${head({ title, desc: p.summary, path: p.href, base, css: ['tokens.css', 'style.css', 'theme.css'], extra: hero ? `<script src="${base}sky.js"></script>` : '' })}
 </head>
-<body style="${skyVars(z)}">${backdrop}<header><a class="brand" href="${base}index.html">ZEIN<span> / CLOUD ENGINEERING</span></a><nav aria-label="Main navigation"><a href="${base}index.html">World</a><a href="${base}projects.html">All projects</a>${subs.map(([id, t]) => `<a href="#${id}">${cap(t)}</a>`).join('')}<a class="pill-link" href="mailto:${SITE.email}">Contact</a><a class="nav-contact" href="${esc(p.repo_url)}">GitHub</a>${hero ? skyControl : ''}</nav></header>
+<body style="${skyVars(z)}">${backdrop}<header><a class="brand" href="${base}index.html">ZEIN<span> / CLOUD ENGINEERING</span></a><nav aria-label="Main navigation"><a href="${base}index.html">World</a><a href="${base}projects.html">All projects</a><a href="${base}code-clinic.html">Code Clinic</a>${subs.map(([id, t]) => `<a href="#${id}">${cap(t)}</a>`).join('')}<a class="pill-link" href="mailto:${SITE.email}">Contact</a><a class="nav-contact" href="${esc(p.repo_url)}">GitHub</a>${hero ? skyControl : ''}</nav></header>
 <main id="home" style="--c:${p.color}">
 <nav class="crumbs" aria-label="Breadcrumb"><ol><li><a href="${base}index.html">World</a></li><li><a href="${base}index.html#${z.id}">${esc(z.short)}</a></li><li aria-current="page">${esc(p.short)}</li></ol></nav>
 <section id="work" class="project"><div class="section-label">CASE STUDY · ${p.cc ? `CODE CLINIC ${p.cc} · ` : ''}${esc(z.name.toUpperCase())}</div>
@@ -205,6 +206,56 @@ ${lims.length || steps.length ? `<div id="limitations" class="sub"><div class="s
 </section>
 <nav class="pn" aria-label="More islands in this zone">${peers.length > 1 ? `<a href="${prev.name}.html" rel="prev"><span>← Previous island</span><b>${esc(prev.short)}</b></a>` : '<span></span>'}<a class="mid" href="${base}index.html#p-${p.name}"><span>${esc(z.name)}</span><b>Show on map</b></a>${peers.length > 1 ? `<a href="${next.name}.html" rel="next"><span>Next island →</span><b>${esc(next.short)}</b></a>` : '<span></span>'}</nav>
 </main>${footer(base)}${scripts}</body></html>
+`;
+}
+
+/* ---------- Code Clinic: every card comes from data/portfolio-manifest.json ---------- */
+const CAT_LABEL = { 'ci-cd': 'CI/CD', finops: 'FinOps' }; // display spelling only; anything else is capitalised
+const catLabel = (c) => CAT_LABEL[c] || c.charAt(0).toUpperCase() + c.slice(1);
+const CI_LABEL = { pass: ['CI passing', 'live'], fail: ['CI failing', 'open'], none: ['No CI run on main', 'none'] }; // rule: ciState() in check-manifest.mjs
+function clinicPage() {
+  const M = readManifest(root);
+  if (M.errors.length) throw new Error('data/portfolio-manifest.json is invalid (run node scripts/check-manifest.mjs):\n  ' + M.errors.join('\n  '));
+  const E = M.repos, cats = M.categories; // categories in manifest order, with their counts
+  const passing = E.filter((e) => ciState(e.ci_status_main) === 'pass').length;
+  const ci = (records) => { const [t, c] = CI_LABEL[ciState(records)]; return `<span class="st ${c}">${esc(t.toUpperCase())}</span>`; };
+  const row = (dt, dd) => (dd === null || dd === undefined ? '' : `<dt>${dt}</dt><dd>${esc(dd)}</dd>`);
+  const cards = E.map((e) => {
+    const n = String(e.number).padStart(2, '0');
+    return `<li class="cc-card" data-cat="${esc(e.category)}" data-text="${esc([e.title, ...e.skills, ...e.stack].join(' ').toLowerCase())}"><article aria-labelledby="cc-${n}">
+<p class="cc-meta"><span class="cc-num">${n}</span><span class="cc-cat">${esc(catLabel(e.category))}</span>${ci(e.ci_status_main)}</p>
+<h2 id="cc-${n}">${esc(e.title)}</h2>
+<p class="cc-sum">${esc(e.summary)}</p>
+<ul class="tags" aria-label="Skills">${e.skills.map((s) => `<li>${esc(s)}</li>`).join('')}</ul>
+<details><summary>Details</summary><dl>${row('Problem', e.problem)}${row('Safety', e.safety)}${row('How it is tested', e.tested)}${row('Limits', e.limits)}${row('Stack', e.stack.join(', '))}${row('CI on main', e.ci_status_main.map((r) => `${r.workflow}: ${r.status}`).join('; '))}</dl></details>
+<a class="text-link" href="${esc(e.url)}">Repository on GitHub<span class="vh">: ${esc(e.title)}</span></a>
+</article></li>`;
+  }).join('\n');
+  const desc = `${E.length} hands-on Cloud and DevOps challenges by Zein, each in its own public repository with tests and CI.`;
+  return `<!doctype html>
+<html lang="en" data-mode="day"><head>${head({ title: 'Code Clinic · Zein Cloud Portfolio', desc, path: 'code-clinic.html', css: ['tokens.css', 'style.css', 'theme.css', 'clinic.css'] })}
+</head>
+<body style="${skyVars(zoneById.capital)}">${backdrop}<header><a class="brand" href="index.html">ZEIN<span> / CLOUD ENGINEERING</span></a><nav aria-label="Main navigation"><a href="index.html">World</a><a href="projects.html">All projects</a><a href="code-clinic.html" aria-current="page">Code Clinic</a><a class="pill-link" href="mailto:${SITE.email}">Contact</a><a class="nav-contact" href="${SITE.github}">GitHub</a></nav></header>
+<main id="home">
+<nav class="crumbs" aria-label="Breadcrumb"><ol><li><a href="index.html">World</a></li><li aria-current="page">Code Clinic</li></ol></nav>
+<section class="project list cc"><div class="section-label">CODE CLINIC · ${E.length} PUBLIC REPOSITORIES</div>
+<div class="project-heading"><h1 class="title">Code Clinic<i class="dot" aria-hidden="true"></i></h1><div><p>${E.length} hands-on Cloud and DevOps challenges, each in its own public repository with tests and CI.</p><p>None of them was run against a real cloud account. As each README states, they are tested with mocks, fixtures, containers or static checks; the limits are listed on every card.</p></div></div>
+<ul class="cc-stats" aria-label="Summary">
+<li><b>${E.length}</b><span>repositories</span></li>
+<li><b>${cats.length}</b><span>categories</span></li>
+<li><b>${passing} of ${E.length}</b><span>passing CI on main</span></li>
+</ul>
+<p class="muted cc-note">CI status is a snapshot as of ${esc(M.generatedAt)}, not a live check. A repository counts as passing when every workflow that has run on its main branch passed. Each repository shows its current status on GitHub.</p>
+<div class="cc-filters" id="cc-filters">
+<div class="cc-cats" role="group" aria-label="Filter by category"><button type="button" aria-pressed="true" data-cat="">All <span>${E.length}</span></button>${cats.map((c) => `<button type="button" aria-pressed="false" data-cat="${esc(c.name)}">${esc(catLabel(c.name))} <span>${c.count}</span></button>`).join('')}</div>
+<label class="cc-search">Search titles, skills and tools<input type="search" id="cc-q" placeholder="For example Terraform or IAM" aria-controls="cc-list"></label>
+</div>
+<p class="count" id="cc-count" aria-live="polite">Showing ${E.length} of ${E.length} challenges</p>
+<ol class="cc-list" id="cc-list">
+${cards}
+</ol>
+<p class="muted empty" id="cc-empty" hidden>No challenge matches this category and search. <button type="button" class="linklike" id="cc-clear">Clear filters</button></p>
+</section></main>${footer('')}<script src="clinic.js" defer></script></body></html>
 `;
 }
 
@@ -226,7 +277,7 @@ function listPage() {
   return `<!doctype html>
 <html lang="en" data-mode="day"><head>${head({ title: 'All projects · Zein Cloud Portfolio', desc, path: 'projects.html', css: ['tokens.css', 'style.css', 'theme.css'] })}
 </head>
-<body style="${skyVars(zoneById.capital)}">${backdrop}<header><a class="brand" href="index.html">ZEIN<span> / CLOUD ENGINEERING</span></a><nav aria-label="Main navigation"><a href="index.html">World</a><a href="projects.html" aria-current="page">All projects</a><a class="pill-link" href="mailto:${SITE.email}">Contact</a><a class="nav-contact" href="${SITE.github}">GitHub</a></nav></header>
+<body style="${skyVars(zoneById.capital)}">${backdrop}<header><a class="brand" href="index.html">ZEIN<span> / CLOUD ENGINEERING</span></a><nav aria-label="Main navigation"><a href="index.html">World</a><a href="projects.html" aria-current="page">All projects</a><a href="code-clinic.html">Code Clinic</a><a class="pill-link" href="mailto:${SITE.email}">Contact</a><a class="nav-contact" href="${SITE.github}">GitHub</a></nav></header>
 <main id="home">
 <nav class="crumbs" aria-label="Breadcrumb"><ol><li><a href="index.html">World</a></li><li aria-current="page">All projects</li></ol></nav>
 <section class="project list"><div class="section-label">ALL PROJECTS · ${projects.length} PUBLIC REPOSITORIES</div>
@@ -263,7 +314,7 @@ const notFound = `<!doctype html>
 const today = projects.map((p) => p.last_push).filter(Boolean).sort().pop();
 const sitemap = `<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-${['', 'projects.html', ...projects.map((p) => p.href)].map((u) => `<url><loc>${SITE.url}${u}</loc><lastmod>${(byName[u.slice(9, -5)] || {}).last_push || today}</lastmod></url>`).join('\n')}
+${['', 'projects.html', 'code-clinic.html', ...projects.map((p) => p.href)].map((u) => `<url><loc>${SITE.url}${u}</loc><lastmod>${(byName[u.slice(9, -5)] || {}).last_push || today}</lastmod></url>`).join('\n')}
 </urlset>
 `;
 
@@ -272,6 +323,7 @@ const out = new Map();
 const { html: indexHtml, placement } = indexPage();
 out.set('index.html', indexHtml);
 out.set('projects.html', listPage());
+out.set('code-clinic.html', clinicPage());
 out.set('world/placement.json', JSON.stringify(placement, null, 1) + '\n');
 for (const p of projects) out.set(p.href, casePage(p));
 for (const [from, to] of Object.entries(W.redirects)) out.set(from, redirect(to));

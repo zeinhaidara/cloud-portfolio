@@ -1,0 +1,1719 @@
+{
+  "generated_at": "2026-11-23",
+  "total": 50,
+  "categories": [
+    {
+      "name": "terraform",
+      "count": 6
+    },
+    {
+      "name": "ansible",
+      "count": 4
+    },
+    {
+      "name": "kubernetes",
+      "count": 5
+    },
+    {
+      "name": "ci-cd",
+      "count": 3
+    },
+    {
+      "name": "observability",
+      "count": 5
+    },
+    {
+      "name": "security",
+      "count": 9
+    },
+    {
+      "name": "finops",
+      "count": 7
+    },
+    {
+      "name": "reliability",
+      "count": 6
+    },
+    {
+      "name": "automation",
+      "count": 5
+    }
+  ],
+  "repos": [
+    {
+      "number": 1,
+      "name": "01-terraform-multi-az-vpc",
+      "url": "https://github.com/zeinhaidara/01-terraform-multi-az-vpc",
+      "title": "Multi-AZ Three-Tier VPC Module",
+      "summary": "Terraform module for a three-tier AWS VPC across two or three availability zones, with NAT, VPC endpoints and flow logs.",
+      "problem": "Hand-built VPCs drift: databases get default routes, an AZ ends up without NAT, and S3 traffic pays NAT data charges.",
+      "stack": [
+        "Terraform",
+        "AWS VPC",
+        "tflint",
+        "Checkov"
+      ],
+      "skills": [
+        "Terraform module design",
+        "Terraform testing",
+        "AWS networking",
+        "Cost-aware design"
+      ],
+      "category": "terraform",
+      "safety": "Input validation rejects bad CIDR sizes, environments, AZ counts and NAT strategies, and isolated subnets have no default route.",
+      "tested": "terraform test plans against a mocked AWS provider, with fmt, validate, tflint and Checkov in CI.",
+      "limits": "Tests are plan-only with a mocked provider; nothing has been applied to an AWS account.",
+      "default_branch": "main",
+      "last_commit_date": "2026-11-11",
+      "license": "MIT",
+      "ci_status_main": [
+        {
+          "workflow": "ci.yml",
+          "status": "pass",
+          "date": "2026-11-11"
+        }
+      ]
+    },
+    {
+      "number": 2,
+      "name": "02-ansible-linux-hardening",
+      "url": "https://github.com/zeinhaidara/02-ansible-linux-hardening",
+      "title": "CIS-Subset Linux Hardening Roles",
+      "summary": "Ansible roles that harden Ubuntu 24.04 and RHEL 9 web hosts with SSH lockdown, fail2ban, automatic security updates and network settings.",
+      "problem": "Stock images allow password SSH and legacy ciphers, and hardening by hand drifts between servers.",
+      "stack": [
+        "Ansible",
+        "Molecule",
+        "Docker",
+        "yamllint",
+        "ansible-lint"
+      ],
+      "skills": [
+        "Ansible role design",
+        "OS hardening",
+        "Molecule testing",
+        "Idempotency"
+      ],
+      "category": "ansible",
+      "safety": "sshd config is checked with sshd -t before any restart, disabling password login first checks for an authorized key, and rollout runs in 25% batches.",
+      "tested": "yamllint, ansible-lint, a syntax check, and Molecule converge, idempotence and verify on Ubuntu 24.04 and Rocky 9 containers in CI.",
+      "limits": "Never run against a real EC2 host; the sudo path and real nftables banning are not exercised.",
+      "default_branch": "main",
+      "last_commit_date": "2026-11-23",
+      "license": "MIT",
+      "ci_status_main": [
+        {
+          "workflow": "ci.yml",
+          "status": "pass",
+          "date": "2026-11-23"
+        }
+      ]
+    },
+    {
+      "number": 3,
+      "name": "03-python-ebs-orphan-report",
+      "url": "https://github.com/zeinhaidara/03-python-ebs-orphan-report",
+      "title": "Orphaned EBS Volume Report",
+      "summary": "Python tool that scans every account and region in an AWS Organization for unattached EBS volumes and writes the old ones to a CSV with an estimated cost.",
+      "problem": "Unattached EBS volumes keep costing money, and across many accounts and regions nobody sees them all in one place.",
+      "stack": [
+        "Python",
+        "boto3",
+        "moto",
+        "pytest"
+      ],
+      "skills": [
+        "AWS Organizations",
+        "boto3",
+        "Cost reporting",
+        "Testing with moto"
+      ],
+      "category": "finops",
+      "safety": "It never deletes anything; a person reviews the CSV.",
+      "tested": "pytest with moto only.",
+      "limits": "Not run against a live AWS organization, and volume age comes from CreateTime, not detach time.",
+      "default_branch": "main",
+      "last_commit_date": "2026-11-11",
+      "license": "MIT",
+      "ci_status_main": [
+        {
+          "workflow": "ci.yml",
+          "status": "pass",
+          "date": "2026-11-11"
+        }
+      ]
+    },
+    {
+      "number": 4,
+      "name": "04-terraform-cross-account-ci-role",
+      "url": "https://github.com/zeinhaidara/04-terraform-cross-account-ci-role",
+      "title": "Cross-Account CI IAM Role",
+      "summary": "Terraform module that creates one IAM role a single CI role from another account can assume, with an external ID, a one-hour session and only the listed actions.",
+      "problem": "CI should not hold long-lived access keys for other accounts.",
+      "stack": [
+        "Terraform",
+        "AWS IAM"
+      ],
+      "skills": [
+        "IAM least privilege",
+        "Terraform testing",
+        "Cross-account access"
+      ],
+      "category": "security",
+      "safety": "Wildcard actions (* and service:*) are rejected, and no policy is attached until resource ARNs are set.",
+      "tested": "terraform test against a mocked AWS provider checks the exact CI role in the trust policy, the external ID, wildcard rejection and the one-hour session.",
+      "limits": "Never applied to a real account; partial wildcards such as s3:Get* are allowed and there is no permission boundary.",
+      "default_branch": "main",
+      "last_commit_date": "2026-11-23",
+      "license": "MIT",
+      "ci_status_main": [
+        {
+          "workflow": "ci.yml",
+          "status": "pass",
+          "date": "2026-11-23"
+        }
+      ]
+    },
+    {
+      "number": 5,
+      "name": "05-bash-ebs-snapshot-retention",
+      "url": "https://github.com/zeinhaidara/05-bash-ebs-snapshot-retention",
+      "title": "EBS Snapshot Retention Script",
+      "summary": "Bash script that snapshots EBS volumes tagged Backup=true and prunes only the snapshots it created once they pass a retention period.",
+      "problem": "Backups that nobody runs, and snapshot sprawl that nobody cleans up.",
+      "stack": [
+        "Bash",
+        "AWS CLI",
+        "shellcheck"
+      ],
+      "skills": [
+        "Bash scripting",
+        "AWS EBS",
+        "Safe automation",
+        "Testing with fakes"
+      ],
+      "category": "automation",
+      "safety": "prune is a dry run unless --execute is passed, only touches snapshots tagged created-by=ebs-backup-script, and refuses retention under 7 days without a flag.",
+      "tested": "shellcheck and a test script that runs the tool against a fake aws CLI on PATH.",
+      "limits": "Never run against a real AWS account; no cross-region copy and no restore check.",
+      "default_branch": "main",
+      "last_commit_date": "2026-11-23",
+      "license": "MIT",
+      "ci_status_main": [
+        {
+          "workflow": "ci.yml",
+          "status": "pass",
+          "date": "2026-11-23"
+        }
+      ]
+    },
+    {
+      "number": 6,
+      "name": "06-github-actions-image-pipeline",
+      "url": "https://github.com/zeinhaidara/06-github-actions-image-pipeline",
+      "title": "Container Image Build, Scan and Sign",
+      "summary": "GitHub Actions pipeline that builds a container image, scans it with Trivy, and on main pushes a multi-arch image to GHCR and signs it with Cosign.",
+      "problem": "Unscanned images reach production, unsigned images can't be traced to their pipeline, and pushing from every branch leaks unreviewed images.",
+      "stack": [
+        "GitHub Actions",
+        "Docker",
+        "Trivy",
+        "Cosign",
+        "GHCR"
+      ],
+      "skills": [
+        "Supply chain security",
+        "GitHub Actions",
+        "Container scanning",
+        "Image signing"
+      ],
+      "category": "ci-cd",
+      "safety": "The scan fails on fixable HIGH or CRITICAL findings, and push and signing run only on main.",
+      "tested": "The scan, multi-arch push and signing passed in GitHub Actions on main, and a script checks that the workflow keeps its gates.",
+      "limits": "The pushed image is a separate build from the scanned amd64 image, and the arm64 image is not scanned.",
+      "default_branch": "main",
+      "last_commit_date": "2026-11-23",
+      "license": "MIT",
+      "ci_status_main": [
+        {
+          "workflow": "image.yml",
+          "status": "pass",
+          "date": "2026-11-23"
+        }
+      ]
+    },
+    {
+      "number": 7,
+      "name": "07-semver-tag-action",
+      "url": "https://github.com/zeinhaidara/07-semver-tag-action",
+      "title": "Semantic Version Tag Action",
+      "summary": "Reusable GitHub Action that reads conventional commits since the last stable tag, picks the next version, tags the commit and creates a release with notes.",
+      "problem": "Manual version bumps drift, changelogs get skipped, and tags stop matching what shipped.",
+      "stack": [
+        "GitHub Actions",
+        "Bash",
+        "Git"
+      ],
+      "skills": [
+        "GitHub Actions authoring",
+        "Release automation",
+        "Bash scripting",
+        "Conventional commits"
+      ],
+      "category": "ci-cd",
+      "safety": "A dry-run input prints the next version and notes without tagging, pushing or releasing.",
+      "tested": "shellcheck and a test script that builds throwaway git repos, mostly in dry-run mode.",
+      "limits": "Not yet run as an action in GitHub Actions, and pre-release tags are not supported.",
+      "default_branch": "main",
+      "last_commit_date": "2026-11-23",
+      "license": "MIT",
+      "ci_status_main": [
+        {
+          "workflow": "ci.yml",
+          "status": "pass",
+          "date": "2026-11-23"
+        }
+      ]
+    },
+    {
+      "number": 8,
+      "name": "08-terraform-plan-policy-check",
+      "url": "https://github.com/zeinhaidara/08-terraform-plan-policy-check",
+      "title": "Terraform Plan Policy Check",
+      "summary": "Dependency-free Python script that checks a Terraform plan JSON for public S3 buckets, missing Owner and CostCenter tags and disallowed instance types, and exits 1 on any violation.",
+      "problem": "Policy-breaking Terraform plans are usually found after apply, and manual plan review doesn't scale.",
+      "stack": [
+        "Python",
+        "Terraform"
+      ],
+      "skills": [
+        "Policy as code",
+        "Terraform",
+        "CI gating"
+      ],
+      "category": "terraform",
+      "safety": null,
+      "tested": "unittest with hand-written plan fixtures (six tests).",
+      "limits": "Not run against a real Terraform plan; only planned values are checked, not provider defaults.",
+      "default_branch": "main",
+      "last_commit_date": "2026-11-23",
+      "license": "MIT",
+      "ci_status_main": [
+        {
+          "workflow": "ci.yml",
+          "status": "pass",
+          "date": "2026-11-23"
+        }
+      ]
+    },
+    {
+      "number": 9,
+      "name": "09-argocd-applicationset-kustomize",
+      "url": "https://github.com/zeinhaidara/09-argocd-applicationset-kustomize",
+      "title": "Argo CD ApplicationSet with Kustomize",
+      "summary": "One Argo CD ApplicationSet that renders a shared Kustomize base into dev, stage and prod Applications; dev and stage auto-sync, prod syncs manually.",
+      "problem": "Hand-copied per-environment configs drift apart, and promoting to prod becomes a manual, error-prone sync.",
+      "stack": [
+        "Argo CD",
+        "Kustomize",
+        "Kubernetes",
+        "kubeconform",
+        "nginx"
+      ],
+      "skills": [
+        "GitOps",
+        "Kustomize overlays",
+        "Kubernetes security context",
+        "Manifest validation"
+      ],
+      "category": "kubernetes",
+      "safety": "Prod syncs manually, and workloads run non-root with a read-only root filesystem and no Linux capabilities.",
+      "tested": "yamllint, kustomize build, kubeconform, a rendered-output test and a non-root nginx -t check in CI.",
+      "limits": "Not applied to any Argo CD instance, and cluster URLs are placeholders.",
+      "default_branch": "main",
+      "last_commit_date": "2026-11-23",
+      "license": "MIT",
+      "ci_status_main": [
+        {
+          "workflow": "ci.yml",
+          "status": "pass",
+          "date": "2026-11-23"
+        }
+      ]
+    },
+    {
+      "number": 10,
+      "name": "10-terraform-drift-detection",
+      "url": "https://github.com/zeinhaidara/10-terraform-drift-detection",
+      "title": "Scheduled Terraform Drift Detection",
+      "summary": "Scheduled GitHub Actions workflow that runs terraform plan with detailed exit codes, counts drifted resources from the plan JSON and can post a summary to Slack.",
+      "problem": "Changes made outside Terraform go unnoticed until someone runs plan or something breaks.",
+      "stack": [
+        "Terraform",
+        "GitHub Actions",
+        "Bash",
+        "jq",
+        "Slack"
+      ],
+      "skills": [
+        "Drift detection",
+        "Terraform",
+        "Bash scripting",
+        "CI automation"
+      ],
+      "category": "terraform",
+      "safety": null,
+      "tested": "shellcheck and a test script that applies terraform_data configs in temp folders and checks no drift, drift counts, replacement, errors and the Slack message.",
+      "limits": "Drift is only simulated with terraform_data; real cloud drift and a real Slack post are not tested.",
+      "default_branch": "main",
+      "last_commit_date": "2026-11-23",
+      "license": "MIT",
+      "ci_status_main": [
+        {
+          "workflow": "ci.yml",
+          "status": "no run on main",
+          "date": null
+        },
+        {
+          "workflow": "drift.yml",
+          "status": "pass",
+          "date": "2026-11-20"
+        }
+      ]
+    },
+    {
+      "number": 11,
+      "name": "11-helm-12factor-chart",
+      "url": "https://github.com/zeinhaidara/11-helm-12factor-chart",
+      "title": "12-Factor App Helm Chart",
+      "summary": "Helm chart for a stateless 12-factor web app with HPA, PodDisruptionBudget, NetworkPolicy and ExternalSecret, with values checked by a schema.",
+      "problem": "Hand-deployed services drift, get no autoscaling, and lose capacity during node drains.",
+      "stack": [
+        "Helm",
+        "Kubernetes",
+        "kubeconform",
+        "External Secrets"
+      ],
+      "skills": [
+        "Helm chart design",
+        "Kubernetes",
+        "Manifest validation",
+        "Secure defaults"
+      ],
+      "category": "kubernetes",
+      "safety": "Pods run non-root with a read-only root filesystem, no privilege escalation and no Linux capabilities.",
+      "tested": "helm lint, helm template for default and prod values, kubeconform, and a rendered-output test.",
+      "limits": "Not deployed to any cluster; HPA, PDB and NetworkPolicy are only checked in rendered YAML.",
+      "default_branch": "main",
+      "last_commit_date": "2026-11-23",
+      "license": "MIT",
+      "ci_status_main": [
+        {
+          "workflow": "ci.yml",
+          "status": "pass",
+          "date": "2026-11-23"
+        }
+      ]
+    },
+    {
+      "number": 12,
+      "name": "12-k8s-configmap-secret-controller",
+      "url": "https://github.com/zeinhaidara/12-k8s-configmap-secret-controller",
+      "title": "ConfigMap-to-Secret Sync Controller",
+      "summary": "Python Kubernetes controller that watches annotated ConfigMaps and keeps a matching Secret in step with a value in AWS Secrets Manager.",
+      "problem": "Copying secrets into Kubernetes by hand leaks them into terminals and chat logs, and the copies go stale when the value rotates.",
+      "stack": [
+        "Python",
+        "Kubernetes client",
+        "boto3",
+        "AWS Secrets Manager"
+      ],
+      "skills": [
+        "Kubernetes controllers",
+        "Secrets management",
+        "RBAC least privilege",
+        "Testing with fakes"
+      ],
+      "category": "kubernetes",
+      "safety": "It never overwrites a Secret it did not create, and never logs secret values.",
+      "tested": "unittest with a fake secret store and a fake Kubernetes API.",
+      "limits": "Not run against a real cluster or AWS; it watches one namespace and picks up rotation by polling.",
+      "default_branch": "main",
+      "last_commit_date": "2026-11-23",
+      "license": "MIT",
+      "ci_status_main": [
+        {
+          "workflow": "ci.yml",
+          "status": "pass",
+          "date": "2026-11-23"
+        }
+      ]
+    },
+    {
+      "number": 13,
+      "name": "13-python-pod-security-audit",
+      "url": "https://github.com/zeinhaidara/13-python-pod-security-audit",
+      "title": "Pod Security Audit CLI",
+      "summary": "Read-only Python CLI that audits Kubernetes manifests for privileged containers, hostPath volumes and missing resource limits, and prints a Markdown or JSON report.",
+      "problem": "Privileged containers, hostPath mounts and missing limits are easy to miss in review.",
+      "stack": [
+        "Python",
+        "PyYAML",
+        "Kubernetes"
+      ],
+      "skills": [
+        "Kubernetes security",
+        "Python CLI",
+        "CI gating"
+      ],
+      "category": "security",
+      "safety": "Read-only, including the optional live-cluster mode, which only lists pods.",
+      "tested": "unittest against example manifests and inline YAML, with no cluster.",
+      "limits": "Only three rules, and the live-cluster mode has never been run against a real cluster.",
+      "default_branch": "main",
+      "last_commit_date": "2026-11-23",
+      "license": "MIT",
+      "ci_status_main": [
+        {
+          "workflow": "ci.yml",
+          "status": "pass",
+          "date": "2026-11-23"
+        }
+      ]
+    },
+    {
+      "number": 14,
+      "name": "14-helm-observability-sidecar-library",
+      "url": "https://github.com/zeinhaidara/14-helm-observability-sidecar-library",
+      "title": "Observability Sidecar Helm Library",
+      "summary": "Helm library chart that defines a StatsD-to-Prometheus exporter sidecar, a Fluent Bit sidecar and restricted security contexts for any chart to include.",
+      "problem": "Sidecars added by hand differ in every chart, with different images and missing security settings.",
+      "stack": [
+        "Helm",
+        "Fluent Bit",
+        "statsd-exporter",
+        "kubeconform"
+      ],
+      "skills": [
+        "Helm library charts",
+        "Kubernetes security context",
+        "Observability sidecars"
+      ],
+      "category": "observability",
+      "safety": "Security contexts default to non-root, no capabilities, no privilege escalation, a read-only root filesystem and RuntimeDefault seccomp.",
+      "tested": "helm lint, helm template with and without sidecars, kubeconform -strict, and a rendered-output test.",
+      "limits": "Never deployed, and no end-to-end metrics pipeline is exercised.",
+      "default_branch": "main",
+      "last_commit_date": "2026-11-23",
+      "license": "MIT",
+      "ci_status_main": [
+        {
+          "workflow": "ci.yml",
+          "status": "pass",
+          "date": "2026-11-23"
+        }
+      ]
+    },
+    {
+      "number": 15,
+      "name": "15-python-networkpolicy-generator",
+      "url": "https://github.com/zeinhaidara/15-python-networkpolicy-generator",
+      "title": "NetworkPolicy Generator",
+      "summary": "Python CLI that turns a short YAML intent file into one Kubernetes NetworkPolicy per service, with optional default-deny policies.",
+      "problem": "Hand-written NetworkPolicies are long, easy to get subtly wrong and hard to review.",
+      "stack": [
+        "Python",
+        "PyYAML",
+        "Kubernetes"
+      ],
+      "skills": [
+        "Kubernetes networking",
+        "Python CLI",
+        "Input validation"
+      ],
+      "category": "kubernetes",
+      "safety": "It never talks to a cluster, and a service named in no rule gets a policy that denies all traffic.",
+      "tested": "unittest on valid and invalid intent files, cross-namespace rules, default-deny and the output-directory path.",
+      "limits": "No ipBlock peers, DNS egress must be allowed explicitly, and the policies were never applied to a cluster.",
+      "default_branch": "main",
+      "last_commit_date": "2026-11-23",
+      "license": "MIT",
+      "ci_status_main": [
+        {
+          "workflow": "ci.yml",
+          "status": "pass",
+          "date": "2026-11-23"
+        }
+      ]
+    },
+    {
+      "number": 16,
+      "name": "16-lambda-iam-mfa-enforcement",
+      "url": "https://github.com/zeinhaidara/16-lambda-iam-mfa-enforcement",
+      "title": "IAM MFA Enforcement Lambda",
+      "summary": "Python Lambda that reacts to IAM CreateUser events, attaches a deny-without-MFA policy to the new user and publishes an SNS notification.",
+      "problem": "A new IAM user without MFA is one leaked credential away from full use of its permissions.",
+      "stack": [
+        "Python",
+        "AWS Lambda",
+        "EventBridge",
+        "IAM",
+        "SNS"
+      ],
+      "skills": [
+        "IAM least privilege",
+        "Event-driven automation",
+        "Testing with mocks"
+      ],
+      "category": "security",
+      "safety": "The attached policy only denies actions when MFA is absent and still allows self-enrolment.",
+      "tested": "unittest with mocked IAM, SNS and STS clients.",
+      "limits": "Not deployed and no live AWS calls; existing users are not covered.",
+      "default_branch": "main",
+      "last_commit_date": "2026-11-23",
+      "license": "MIT",
+      "ci_status_main": [
+        {
+          "workflow": "ci.yml",
+          "status": "pass",
+          "date": "2026-11-23"
+        }
+      ]
+    },
+    {
+      "number": 17,
+      "name": "17-ansible-ssh-key-rotation",
+      "url": "https://github.com/zeinhaidara/17-ansible-ssh-key-rotation",
+      "title": "SSH Key Rotation Role",
+      "summary": "Ansible role that rotates SSH host keys and authorized_keys across a fleet, records each host in a central JSON inventory and can notify owners by webhook.",
+      "problem": "SSH keys that never change and authorized_keys files that only grow leave old access in place.",
+      "stack": [
+        "Ansible",
+        "community.crypto",
+        "Python",
+        "pytest"
+      ],
+      "skills": [
+        "Ansible role design",
+        "Access management",
+        "Idempotency",
+        "Plugin testing"
+      ],
+      "category": "ansible",
+      "safety": "Check mode with --diff gives a dry run, host key checking stays on, and webhook notifications are off by default.",
+      "tested": "yamllint, ansible-lint, a syntax check, pytest on the filter plugin, and the notification tasks run against a local HTTP server.",
+      "limits": "Never run against a real fleet, and two failure paths are untested.",
+      "default_branch": "main",
+      "last_commit_date": "2026-11-23",
+      "license": "MIT",
+      "ci_status_main": [
+        {
+          "workflow": "ci.yml",
+          "status": "pass",
+          "date": "2026-11-23"
+        }
+      ]
+    },
+    {
+      "number": 18,
+      "name": "18-terraform-s3-public-remediation",
+      "url": "https://github.com/zeinhaidara/18-terraform-s3-public-remediation",
+      "title": "Public S3 Bucket Auto-Remediation",
+      "summary": "Terraform module that uses AWS Config to flag public S3 buckets and can turn on Block Public Access through an SSM Automation remediation.",
+      "problem": "A bucket made public by a policy or ACL change can expose data before anyone notices.",
+      "stack": [
+        "Terraform",
+        "AWS Config",
+        "SSM Automation",
+        "IAM"
+      ],
+      "skills": [
+        "AWS Config",
+        "IAM least privilege",
+        "Terraform testing",
+        "Auto-remediation"
+      ],
+      "category": "security",
+      "safety": "Detect-only by default; remediation needs automatic_remediation = true, and its role can only read and set Block Public Access.",
+      "tested": "terraform fmt, validate and test with a mocked AWS provider, plus tflint and a Trivy config scan in CI.",
+      "limits": "No live deployment; Config evaluation and the remediation have not run in a real account.",
+      "default_branch": "main",
+      "last_commit_date": "2026-11-23",
+      "license": "MIT",
+      "ci_status_main": [
+        {
+          "workflow": "ci.yml",
+          "status": "pass",
+          "date": "2026-11-23"
+        }
+      ]
+    },
+    {
+      "number": 19,
+      "name": "19-python-securityhub-jira-aggregator",
+      "url": "https://github.com/zeinhaidara/19-python-securityhub-jira-aggregator",
+      "title": "Security Hub to Jira Aggregator",
+      "summary": "Python CLI that ranks Security Hub findings by severity and asset criticality and opens one Jira ticket per finding above a priority bar.",
+      "problem": "Hundreds of findings with the same severity mean very different things on different assets.",
+      "stack": [
+        "Python",
+        "AWS Security Hub",
+        "Jira REST API"
+      ],
+      "skills": [
+        "Security operations",
+        "Risk scoring",
+        "Python CLI",
+        "Idempotency"
+      ],
+      "category": "security",
+      "safety": "Dry run by default; real Jira calls need --execute, and findings that already have a ticket are skipped.",
+      "tested": "unittest against example exports and an in-memory fake Jira client.",
+      "limits": "Reads an exported findings file only, and --execute against real Jira is untested.",
+      "default_branch": "main",
+      "last_commit_date": "2026-11-23",
+      "license": "MIT",
+      "ci_status_main": [
+        {
+          "workflow": "ci.yml",
+          "status": "pass",
+          "date": "2026-11-23"
+        }
+      ]
+    },
+    {
+      "number": 20,
+      "name": "20-precommit-secret-scan",
+      "url": "https://github.com/zeinhaidara/20-precommit-secret-scan",
+      "title": "Pre-Commit Secret Scanner",
+      "summary": "Pre-commit hook and CI check using detect-secrets 1.5.0 to block hard-coded credentials, plus a small custom regex and entropy scanner.",
+      "problem": "A credential that reaches a commit has to be revoked and scrubbed from history.",
+      "stack": [
+        "Python",
+        "detect-secrets",
+        "pre-commit",
+        "Git"
+      ],
+      "skills": [
+        "Secret scanning",
+        "Git hooks",
+        "Python packaging",
+        "Security testing"
+      ],
+      "category": "security",
+      "safety": "A new unbaselined secret blocks the commit, and baselines and allow comments are treated as security-sensitive changes.",
+      "tested": "unittest, including installing the hook into a temporary consumer repository, plus pre-commit run --all-files in CI.",
+      "limits": "A heuristic guard only; it does not prove a repository has no secrets.",
+      "default_branch": "main",
+      "last_commit_date": "2026-11-23",
+      "license": "MIT",
+      "ci_status_main": [
+        {
+          "workflow": "ci.yml",
+          "status": "pass",
+          "date": "2026-11-23"
+        }
+      ]
+    },
+    {
+      "number": 21,
+      "name": "21-terraform-prometheus-grafana-stack",
+      "url": "https://github.com/zeinhaidara/21-terraform-prometheus-grafana-stack",
+      "title": "Prometheus and Grafana Stack Module",
+      "summary": "Terraform module that installs kube-prometheus-stack with node and pod health alerts and two starter Grafana dashboards.",
+      "problem": "Monitoring stacks installed by hand end up with different chart versions, different alerts and secrets in values files.",
+      "stack": [
+        "Terraform",
+        "Helm",
+        "Kubernetes",
+        "Prometheus",
+        "Grafana"
+      ],
+      "skills": [
+        "Terraform testing",
+        "Prometheus alerting",
+        "Helm",
+        "Secrets handling"
+      ],
+      "category": "observability",
+      "safety": "The webhook URL and admin password stay in existing Kubernetes Secrets; Terraform only gets their names.",
+      "tested": "terraform test with mock providers, promtool check and test rules, and jq on the dashboard JSON.",
+      "limits": "Never applied against a real cluster, and dashboards are only checked as valid JSON.",
+      "default_branch": "main",
+      "last_commit_date": "2026-11-23",
+      "license": "MIT",
+      "ci_status_main": [
+        {
+          "workflow": "ci.yml",
+          "status": "pass",
+          "date": "2026-11-23"
+        }
+      ]
+    },
+    {
+      "number": 22,
+      "name": "22-python-metric-anomaly-alerts",
+      "url": "https://github.com/zeinhaidara/22-python-metric-anomaly-alerts",
+      "title": "CloudWatch Metric Anomaly Alerts",
+      "summary": "Python CLI that pulls CloudWatch metrics, flags anomalies with a rolling z-score and posts a Slack alert with the expected range and a recommended action.",
+      "problem": "Fixed thresholds either fire constantly or miss problems on metrics whose normal level moves.",
+      "stack": [
+        "Python",
+        "boto3",
+        "CloudWatch",
+        "Slack"
+      ],
+      "skills": [
+        "Anomaly detection",
+        "Observability",
+        "Python",
+        "Testing with fakes"
+      ],
+      "category": "observability",
+      "safety": "--dry-run prints the Slack payload without posting, and the webhook URL is never printed.",
+      "tested": "unittest with hand-written fakes for the detector, CloudWatch pagination, Slack posting and the CLI.",
+      "limits": "Never run against real CloudWatch or Slack, and repeated alerts are not de-duplicated.",
+      "default_branch": "main",
+      "last_commit_date": "2026-11-23",
+      "license": "MIT",
+      "ci_status_main": [
+        {
+          "workflow": "ci.yml",
+          "status": "pass",
+          "date": "2026-11-23"
+        }
+      ]
+    },
+    {
+      "number": 23,
+      "name": "23-fluentbit-k8s-log-routing",
+      "url": "https://github.com/zeinhaidara/23-fluentbit-k8s-log-routing",
+      "title": "Fluent Bit Kubernetes Log Routing",
+      "summary": "Fluent Bit config and DaemonSet that enrich container logs with Kubernetes metadata and route them to Elasticsearch, S3 or Splunk by pod label.",
+      "problem": "One team's logs need to go somewhere different from another's without running separate DaemonSets.",
+      "stack": [
+        "Fluent Bit",
+        "Kubernetes",
+        "Docker",
+        "kubeconform"
+      ],
+      "skills": [
+        "Log routing",
+        "Kubernetes DaemonSets",
+        "Config testing"
+      ],
+      "category": "observability",
+      "safety": "Unlabelled records and unknown label values go to a default output instead of being dropped.",
+      "tested": "fluent-bit --dry-run, a fixture-based routing test through the real engine in Docker, and kubeconform -strict.",
+      "limits": "Never run against a real cluster or backend, and the live Kubernetes metadata lookup is not exercised.",
+      "default_branch": "main",
+      "last_commit_date": "2026-11-11",
+      "license": "MIT",
+      "ci_status_main": [
+        {
+          "workflow": "ci.yml",
+          "status": "pass",
+          "date": "2026-11-11"
+        }
+      ]
+    },
+    {
+      "number": 24,
+      "name": "24-python-slo-burnrate-metrics",
+      "url": "https://github.com/zeinhaidara/24-python-slo-burnrate-metrics",
+      "title": "SLO Burn-Rate Metrics Service",
+      "summary": "Python order simulator that exposes Prometheus latency and outcome metrics and ships a multi-window SLO burn-rate alert.",
+      "problem": "Alerting on raw error rates either pages for every blip or reacts too late to a slow leak.",
+      "stack": [
+        "Python",
+        "prometheus_client",
+        "Prometheus",
+        "promtool"
+      ],
+      "skills": [
+        "SLOs",
+        "Prometheus alerting",
+        "Burn-rate math",
+        "promtool testing"
+      ],
+      "category": "observability",
+      "safety": null,
+      "tested": "unittest for the burn-rate math and /metrics output, and promtool test rules for a firing and a non-firing case.",
+      "limits": "Never run against real traffic or a real Prometheus server.",
+      "default_branch": "main",
+      "last_commit_date": "2026-11-23",
+      "license": "MIT",
+      "ci_status_main": [
+        {
+          "workflow": "ci.yml",
+          "status": "pass",
+          "date": "2026-11-23"
+        }
+      ]
+    },
+    {
+      "number": 25,
+      "name": "25-ansible-datadog-agent-rollout",
+      "url": "https://github.com/zeinhaidara/25-ansible-datadog-agent-rollout",
+      "title": "Datadog Agent Rollout Role",
+      "summary": "Ansible role that installs and configures the Datadog agent on Debian, RedHat and Windows hosts, with tags and optional APM.",
+      "problem": "Agents installed by hand end up with missing tags, mixed settings and hosts that never report.",
+      "stack": [
+        "Ansible",
+        "Datadog",
+        "yamllint",
+        "ansible-lint"
+      ],
+      "skills": [
+        "Ansible role design",
+        "Cross-platform automation",
+        "Observability"
+      ],
+      "category": "ansible",
+      "safety": "The play fails if the API key is unset or the APM flag is not a boolean.",
+      "tested": "yamllint, ansible-lint, a syntax check per OS family, check-mode config runs and negative tests in Linux CI.",
+      "limits": "Never run against a real host or Datadog account, and the Windows install path is only syntax-checked.",
+      "default_branch": "main",
+      "last_commit_date": "2026-11-23",
+      "license": "MIT",
+      "ci_status_main": [
+        {
+          "workflow": "ci.yml",
+          "status": "pass",
+          "date": "2026-11-23"
+        }
+      ]
+    },
+    {
+      "number": 26,
+      "name": "26-bash-asg-bluegreen-deploy",
+      "url": "https://github.com/zeinhaidara/26-bash-asg-bluegreen-deploy",
+      "title": "ASG Blue/Green and Canary Deploys",
+      "summary": "Bash framework for blue/green deploys of two EC2 Auto Scaling Groups behind one target group, with a canary step and a health gate.",
+      "problem": "Replacing a fleet in place lets a bad release reach every instance before anyone sees it fail.",
+      "stack": [
+        "Bash",
+        "AWS CLI",
+        "shellcheck"
+      ],
+      "skills": [
+        "Deployment strategies",
+        "Bash scripting",
+        "Rollback design",
+        "Testing with fakes"
+      ],
+      "category": "reliability",
+      "safety": "Dry run is the default and makes no AWS calls, and a failed canary or full-capacity check rolls back before blue is touched.",
+      "tested": "shellcheck and a test runner against a fake aws CLI that records every call.",
+      "limits": "Never run against a real AWS account, ASG or target group.",
+      "default_branch": "main",
+      "last_commit_date": "2026-11-23",
+      "license": "MIT",
+      "ci_status_main": [
+        {
+          "workflow": "ci.yml",
+          "status": "pass",
+          "date": "2026-11-23"
+        }
+      ]
+    },
+    {
+      "number": 27,
+      "name": "27-python-cloud-tagging-cli",
+      "url": "https://github.com/zeinhaidara/27-python-cloud-tagging-cli",
+      "title": "Cloud Resource Tagging CLI",
+      "summary": "Python CLI that reports AWS resource tags that break a YAML policy and fixes the ones it can, with Azure and GCP as interface stubs.",
+      "problem": "Resources get tagged inconsistently across clouds and over time.",
+      "stack": [
+        "Python",
+        "boto3",
+        "Click",
+        "Resource Groups Tagging API"
+      ],
+      "skills": [
+        "Tag governance",
+        "Python CLI",
+        "Idempotency",
+        "Testing with fakes"
+      ],
+      "category": "finops",
+      "safety": "apply writes nothing without --apply and never guesses a missing or disallowed value.",
+      "tested": "29 pytest tests with a fake boto3 client, including the CLI end to end.",
+      "limits": "Never run against a real AWS account; Azure and GCP are stubs.",
+      "default_branch": "main",
+      "last_commit_date": "2026-11-23",
+      "license": "MIT",
+      "ci_status_main": [
+        {
+          "workflow": "ci.yml",
+          "status": "pass",
+          "date": "2026-11-23"
+        }
+      ]
+    },
+    {
+      "number": 28,
+      "name": "28-lambda-unused-resource-cleanup",
+      "url": "https://github.com/zeinhaidara/28-lambda-unused-resource-cleanup",
+      "title": "Unused AWS Resource Cleanup",
+      "summary": "Two Lambdas: one finds unused Elastic IPs, old AMIs, unused security groups and idle load balancers, the other deletes only human-approved items after a re-check.",
+      "problem": "Unused resources keep costing money, but deleting them automatically is risky.",
+      "stack": [
+        "Python",
+        "AWS Lambda",
+        "SNS",
+        "SQS",
+        "IAM"
+      ],
+      "skills": [
+        "FinOps automation",
+        "IAM least privilege",
+        "Safe deletion design",
+        "Testing with fakes"
+      ],
+      "category": "finops",
+      "safety": "Cleanup is a dry run unless APPLY is set, re-checks every item before deleting, and IAM denies deletes on protect-tagged resources.",
+      "tested": "pytest with hand-written boto3 fakes, including re-check pagination and the IAM policy structure.",
+      "limits": "Never deployed or run against AWS, and the AMI check ignores launch templates.",
+      "default_branch": "main",
+      "last_commit_date": "2026-11-23",
+      "license": "MIT",
+      "ci_status_main": [
+        {
+          "workflow": "ci.yml",
+          "status": "pass",
+          "date": "2026-11-23"
+        }
+      ]
+    },
+    {
+      "number": 29,
+      "name": "29-azure-resource-group-module",
+      "url": "https://github.com/zeinhaidara/29-azure-resource-group-module",
+      "title": "Azure Resource Group Module",
+      "summary": "PowerShell module that creates Azure resource groups with a fixed naming convention, a delete lock and a monthly budget in one idempotent call.",
+      "problem": "Resource groups created ad hoc get inconsistent names, no delete protection and no cost visibility.",
+      "stack": [
+        "PowerShell",
+        "Az PowerShell",
+        "Pester",
+        "PSScriptAnalyzer"
+      ],
+      "skills": [
+        "Azure governance",
+        "PowerShell module design",
+        "Pester testing",
+        "Idempotency"
+      ],
+      "category": "automation",
+      "safety": "Every step supports -WhatIf, and lookups fail loudly instead of guessing.",
+      "tested": "Pester with mocked Az cmdlets, and PSScriptAnalyzer.",
+      "limits": "Never run against a real Azure subscription.",
+      "default_branch": "main",
+      "last_commit_date": "2026-11-21",
+      "license": "MIT",
+      "ci_status_main": [
+        {
+          "workflow": "ci.yml",
+          "status": "pass",
+          "date": "2026-11-21"
+        }
+      ]
+    },
+    {
+      "number": 30,
+      "name": "30-python-dynamic-ansible-inventory",
+      "url": "https://github.com/zeinhaidara/30-python-dynamic-ansible-inventory",
+      "title": "Dynamic Ansible Inventory",
+      "summary": "Python script that implements Ansible's dynamic inventory contract for AWS EC2, grouping running instances by provider and tag.",
+      "problem": "A static inventory file goes stale as soon as instances are replaced.",
+      "stack": [
+        "Python",
+        "boto3",
+        "Ansible"
+      ],
+      "skills": [
+        "Ansible inventory",
+        "boto3",
+        "Python CLI"
+      ],
+      "category": "automation",
+      "safety": "Read-only, and it never prints a partial inventory when a provider fails.",
+      "tested": "pytest with a fake EC2 client, plus ansible-inventory over a fixture script in CI.",
+      "limits": "Never run against a real cloud account; Azure and GCP are stubs.",
+      "default_branch": "main",
+      "last_commit_date": "2026-11-23",
+      "license": "MIT",
+      "ci_status_main": [
+        {
+          "workflow": "ci.yml",
+          "status": "pass",
+          "date": "2026-11-23"
+        }
+      ]
+    },
+    {
+      "number": 31,
+      "name": "31-python-cost-explorer-report",
+      "url": "https://github.com/zeinhaidara/31-python-cost-explorer-report",
+      "title": "Weekly AWS Cost Report",
+      "summary": "Python script that reads two weeks of Cost Explorer data and writes a Markdown report of the top cost drivers by service and by one tag.",
+      "problem": "The Cost Explorer console shows what was spent, but not what changed this week or who owns it.",
+      "stack": [
+        "Python",
+        "boto3",
+        "AWS Cost Explorer"
+      ],
+      "skills": [
+        "FinOps reporting",
+        "boto3",
+        "Testing with fakes"
+      ],
+      "category": "finops",
+      "safety": null,
+      "tested": "32 pytest tests with a fake client and JSON fixtures, including error and empty-data cases.",
+      "limits": "Not run against a real AWS account; Azure and PDF output are not implemented.",
+      "default_branch": "main",
+      "last_commit_date": "2026-11-23",
+      "license": "MIT",
+      "ci_status_main": [
+        {
+          "workflow": "ci.yml",
+          "status": "pass",
+          "date": "2026-11-23"
+        }
+      ]
+    },
+    {
+      "number": 32,
+      "name": "32-lambda-scheduled-instance-stop",
+      "url": "https://github.com/zeinhaidara/32-lambda-scheduled-instance-stop",
+      "title": "Scheduled Non-Production Instance Stop",
+      "summary": "Lambda that stops opted-in non-production EC2 and RDS instances outside the business hours set in their tags, with a temporary override tag.",
+      "problem": "Non-production instances left running at night and at weekends are paid for while nobody uses them.",
+      "stack": [
+        "Python",
+        "AWS Lambda",
+        "EventBridge",
+        "EC2",
+        "RDS"
+      ],
+      "skills": [
+        "FinOps automation",
+        "Time zone handling",
+        "IAM least privilege"
+      ],
+      "category": "finops",
+      "safety": "DRY_RUN defaults to true, and only opted-in, non-production resources are touched.",
+      "tested": "47 pytest tests with fake EC2 and RDS clients.",
+      "limits": "Not deployed, it only stops instances, and RDS starts itself again after 7 days.",
+      "default_branch": "main",
+      "last_commit_date": "2026-11-23",
+      "license": "MIT",
+      "ci_status_main": [
+        {
+          "workflow": "ci.yml",
+          "status": "pass",
+          "date": "2026-11-23"
+        }
+      ]
+    },
+    {
+      "number": 33,
+      "name": "33-terraform-mandatory-tag-policy",
+      "url": "https://github.com/zeinhaidara/33-terraform-mandatory-tag-policy",
+      "title": "Mandatory Tag Policy Module",
+      "summary": "Terraform S3 module that refuses to plan unless its cost-allocation tags are present, lowercase and well formed.",
+      "problem": "Untagged resources can't be charged back to a team, so cost reports end up with a large unknown line.",
+      "stack": [
+        "Terraform",
+        "AWS S3"
+      ],
+      "skills": [
+        "Terraform validation",
+        "Terraform testing",
+        "Tag governance"
+      ],
+      "category": "terraform",
+      "safety": "Variable validation and resource preconditions fail the plan before anything is created.",
+      "tested": "14 terraform test runs against a mocked AWS provider, 12 of them expected failures.",
+      "limits": "Only covers resources created through this module, and nothing has been planned or applied in AWS.",
+      "default_branch": "main",
+      "last_commit_date": "2026-11-23",
+      "license": "MIT",
+      "ci_status_main": [
+        {
+          "workflow": "ci.yml",
+          "status": "pass",
+          "date": "2026-11-23"
+        }
+      ]
+    },
+    {
+      "number": 34,
+      "name": "34-python-vm-rightsizing-advisor",
+      "url": "https://github.com/zeinhaidara/34-python-vm-rightsizing-advisor",
+      "title": "EC2 Rightsizing Advisor",
+      "summary": "Read-only Python tool that compares two weeks of EC2 CPU and memory use with a YAML catalog and suggests one size down, one size up or no change.",
+      "problem": "Instances are sized by a guess at launch and rarely looked at again.",
+      "stack": [
+        "Python",
+        "boto3",
+        "CloudWatch"
+      ],
+      "skills": [
+        "FinOps analysis",
+        "boto3",
+        "Testing with fakes"
+      ],
+      "category": "finops",
+      "safety": "Read-only; it never changes anything.",
+      "tested": "34 pytest tests with fake EC2 and CloudWatch clients.",
+      "limits": "Not run against a real account, and it only moves one size within a family.",
+      "default_branch": "main",
+      "last_commit_date": "2026-11-23",
+      "license": "MIT",
+      "ci_status_main": [
+        {
+          "workflow": "ci.yml",
+          "status": "pass",
+          "date": "2026-11-23"
+        }
+      ]
+    },
+    {
+      "number": 35,
+      "name": "35-python-s3-lifecycle-savings-report",
+      "url": "https://github.com/zeinhaidara/35-python-s3-lifecycle-savings-report",
+      "title": "S3 Tiering Savings Report",
+      "summary": "Read-only Python job that estimates monthly savings from Intelligent-Tiering or a Standard-IA lifecycle rule and writes a Markdown report.",
+      "problem": "Objects in S3 Standard that nobody reads are still billed at the Standard rate.",
+      "stack": [
+        "Python",
+        "boto3",
+        "S3"
+      ],
+      "skills": [
+        "FinOps analysis",
+        "S3 storage classes",
+        "Testing with fakes"
+      ],
+      "category": "finops",
+      "safety": "Read-only, and all prices are labelled as placeholders.",
+      "tested": "29 pytest tests with a CSV fixture and a fake ListObjectsV2 client.",
+      "limits": "Not run against a real account, and savings are an upper bound based on object age, not access.",
+      "default_branch": "main",
+      "last_commit_date": "2026-11-23",
+      "license": "MIT",
+      "ci_status_main": [
+        {
+          "workflow": "ci.yml",
+          "status": "pass",
+          "date": "2026-11-23"
+        }
+      ]
+    },
+    {
+      "number": 36,
+      "name": "36-terraform-transit-gateway-hub-spoke",
+      "url": "https://github.com/zeinhaidara/36-terraform-transit-gateway-hub-spoke",
+      "title": "Transit Gateway Hub with Inspection",
+      "summary": "Terraform module for a Transit Gateway hub that sends all spoke-to-spoke traffic through AWS Network Firewall in an inspection VPC.",
+      "problem": "With many VPCs, flat routing lets any VPC reach any other with no check in between.",
+      "stack": [
+        "Terraform",
+        "AWS Transit Gateway",
+        "AWS Network Firewall"
+      ],
+      "skills": [
+        "AWS networking",
+        "Terraform testing",
+        "Network segmentation"
+      ],
+      "category": "terraform",
+      "safety": "Default TGW route tables are disabled, and the plan fails if the firewall has no endpoint in the chosen AZ.",
+      "tested": "10 terraform test runs against a mocked AWS provider, including spoke isolation and a missing-endpoint failure.",
+      "limits": "Nothing has been planned or applied in AWS, and the firewall endpoint is in a single AZ.",
+      "default_branch": "main",
+      "last_commit_date": "2026-11-23",
+      "license": "MIT",
+      "ci_status_main": [
+        {
+          "workflow": "ci.yml",
+          "status": "pass",
+          "date": "2026-11-23"
+        }
+      ]
+    },
+    {
+      "number": 37,
+      "name": "37-python-security-group-audit",
+      "url": "https://github.com/zeinhaidara/37-python-security-group-audit",
+      "title": "Security Group Audit",
+      "summary": "Read-only Python script that reads security groups across accounts and regions, writes a CSV of every ingress rule, and reports rules open to the internet and unused groups.",
+      "problem": "Rules open to the whole internet are easy to miss across many accounts.",
+      "stack": [
+        "Python",
+        "boto3",
+        "STS"
+      ],
+      "skills": [
+        "Security auditing",
+        "Multi-account AWS",
+        "Testing with fakes"
+      ],
+      "category": "security",
+      "safety": "Read-only, and no reports are written if any account or region fails.",
+      "tested": "28 pytest tests with fake EC2 and STS clients.",
+      "limits": "Not run against real accounts, and Azure NSGs are not implemented.",
+      "default_branch": "main",
+      "last_commit_date": "2026-11-23",
+      "license": "MIT",
+      "ci_status_main": [
+        {
+          "workflow": "ci.yml",
+          "status": "pass",
+          "date": "2026-11-23"
+        }
+      ]
+    },
+    {
+      "number": 38,
+      "name": "38-ansible-ipsec-vpn-tunnels",
+      "url": "https://github.com/zeinhaidara/38-ansible-ipsec-vpn-tunnels",
+      "title": "IPsec Tunnels with strongSwan",
+      "summary": "Ansible playbook and role that set up an IKEv2 IPsec tunnel between two strongSwan gateways with X.509 certificates and a health check timer.",
+      "problem": "Tunnels set up by hand with a shared key are hard to repeat, hard to rotate and can fail without anyone noticing.",
+      "stack": [
+        "Ansible",
+        "strongSwan",
+        "systemd",
+        "Prometheus"
+      ],
+      "skills": [
+        "Network automation",
+        "PKI",
+        "Ansible",
+        "Monitoring"
+      ],
+      "category": "ansible",
+      "safety": "Real runs start with --check --diff, private keys come from Ansible Vault, and a test checks that no key or certificate is in git.",
+      "tested": "yamllint, ansible-lint, a syntax check, shellcheck and 19 pytest tests, including the health check against a fake swanctl.",
+      "limits": "No tunnel has been brought up, and the role has never run against a real host.",
+      "default_branch": "main",
+      "last_commit_date": "2026-11-23",
+      "license": "MIT",
+      "ci_status_main": [
+        {
+          "workflow": "ci.yml",
+          "status": "pass",
+          "date": "2026-11-23"
+        }
+      ]
+    },
+    {
+      "number": 39,
+      "name": "39-python-gitops-dns-reconciler",
+      "url": "https://github.com/zeinhaidara/39-python-gitops-dns-reconciler",
+      "title": "GitOps DNS Reconciler",
+      "summary": "Python tool that keeps Route 53 records in line with a YAML file in Git, prints a plan and applies it as one change batch only when asked.",
+      "problem": "DNS changes made in the console have no review or history, and a wrong record can take a service offline.",
+      "stack": [
+        "Python",
+        "boto3",
+        "Route 53",
+        "Git"
+      ],
+      "skills": [
+        "GitOps",
+        "DNS automation",
+        "Safe change design"
+      ],
+      "category": "automation",
+      "safety": "Plan only by default; NS and SOA records are protected and a deletion guard can refuse a plan.",
+      "tested": "32 pytest tests with a fake Route 53 client that pages like the real API and applies batches all or nothing.",
+      "limits": "Not run against a real hosted zone, and Azure DNS is a stub.",
+      "default_branch": "main",
+      "last_commit_date": "2026-11-23",
+      "license": "MIT",
+      "ci_status_main": [
+        {
+          "workflow": "ci.yml",
+          "status": "pass",
+          "date": "2026-11-23"
+        }
+      ]
+    },
+    {
+      "number": 40,
+      "name": "40-terraform-private-api-gateway",
+      "url": "https://github.com/zeinhaidara/40-terraform-private-api-gateway",
+      "title": "Private API Gateway Pattern",
+      "summary": "Terraform module that exposes an internal service through a private REST API, an execute-api VPC endpoint, a VPC link and an internal NLB.",
+      "problem": "Internal services often get a public API endpoint by default and rely on auth alone.",
+      "stack": [
+        "Terraform",
+        "API Gateway",
+        "VPC endpoints",
+        "NLB"
+      ],
+      "skills": [
+        "AWS networking",
+        "IAM resource policies",
+        "Terraform testing"
+      ],
+      "category": "terraform",
+      "safety": "A policy guard fails the plan without an endpoint-scoped Deny, the endpoint policy allows only this API, and allowed CIDRs must be private.",
+      "tested": "14 terraform test runs against a mocked AWS provider, including bad policies fed to the guard.",
+      "limits": "Nothing has been planned or applied in AWS, and there is no auth beyond the network path.",
+      "default_branch": "main",
+      "last_commit_date": "2026-11-23",
+      "license": "MIT",
+      "ci_status_main": [
+        {
+          "workflow": "ci.yml",
+          "status": "pass",
+          "date": "2026-11-23"
+        }
+      ]
+    },
+    {
+      "number": 41,
+      "name": "41-python-rds-failover-test",
+      "url": "https://github.com/zeinhaidara/41-python-rds-failover-test",
+      "title": "Cross-Region RDS Failover Test",
+      "summary": "Python script that promotes an RDS cross-region read replica, checks the application can connect, times it and writes a Markdown report.",
+      "problem": "A disaster recovery plan that has never been run is a guess.",
+      "stack": [
+        "Python",
+        "boto3",
+        "RDS",
+        "CloudWatch"
+      ],
+      "skills": [
+        "Disaster recovery",
+        "Orchestration",
+        "Testing with fakes"
+      ],
+      "category": "reliability",
+      "safety": "Dry run by default, and the IAM policy allows promotion only on instances tagged environment=staging or dr-test.",
+      "tested": "20 pytest tests with fake RDS and CloudWatch clients, an injected clock and a fake connectivity check.",
+      "limits": "Nothing has promoted a real database, and Azure SQL is not implemented.",
+      "default_branch": "main",
+      "last_commit_date": "2026-11-23",
+      "license": "MIT",
+      "ci_status_main": [
+        {
+          "workflow": "ci.yml",
+          "status": "pass",
+          "date": "2026-11-23"
+        }
+      ]
+    },
+    {
+      "number": 42,
+      "name": "42-terraform-lambda-cross-region-backup",
+      "url": "https://github.com/zeinhaidara/42-terraform-lambda-cross-region-backup",
+      "title": "Cross-Region EBS Backup",
+      "summary": "Terraform module and Lambda that copy the latest snapshot of tagged EBS volumes to a second region with a KMS key in that region, and prune old copies.",
+      "problem": "Snapshots that only exist in the volume's own region don't help during a regional outage.",
+      "stack": [
+        "Terraform",
+        "Python",
+        "AWS Lambda",
+        "KMS",
+        "EBS"
+      ],
+      "skills": [
+        "Backup design",
+        "Terraform testing",
+        "Encryption",
+        "Testing with fakes"
+      ],
+      "category": "reliability",
+      "safety": "The function is a dry run by default.",
+      "tested": "20 pytest tests with fake EC2 clients and 6 terraform test runs against mocked providers.",
+      "limits": "Nothing has been planned or applied in AWS, and the function has never run against real snapshots.",
+      "default_branch": "main",
+      "last_commit_date": "2026-11-23",
+      "license": "MIT",
+      "ci_status_main": [
+        {
+          "workflow": "ci.yml",
+          "status": "pass",
+          "date": "2026-11-23"
+        }
+      ]
+    },
+    {
+      "number": 43,
+      "name": "43-terraform-multiregion-ha-pattern",
+      "url": "https://github.com/zeinhaidara/43-terraform-multiregion-ha-pattern",
+      "title": "Multi-Region Active-Passive Pattern",
+      "summary": "Terraform module for a DynamoDB global table replicated to a second region and Route 53 failover records driven by a health check.",
+      "problem": "Running in one region means a regional outage takes the application down with it.",
+      "stack": [
+        "Terraform",
+        "DynamoDB",
+        "Route 53"
+      ],
+      "skills": [
+        "Multi-region design",
+        "Terraform testing",
+        "DNS failover"
+      ],
+      "category": "reliability",
+      "safety": null,
+      "tested": "6 terraform test runs against a mocked AWS provider, and the example validates against a committed lock file.",
+      "limits": "Nothing has been planned or applied in AWS, so replication lag and real failover are untested.",
+      "default_branch": "main",
+      "last_commit_date": "2026-11-23",
+      "license": "MIT",
+      "ci_status_main": [
+        {
+          "workflow": "ci.yml",
+          "status": "pass",
+          "date": "2026-11-23"
+        }
+      ]
+    },
+    {
+      "number": 44,
+      "name": "44-python-chaos-engineering-fis",
+      "url": "https://github.com/zeinhaidara/44-python-chaos-engineering-fis",
+      "title": "Chaos Runner for AWS FIS",
+      "summary": "Python script that runs AWS FIS experiments one at a time and checks that the system recovers within the time limit its runbook gives.",
+      "problem": "Runbooks say systems recover on their own, but that is rarely checked before a real failure.",
+      "stack": [
+        "Python",
+        "boto3",
+        "AWS FIS"
+      ],
+      "skills": [
+        "Chaos engineering",
+        "Reliability testing",
+        "Testing with fakes"
+      ],
+      "category": "reliability",
+      "safety": "Dry run by default; injecting needs --execute and guards can refuse an experiment.",
+      "tested": "27 pytest tests with a fake FIS client, an injected clock and a fake steady-state check.",
+      "limits": "Nothing has started a real FIS experiment, and Azure Chaos Studio is not implemented.",
+      "default_branch": "main",
+      "last_commit_date": "2026-11-23",
+      "license": "MIT",
+      "ci_status_main": [
+        {
+          "workflow": "ci.yml",
+          "status": "pass",
+          "date": "2026-11-23"
+        }
+      ]
+    },
+    {
+      "number": 45,
+      "name": "45-lambda-ecs-autoremediation",
+      "url": "https://github.com/zeinhaidara/45-lambda-ecs-autoremediation",
+      "title": "ECS Auto-Remediation Lambda",
+      "summary": "Lambda that forces a new deployment when an ECS task crashes and scales out by one task when targets are unhealthy, for opted-in services only.",
+      "problem": "Crashed tasks and unhealthy targets need the same first fix, at any hour.",
+      "stack": [
+        "Python",
+        "AWS Lambda",
+        "ECS",
+        "ELBv2",
+        "EventBridge"
+      ],
+      "skills": [
+        "Auto-remediation",
+        "Event-driven automation",
+        "IAM conditions"
+      ],
+      "category": "reliability",
+      "safety": "Dry run by default, only services tagged auto-remediate=true, a cooldown, and a hard maximum on scale-out.",
+      "tested": "30 pytest tests with fake ECS and ELBv2 clients and a fixed clock.",
+      "limits": "Not deployed, and it has never called real ECS or ELB APIs.",
+      "default_branch": "main",
+      "last_commit_date": "2026-11-23",
+      "license": "MIT",
+      "ci_status_main": [
+        {
+          "workflow": "ci.yml",
+          "status": "pass",
+          "date": "2026-11-23"
+        }
+      ]
+    },
+    {
+      "number": 46,
+      "name": "46-gitops-crossplane-monorepo",
+      "url": "https://github.com/zeinhaidara/46-gitops-crossplane-monorepo",
+      "title": "GitOps Monorepo with Crossplane",
+      "summary": "One repository that Argo CD watches to manage both cloud infrastructure through Crossplane and an application through Kustomize, from a single root Application.",
+      "problem": "Infrastructure and applications in separate tools are reviewed in two places and drift in two ways.",
+      "stack": [
+        "Argo CD",
+        "Crossplane",
+        "Kustomize",
+        "kubeconform"
+      ],
+      "skills": [
+        "GitOps",
+        "Crossplane compositions",
+        "Schema validation"
+      ],
+      "category": "kubernetes",
+      "safety": null,
+      "tested": "kustomize build and kubeconform -strict against checksum-verified schemas, with five negative cases that must be rejected.",
+      "limits": "Nothing has been applied to a cluster, and credentials and the Argo CD installation are not built.",
+      "default_branch": "main",
+      "last_commit_date": "2026-11-23",
+      "license": "MIT",
+      "ci_status_main": [
+        {
+          "workflow": "ci.yml",
+          "status": "pass",
+          "date": "2026-11-23"
+        }
+      ]
+    },
+    {
+      "number": 47,
+      "name": "47-python-opa-compliance-engine",
+      "url": "https://github.com/zeinhaidara/47-python-opa-compliance-engine",
+      "title": "OPA Compliance Engine",
+      "summary": "Six Rego rules, a YAML mapping to SOC 2 and ISO 27001 control IDs, and a Python runner that reports pass, fail or not evaluated per control.",
+      "problem": "Compliance evidence is often collected by hand, from screenshots, once a year.",
+      "stack": [
+        "OPA",
+        "Rego",
+        "Python"
+      ],
+      "skills": [
+        "Policy as code",
+        "Compliance mapping",
+        "OPA testing"
+      ],
+      "category": "security",
+      "safety": null,
+      "tested": "14 opa test cases and 16 pytest tests that call the real pinned opa binary.",
+      "limits": "The control mapping is illustrative, not an audit, and there is no live cloud collection.",
+      "default_branch": "main",
+      "last_commit_date": "2026-11-23",
+      "license": "MIT",
+      "ci_status_main": [
+        {
+          "workflow": "ci.yml",
+          "status": "pass",
+          "date": "2026-11-23"
+        }
+      ]
+    },
+    {
+      "number": 48,
+      "name": "48-fastapi-temp-access-portal",
+      "url": "https://github.com/zeinhaidara/48-fastapi-temp-access-portal",
+      "title": "Temporary Access Portal",
+      "summary": "FastAPI backend where developers request time-limited access to an allowlisted IAM role, another person approves, and the STS credentials expire on their own.",
+      "problem": "Standing admin access is easy to misuse and hard to review.",
+      "stack": [
+        "Python",
+        "FastAPI",
+        "boto3",
+        "AWS STS"
+      ],
+      "skills": [
+        "Access management",
+        "API design",
+        "Audit logging",
+        "Concurrency"
+      ],
+      "category": "security",
+      "safety": "Requesters can't approve their own requests, approvers can be limited per role, and sessions end with the approval window.",
+      "tested": "30 pytest tests through FastAPI's TestClient with a fake granter and an injected clock, including concurrent requests.",
+      "limits": "No authentication is built, and it runs as a single process with requests in memory.",
+      "default_branch": "main",
+      "last_commit_date": "2026-11-23",
+      "license": "MIT",
+      "ci_status_main": [
+        {
+          "workflow": "ci.yml",
+          "status": "pass",
+          "date": "2026-11-23"
+        }
+      ]
+    },
+    {
+      "number": 49,
+      "name": "49-python-cmdb-sync-tool",
+      "url": "https://github.com/zeinhaidara/49-python-cmdb-sync-tool",
+      "title": "AWS Config to CMDB Sync",
+      "summary": "Python tool that syncs AWS Config inventory into a SQLite CMDB, soft-retiring missing resources and reviving ones that come back.",
+      "problem": "A CMDB filled in by hand goes out of date quickly, so nobody trusts it during an incident.",
+      "stack": [
+        "Python",
+        "boto3",
+        "AWS Config",
+        "SQLite"
+      ],
+      "skills": [
+        "Inventory management",
+        "Idempotency",
+        "Testing with fakes"
+      ],
+      "category": "automation",
+      "safety": "A dry run prints the diff without writing, and it refuses to retire everything when the source returns nothing.",
+      "tested": "20 pytest tests with a fake Config client and temporary SQLite files.",
+      "limits": "Nothing has called AWS, and it covers one account and region per run.",
+      "default_branch": "main",
+      "last_commit_date": "2026-11-23",
+      "license": "MIT",
+      "ci_status_main": [
+        {
+          "workflow": "ci.yml",
+          "status": "pass",
+          "date": "2026-11-23"
+        }
+      ]
+    },
+    {
+      "number": 50,
+      "name": "50-golden-path-env-provisioner",
+      "url": "https://github.com/zeinhaidara/50-golden-path-env-provisioner",
+      "title": "Golden Path Environment Provisioner",
+      "summary": "Reusable GitHub Actions workflow that validates one parameter file and provisions a VPC, EKS, observability and a sample app with Terraform and Ansible.",
+      "problem": "When every team builds its own environment, each one ends up different and takes weeks.",
+      "stack": [
+        "GitHub Actions",
+        "Terraform",
+        "Ansible",
+        "Kubernetes",
+        "EKS"
+      ],
+      "skills": [
+        "Platform engineering",
+        "GitHub OIDC",
+        "Terraform",
+        "Ansible"
+      ],
+      "category": "ci-cd",
+      "safety": "Apply needs approval on a protected environment, plan uses a read-only role, and only one run per environment can run at a time.",
+      "tested": "34 pytest tests, actionlint, terraform validate, ansible-lint, a syntax check and check mode in CI.",
+      "limits": "Never planned, applied or run against a cluster.",
+      "default_branch": "main",
+      "last_commit_date": "2026-11-23",
+      "license": "MIT",
+      "ci_status_main": [
+        {
+          "workflow": "ci.yml",
+          "status": "pass",
+          "date": "2026-11-23"
+        },
+        {
+          "workflow": "provision.yml",
+          "status": "no run on main",
+          "date": null
+        }
+      ]
+    }
+  ]
+}
