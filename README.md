@@ -36,15 +36,15 @@ The whole world shares one daytime. There is no day/night switch and no weather 
 |---|---|---|---|
 | Capital | flagships | Clear sky | built |
 | Cloud Infrastructure & Provisioning | 01–05 | Sunny tropics: palms, parrots, warm light | built |
-| CI/CD & GitOps | 06–10 | Windy plains | weather sphere and landform from config, shared island models |
-| Containers & Kubernetes | 11–15 | Stormy sea | weather sphere and landform from config |
-| Security & Compliance | 16–20 | Dark forest | weather sphere and landform from config |
-| Monitoring & Observability | 21–25 | Rainy highlands | weather sphere and landform from config |
-| Automation & Scripting | 26–30 | Calm green forest | weather sphere and landform from config |
-| Cost Optimization & FinOps | 31–35 | Scorching desert: cacti, gold, heat shimmer, vultures | built, islands uncharted |
-| Networking & Connectivity | 36–40 | Icy archipelago: snowfall, penguins, frozen bridges | built, islands uncharted |
-| Disaster Recovery & Reliability | 41–45 | Volcanoes and a calm lake | weather sphere and landform from config, uncharted |
-| Advanced / Cross-Cutting | 46–50 | Summit above the clouds | weather sphere and landform from config, uncharted |
+| CI/CD & GitOps | 06–10 | Windy plains: windmills, kites, gulls, streaking clouds (`zones/wind.js`) | built |
+| Containers & Kubernetes | 11–15 | Stormy sea: container stacks, a crane, swell, gulls, lightning (`zones/harbour.js`) | built |
+| Security & Compliance | 16–20 | Dark forest: a fortress, owls, fireflies, heavy fog (`zones/fortress.js`) | built |
+| Monitoring & Observability | 21–25 | Rainy highlands: lighthouses with sweeping beams, lightning (`zones/lighthouse.js`) | built |
+| Automation & Scripting | 26–30 | Calm green forest: a workshop, turning gears, deer (`zones/workshop.js`) | built |
+| Cost Optimization & FinOps | 31–35 | Scorching desert: cacti, gold, heat shimmer, vultures | built |
+| Networking & Connectivity | 36–40 | Icy archipelago: snowfall, penguins, frozen bridges | built |
+| Disaster Recovery & Reliability | 41–45 | A volcano and campfires by a calm lake, ash and embers (`zones/volcano.js`) | built |
+| Advanced / Cross-Cutting | 46–50 | A summit above a sea of cloud, a flag, an eagle (`zones/summit.js`) | built |
 | Archive | archived public repos | Overcast islet | haze only |
 
 Navigation: drag to orbit, scroll or pinch to zoom, click a zone chip, a zone label, the minimap or an island to glide there. `Home` returns to the capital, `0` shows the whole ring, the arrow keys step around the ring, `Esc` closes a panel. Island labels are real links to the case studies; in the 3D view a click first shows the island and its panel. "List view" in the header, a browser without WebGL, or no JavaScript gives the same content as a plain list. `prefers-reduced-motion` gives a still scene: no orbits, no particles, instant camera moves.
@@ -112,7 +112,7 @@ Node 20 or later. Nothing to install.
 2. Run `node scripts/build.mjs`, then `node scripts/check-links.mjs` (add `--external` to request every repository and demo link).
 3. Commit the data and the generated files together. CI runs the same commands and fails if the committed output is stale.
 
-`challenge_number` 1–50 puts the island on its slot in the matching zone, replacing the uncharted island there. `archived: true` puts it on the Archive islet. Anything else is placed by its `domain` text, and falls back to the capital; to override, add it to `placements` in `data/world.json`. Every project gets an island, a label that links to its generated case study, a row in the all-projects table and a sitemap entry. A richer write-up goes in `content/<repo-name>.html`.
+`challenge_number` 1–50 puts the island on its slot in the matching zone (all fifty slots are filled; an empty slot would show as an uncharted island). `archived: true` puts it on the Archive islet. Anything else is placed by its `domain` text, and falls back to the capital; to override, add it to `placements` in `data/world.json`. Every project gets an island, a label that links to its generated case study, a row in the all-projects table and a sitemap entry. A richer write-up goes in `content/<repo-name>.html`.
 
 **Zone**
 
@@ -127,9 +127,8 @@ Node 20 or later. Nothing to install.
 | aws-retail-microservices-eks, healthcare-eks-secops, gcp-ai-log-analyzer, aws-3-tier-github-actions, github-actions-oidc-s3-pipeline, azure-aks-referral-platform | Capital, on the six original orbits | The six flagships of the original world |
 | zeinhaidara (profile README) | Capital, as the "Say hi" balloon | It was already the contact point |
 | cloud-portfolio | Capital, small island on a seventh orbit | Domain "Portfolio" matches no zone |
-| Code Clinic 01–30 | Zone of their challenge number | Five per zone |
+| Code Clinic 01–50 | Zone of their challenge number | Five per zone |
 | forest-run-unity-game | Archive | Archived public repository |
-| Code Clinic 31–50 | Uncharted islands, no link | Not built yet |
 
 Private repositories are never rendered: the build reads only entries marked `PUBLIC`, and the link checker fails if a non-public name from the audit appears anywhere in the output.
 

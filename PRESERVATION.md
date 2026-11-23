@@ -13,8 +13,8 @@ Reference: `14b0408`. Reviewed engine base: `4e74c4c`. Existing engine history i
 | Keyboard search can leave focus in the input | Regression | Focus the visible project close button so Escape reaches the panel handler. |
 | Silently ignored biome import failures | Regression / reliability | Log the actual error and show a visible status message while retaining project navigation. |
 | Rendering continues behind list view | Regression / reliability | Cancel the animation request, including when list mode is selected during startup; resume without accumulating paused animation time. |
-| Eight placeholder non-capital biomes | Minimal identity | Their haze, canopy, landform and particles come from `air.sphere` in the zone config; no per-zone code. Their island models are unchanged. |
-| Challenges 31–50 and additional biome scenery | Future scope | Keep uncharted islands; add no new projects or biome implementations here. |
+| Placeholder non-capital biomes | Completed (Phase 2) | The seven remaining zones now have decor modules (`zones/wind.js`, `harbour.js`, `fortress.js`, `lighthouse.js`, `workshop.js`, `volcano.js`, `summit.js`) built from the same primitives, palette and baked low-poly style. Their haze, canopy and particles still come from `air.sphere`; the placeholder landforms are retired. Island models are unchanged. |
+| Challenges 31–50 | Completed (Phase 2) | All fifty Code Clinic repositories are islands with generated case studies; no uncharted islands remain. |
 
 The restored hero renderer deliberately retains the original implementation instead of adding solo-scene branches to the zone engine. Its only renderer changes are the local r160 import and freezing animation time under reduced motion. `case.js` retains intersection-based suspension and also handles document visibility.
 

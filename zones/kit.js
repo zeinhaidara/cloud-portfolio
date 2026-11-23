@@ -62,3 +62,49 @@ export function waveRibbon(mesh, t, amp, freq, speed) {
   }
   a.needsUpdate = true;
 }
+
+/** a jagged bolt of light: one thin strip whose zigzag is redrawn at every strike */
+export function makeBolt(h, color = '#e8f1ff') {
+  const geo = new THREE.BufferGeometry();
+  geo.setAttribute('position', new THREE.BufferAttribute(new Float32Array(8 * 6 * 3), 3));
+  const mat = new THREE.MeshBasicMaterial({ color, transparent: true, opacity: 0, depthWrite: false, side: THREE.DoubleSide, forceSinglePass: true, fog: false, blending: THREE.AdditiveBlending });
+  const m = new THREE.Mesh(geo, mat);
+  m.frustumCulled = false; m.visible = false;
+  m.userData = { h, next: 1 + Math.random() * 5, age: 9 };
+  return m;
+}
+/** strikes now and then while the zone is in view; never when the visitor prefers reduced motion */
+export function flashBolt(m, dt, k, reduced) {
+  const u = m.userData;
+  if (reduced) { m.visible = false; return; }
+  u.next -= dt; u.age += dt;
+  if (u.next < 0 && k > 0.3) {
+    u.next = 3 + Math.random() * 6; u.age = 0;
+    const a = m.geometry.attributes.position.array, n = 8;
+    let x = 0, y = 0;
+    for (let i = 0; i < n; i++) {
+      const nx = x + (Math.random() - 0.5) * 1.6, ny = y - u.h / n, w = 0.16 * (1 - i / (n * 1.4)), o = i * 18;
+      a.set([x - w, y, 0, x + w, y, 0, nx - w, ny, 0, x + w, y, 0, nx + w, ny, 0, nx - w, ny, 0], o);
+      x = nx; y = ny;
+    }
+    m.geometry.attributes.position.needsUpdate = true;
+  }
+  const f = u.age < 0.16 ? (1 - u.age / 0.16) * (0.65 + 0.35 * Math.sin(u.age * 120)) : 0;
+  m.visible = f > 0.01 && k > 0.02;
+  m.material.opacity = f * k;
+}
+
+/** a flat gear: toothed outline with a hole, one mesh */
+export function makeGear(r, teeth, depth, mat) {
+  const sh = new THREE.Shape(), n = teeth * 4;
+  for (let i = 0; i < n; i++) {
+    const a = (i / n) * Math.PI * 2, rr = r * ([1.18, 1.18, 1, 1][i % 4]);
+    if (i) sh.lineTo(Math.cos(a) * rr, Math.sin(a) * rr); else sh.moveTo(Math.cos(a) * rr, Math.sin(a) * rr);
+  }
+  const hole = new THREE.Path();
+  hole.absarc(0, 0, r * 0.32, 0, Math.PI * 2, true);
+  sh.holes.push(hole);
+  const m = new THREE.Mesh(new THREE.ExtrudeGeometry(sh, { depth, bevelEnabled: false }), mat);
+  m.geometry.translate(0, 0, -depth / 2);
+  return m;
+}
