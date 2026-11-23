@@ -179,14 +179,17 @@ try {
       const group = window.auditScene.children.find((g) => g.isGroup && g.position.x === z.x && g.position.z === z.z);
       const meshes = group.children[0].children.filter((m) => m.isMesh && m.material.vertexColors && !m.material.transparent);
       const near = meshes.filter((m) => !m.visible), far = meshes.filter((m) => m.visible);
-      return near.length === 5 && far.length === 1 && far[0].geometry.attributes.position.count === near.reduce((n, m) => n + m.geometry.attributes.position.count, 0);
+      // zone decor may add its own baked meshes here (the frozen bridges); the island batch is the one holding every island vertex
+      const count = near.reduce((n, m) => n + m.geometry.attributes.position.count, 0);
+      return near.length === 5 && far.filter((m) => m.geometry.attributes.position.count === count).length === 1;
     });
   }), true, 'far batching preserves every opaque island triangle and keeps all zone silhouettes');
   assert.equal(await page.evaluate(() => {
+    const D = JSON.parse(document.getElementById('placement').textContent);
     const ghosts = [];
     window.auditScene.traverse((m) => { if (m.isMesh && m.visible && m.material.vertexColors && m.material.opacity === 0.42) ghosts.push(m); });
-    return ghosts.length > 0 && ghosts.every((m) => m.geometry.attributes.position.count > 0);
-  }), true, 'distant uncharted batches retain their ghost-island geometry');
+    return D.uncharted.length === 0 && document.querySelectorAll('.plabel.ghost').length === 0 && ghosts.length === 0;
+  }), true, 'all fifty Code Clinic slots are built: no uncharted islands or ghost labels remain');
   await page.locator('.dock [data-fly="provisioning"]').click();
   await page.waitForFunction(() => { const w = window.__world.state().weights.provisioning; return w > 0.01 && w < 0.99; });
   await page.waitForFunction(() => window.__world.state().weights.provisioning > 0.99);
